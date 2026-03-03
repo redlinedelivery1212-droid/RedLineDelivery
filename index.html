@@ -377,6 +377,8 @@
             animation: slideUp 0.3s ease-out;
         }
 
+        
+
         .stickers-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -419,7 +421,7 @@
         <h2>Bem-vindo(a)!</h2>
         <p>Qual o seu nome?</p>
         <input type="text" id="ob-nome" placeholder="Seu nome">
-        <input type="tel" id="ob-contato" placeholder="Seu WhatsApp">
+        <input type="tel" id="ob-contato" value="+55 (98) ">
     </div>
 
     <div id="step-2" class="onboarding-step">
@@ -453,6 +455,19 @@
         <div style="display: flex; gap: 10px; margin-top: 10px;">
             <button class="btn-back" id="btn-cancel-addr" style="flex: 1;">Cancelar</button>
             <button class="btn-next" id="btn-save-addr" style="flex: 1;">Salvar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EDITAR PERFIL -->
+<div id="modal-profile" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Editar Perfil</h3>
+        <input type="text" id="edit-profile-name" placeholder="Seu Nome">
+        <input type="tel" id="edit-profile-phone" placeholder="+55 (98) ">
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button class="btn-back" id="btn-cancel-profile" style="flex: 1;">Cancelar</button>
+            <button class="btn-next" id="btn-save-profile" style="flex: 1;">Salvar</button>
         </div>
     </div>
 </div>
@@ -524,7 +539,11 @@
         <div id="active-order-banner"></div>
         <div class="header-home">
             <p class="greeting">Olá, Camila!</p>
-            <h2 style="margin: 5px 0; display: flex; align-items: center;">RedLine Delivery <span id="store-status-badge" class="store-status status-closed">Fechado, Abre as 18:00</span></h2>
+            <h2 style="margin: 5px 0; display: flex; align-items: center; flex-wrap: wrap; gap: 5px;">
+                RedLine Delivery 
+                <span id="store-status-badge" class="store-status status-closed">Fechado, Abre as 18:00</span>
+                <a href="https://wa.me/5598984376365" target="_blank" style="color: #25d366; font-size: 18px; text-decoration: none; margin-left: 5px; display: flex; align-items: center;"><i class="fa-brands fa-whatsapp"></i></a>
+            </h2>
             <p class="location">Travessa Roma, 790 <i class="fa-solid fa-chevron-down"></i></p>
         </div>
 
@@ -639,6 +658,7 @@
             <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: var(--text-gray);"></i>
         </div>
 
+        <div id="status-error-msg" style="color: red; font-size: 13px; font-weight: bold; margin-top: 10px; text-align: center; display: none;"></div>
         <button id="finish-order" style="width: 100%; background: var(--primary-orange); color: white; border: none; padding: 15px; border-radius: 12px; margin-top: 20px; font-weight: bold; cursor: pointer;">Finalizar Pedido</button>
     </div>
 </section>
@@ -692,7 +712,10 @@
     <div class="cart-header">
         <i class="fa-solid fa-arrow-left" onclick="changeTab('home')"></i>
         <h3>Meu Perfil</h3>
-        <i class="fa-solid fa-gear" onclick="openAddressModal()"></i>
+        <div style="display: flex; gap: 15px;">
+            <i class="fa-solid fa-user-pen" onclick="openProfileModal()"></i>
+            <i class="fa-solid fa-gear" onclick="openAddressModal()"></i>
+        </div>
     </div>
 
     <div style="text-align: center; padding: 20px 0;">
@@ -726,11 +749,39 @@
         </div>
     </div>
     <div style="text-align: center; padding: 20px; color: #ccc; font-size: 10px; margin-bottom: 20px;">
-        Versão 1.0.5
+        Versão 1.0.6
     </div>
 </section>
 
-    <nav class="bottom-nav">
+<section id="payment-screen" class="screen">
+    <div class="cart-header">
+        <i class="fa-solid fa-arrow-left" onclick="localStorage.removeItem('pendingPaymentTotal'); changeTab('home');"></i>
+        <h3>Pagamento PIX</h3>
+        <span></span>
+    </div>
+    <div style="text-align: center; padding: 20px; background: white; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <img src="https://www.climbmarcas.com.br/wp-content/uploads/2020/10/logo_pix.png.webp" style="width: 150px; margin-bottom: 20px;">
+        <p style="color: var(--text-gray); font-size: 14px;">Valor Final do Pedido:</p>
+        <h1 id="pay-total-val" style="color: var(--primary-orange); font-size: 32px; margin-bottom: 20px;">R$ 0,00</h1>
+        
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 12px; border: 1px dashed #ddd; margin-bottom: 20px;">
+            <p style="font-size: 12px; color: var(--text-gray); margin-bottom: 5px;">Chave PIX (Celular):</p>
+            <strong id="pix-key" style="font-size: 18px; letter-spacing: 1px;">98984376365</strong>
+            <button onclick="copyPix()" style="display: block; width: 100%; margin-top: 10px; background: #eee; border: 1px solid #ccc; padding: 5px; border-radius: 5px; font-size: 12px; cursor: pointer; font-weight: bold;"> <i class="fa-solid fa-copy"></i> COPIAR CHAVE </button>
+        </div>
+
+        <p style="font-size: 14px; line-height: 1.5; color: var(--text-dark);">
+            Ao efetuar o pagamento, envie o comprovante no whatsapp:
+            <br><br>
+            <a href="https://wa.me/5598984376365" target="_blank" style="background: #25d366; color: white; text-decoration: none; padding: 12px 25px; border-radius: 10px; font-weight: bold; display: inline-block;">
+                <i class="fa-brands fa-whatsapp" style="font-size: 24px;"></i>
+            </a>
+        </p>
+        <button onclick="localStorage.removeItem('pendingPaymentTotal'); changeTab('home');" style="width: 100%; background: var(--primary-orange); color: white; border: none; padding: 15px; border-radius: 12px; margin-top: 25px; font-weight: bold; cursor: pointer;">CONFIRMAR PAGAMENTO</button>
+    </div>
+</section>
+
+<nav class="bottom-nav">
     <div class="nav-item active" id="nav-home"><i class="fa-solid fa-house"></i></div>
     <div class="nav-item" id="nav-search"><i class="fa-solid fa-magnifying-glass"></i></div>
     <div class="nav-item nav-main" id="nav-cart"><i class="fa-solid fa-box-archive"></i></div>
@@ -779,17 +830,35 @@ let currentObStep = 1;
     let editingProductKey = null;
 
     function init() {
+
+    const formatPhone = (id) => {
+        const input = document.getElementById(id);
+        input.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, "");
+            if (!value.startsWith("5598")) value = "5598" + value;
+            value = value.substring(0, 13);
+            let formatted = "+55 (98) ";
+            if (value.length > 4) {
+                formatted += value.substring(4, 9);
+                if (value.length > 9) formatted += "-" + value.substring(9, 13);
+            }
+            e.target.value = formatted;
+        });
+    };
+    formatPhone('ob-contato');
+    formatPhone('edit-profile-phone');
     
     onValue(ref(db, 'orders'), (snapshot) => {
         const data = snapshot.val();
         const banner = document.getElementById('active-order-banner');
         banner.innerHTML = "";
         if(data && userProfile) {
-            const activeOrder = Object.values(data).find(o => o.cliente && o.cliente.contato === userProfile.contato && (o.status === 'pendente' || o.status === 'preparando' || o.status === 'caminho'));
+            const activeOrder = Object.values(data).find(o => o.cliente && o.cliente.contato === userProfile.contato && (o.status === 'pendente' || o.status === 'pago_confirmado' || o.status === 'preparando' || o.status === 'caminho'));
             if(activeOrder) {
-                let statusMsg = "Pedido Recebido";
+                let statusMsg = "Aguardando confirmação";
                 let icon = "fa-clock";
-                if(activeOrder.status === 'preparando') { statusMsg = "Seu pedido está sendo preparado"; icon = "fa-fire-burner"; }
+                if(activeOrder.status === 'pago_confirmado') { statusMsg = "Seu pedido está sendo preparado"; icon = "fa-check-double"; }
+                if(activeOrder.status === 'preparando') { statusMsg = "Aguardando coleta do entregador"; icon = "fa-fire-burner"; }
                 if(activeOrder.status === 'caminho') { statusMsg = "Saiu para entrega!"; icon = "fa-motorcycle"; }
                 
                 banner.innerHTML = `
@@ -839,6 +908,12 @@ let currentObStep = 1;
         updateUserProfileUI();
         updateLocationUI();
         updateFloatingCart();
+
+        const pendingTotal = localStorage.getItem('pendingPaymentTotal');
+        if (pendingTotal) {
+            document.getElementById('pay-total-val').innerText = pendingTotal;
+            setTimeout(() => changeTab('payment'), 500);
+        }
     }
 
     const productsRef = ref(db, 'products');
@@ -1275,6 +1350,9 @@ function renderFakeReviews() {
         document.getElementById('nav-reviews').classList.add('active');
         document.getElementById('floating-cart').style.display = 'none';
         renderFakeReviews();
+    } else if(tab === 'payment') {
+        document.getElementById('payment-screen').classList.add('active');
+        document.getElementById('floating-cart').style.display = 'none';
     }
 }
 
@@ -1534,6 +1612,34 @@ document.getElementById('back-home').onclick = () => changeTab('home');
     document.getElementById('modal-address').style.display = 'flex';
 }
 
+    window.openProfileModal = function() {
+        document.getElementById('edit-profile-name').value = userProfile.nome;
+        document.getElementById('edit-profile-phone').value = userProfile.contato;
+        document.getElementById('modal-profile').style.display = 'flex';
+    }
+
+    document.getElementById('btn-cancel-profile').onclick = () => {
+        document.getElementById('modal-profile').style.display = 'none';
+    };
+
+    document.getElementById('btn-save-profile').onclick = () => {
+        const newName = document.getElementById('edit-profile-name').value;
+        const newPhone = document.getElementById('edit-profile-phone').value;
+
+        if(!newName || !newPhone) return alert("Preencha todos os campos!");
+
+        userProfile.nome = newName;
+        userProfile.contato = newPhone;
+
+        localStorage.setItem('userProfile', JSON.stringify(userProfile));
+        
+        const userKey = userProfile.contato.replace(/\D/g, '');
+        set(ref(db, 'users/' + userKey), userProfile);
+
+        updateUserProfileUI();
+        document.getElementById('modal-profile').style.display = 'none';
+    };
+
     document.getElementById('btn-cancel-addr').onclick = () => {
         document.getElementById('modal-address').style.display = 'none';
     };
@@ -1651,7 +1757,28 @@ document.getElementById('back-home').onclick = () => changeTab('home');
         document.getElementById('btn-save-prod').innerText = "Salvar Produto";
     }
 
+    window.copyPix = function() {
+        const key = document.getElementById('pix-key').innerText;
+        navigator.clipboard.writeText(key).then(() => {
+            alert("Chave PIX copiada!");
+        });
+    }
+
     document.getElementById('finish-order').onclick = () => {
+        const status = updateStoreStatusUI();
+        const errorMsg = document.getElementById('status-error-msg');
+        
+        if (status !== 'aberto') {
+            errorMsg.style.display = 'block';
+            if (status === 'inauguracao') {
+                errorMsg.innerText = "A loja ainda não inaugurou";
+            } else {
+                errorMsg.innerText = "A loja está fechada, ela abrirá às 18:00";
+            }
+            return;
+        }
+        errorMsg.style.display = 'none';
+
         if(cart.length === 0) return alert("Seu carrinho está vazio!");
         
         const rewardItem = cart.find(i => i.isReward);
@@ -1668,6 +1795,7 @@ document.getElementById('back-home').onclick = () => changeTab('home');
             const orders = snap.val();
             const deliveredCount = orders ? Object.values(orders).filter(o => o.cliente && o.cliente.contato === userProfile.contato && o.status === 'pago').length : 0;
             const deliveryFee = (subtotal >= 64.90 || deliveredCount >= 6) ? 0 : 4.99;
+            const finalTotal = subtotal + deliveryFee - rewardDiscount;
             
             const ordersRef = ref(db, 'orders');
             const newOrderRef = push(ordersRef);
@@ -1682,19 +1810,21 @@ document.getElementById('back-home').onclick = () => changeTab('home');
                 items: cart,
                 extras: extras,
                 sticker: selectedSticker,
-                total: subtotal + deliveryFee - rewardDiscount,
+                total: finalTotal,
                 deliveryFee: deliveryFee,
                 timestamp: Date.now(),
                 status: 'pendente'
             }).then(() => {
-                alert("Pedido enviado com sucesso!");
+                const formattedTotal = 'R$ ' + finalTotal.toFixed(2).replace('.', ',');
+                localStorage.setItem('pendingPaymentTotal', formattedTotal);
+                document.getElementById('pay-total-val').innerText = formattedTotal;
                 cart = [];
                 saveCart();
                 selectedSticker = null;
                 document.getElementById('sticker-preview').innerHTML = `<i class="fa-solid fa-face-smile" style="color: var(--primary-orange);"></i>`;
                 document.getElementById('sticker-status-label').innerText = "Clique para escolher uma imagem";
                 document.getElementById('sticker-status-label').style.color = "var(--text-gray)";
-                changeTab('home');
+                changeTab('payment');
             });
         }, { onlyOnce: true });
     };
