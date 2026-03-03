@@ -722,8 +722,11 @@
             Últimos Pedidos
         </h4>
         <div id="order-history-container" style="display: flex; flex-direction: column; gap: 15px;">
-            <!-- Pedidos via JS -->
+            <!-- Pedidos vi2805a JS -->
         </div>
+    </div>
+    <div style="text-align: center; padding: 20px; color: #ccc; font-size: 10px; margin-bottom: 20px;">
+        Versão 1.0.5
     </div>
 </section>
 
@@ -752,6 +755,17 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+
+    // Lógica de Contador de Acessos
+    const today = new Date().toISOString().split('T')[0];
+    onValue(ref(db, 'stats/accesses'), (snap) => {
+        const data = snap.val() || { total: 0, daily: {} };
+        const newTotal = (data.total || 0) + 1;
+        const newDaily = (data.daily && data.daily[today] ? data.daily[today] : 0) + 1;
+        
+        set(ref(db, 'stats/accesses/total'), newTotal);
+        set(ref(db, 'stats/accesses/daily/' + today), newDaily);
+    }, { onlyOnce: true });
 
     let products = [];
 let allProducts = [];
@@ -855,6 +869,7 @@ function updateUserProfileUI() {
 }
 
 function updateLoyaltyUI() {
+    if(!userProfile) return;
     onValue(ref(db, 'orders'), (snapshot) => {
         const data = snapshot.val();
         
@@ -1372,7 +1387,7 @@ function renderFakeReviews() {
 
         onValue(ref(db, 'orders'), (snap) => {
             const orders = snap.val();
-            const deliveredCount = orders ? Object.values(orders).filter(o => o.cliente && o.cliente.contato === userProfile.contato && o.status === 'pago').length : 0;
+            const deliveredCount = (orders && userProfile) ? Object.values(orders).filter(o => o.cliente && o.cliente.contato === userProfile.contato && o.status === 'pago').length : 0;
             if(deliveredCount >= 6) deliveryFee = 0;
             
             if (subtotal > 0) {
@@ -1490,9 +1505,15 @@ document.getElementById('back-home').onclick = () => changeTab('home');
 
             localStorage.setItem('userProfile', JSON.stringify(profile));
             userProfile = profile;
+            
+            // Salva no Firebase para o Admin ver
+            const userKey = profile.contato.replace(/\D/g, '');
+            set(ref(db, 'users/' + userKey), profile);
+
             document.getElementById('onboarding').style.display = 'none';
-            document.querySelector('.greeting').innerText = `Olá, ${profile.nome.split(' ')[0]}!`;
+            updateUserProfileUI();
             updateLocationUI();
+            updateFloatingCart();
         }
     };
 
