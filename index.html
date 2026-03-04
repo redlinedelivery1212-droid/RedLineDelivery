@@ -749,7 +749,7 @@
         </div>
     </div>
     <div style="text-align: center; padding: 20px; color: #ccc; font-size: 10px; margin-bottom: 20px;">
-        Versão 1.0.6
+        Versão 1.0.8
     </div>
 </section>
 
@@ -830,6 +830,10 @@ let currentObStep = 1;
     let editingProductKey = null;
 
     function init() {
+        
+    if ("Notification" in window) {
+        Notification.requestPermission();
+    }
 
     const formatPhone = (id) => {
         const input = document.getElementById(id);
@@ -848,6 +852,7 @@ let currentObStep = 1;
     formatPhone('ob-contato');
     formatPhone('edit-profile-phone');
     
+    let lastKnownStatus = null;
     onValue(ref(db, 'orders'), (snapshot) => {
         const data = snapshot.val();
         const banner = document.getElementById('active-order-banner');
@@ -855,6 +860,17 @@ let currentObStep = 1;
         if(data && userProfile) {
             const activeOrder = Object.values(data).find(o => o.cliente && o.cliente.contato === userProfile.contato && (o.status === 'pendente' || o.status === 'pago_confirmado' || o.status === 'preparando' || o.status === 'caminho'));
             if(activeOrder) {
+
+                if (lastKnownStatus && lastKnownStatus !== activeOrder.status && activeOrder.status === 'caminho') {
+                    if (Notification.permission === "granted") {
+                        new Notification("RedLine Delivery", {
+                            body: "Seu pedido saiu para entrega! 🛵",
+                            icon: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/logoo.png"
+                        });
+                    }
+                }
+                lastKnownStatus = activeOrder.status;
+
                 let statusMsg = "Aguardando confirmação";
                 let icon = "fa-clock";
                 if(activeOrder.status === 'pago_confirmado') { statusMsg = "Seu pedido está sendo preparado"; icon = "fa-check-double"; }
