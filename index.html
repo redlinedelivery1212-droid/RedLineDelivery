@@ -113,10 +113,12 @@
         .add-btn:active { transform: scale(0.9); }
 
         .floating-cart-bar { 
-            position: absolute; 
-            bottom: 85px; 
-            left: 15px; 
-            right: 15px; 
+            position: fixed; 
+            bottom: 90px; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 92%;
+            max-width: 370px;
             background: var(--primary-orange); 
             color: white; 
             padding: 15px 20px; 
@@ -125,11 +127,14 @@
             justify-content: space-between; 
             align-items: center; 
             box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
-            z-index: 100; 
+            z-index: 400; 
             cursor: pointer; 
-            animation: slideUp 0.3s ease-out; 
+            animation: slideUpCart 0.3s ease-out; 
         }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideUpCart { 
+            from { transform: translateX(-50%) translateY(20px); opacity: 0; } 
+            to { transform: translateX(-50%) translateY(0); opacity: 1; } 
+        }
 
         .cart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
         .cart-item {
@@ -749,7 +754,7 @@
         </div>
     </div>
     <div style="text-align: center; padding: 20px; color: #ccc; font-size: 10px; margin-bottom: 20px;">
-        Versão 1.0.9
+        Versão 1.1.0
     </div>
 </section>
 
