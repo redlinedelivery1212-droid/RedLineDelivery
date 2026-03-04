@@ -754,7 +754,7 @@
         </div>
     </div>
     <div style="text-align: center; padding: 20px; color: #ccc; font-size: 10px; margin-bottom: 20px;">
-        Versão 1.1.0
+        Versão 1.1.1
     </div>
 </section>
 
@@ -835,10 +835,6 @@ let currentObStep = 1;
     let editingProductKey = null;
 
     function init() {
-        
-    if ("Notification" in window) {
-        Notification.requestPermission();
-    }
 
     const formatPhone = (id) => {
         const input = document.getElementById(id);
@@ -858,22 +854,25 @@ let currentObStep = 1;
     formatPhone('edit-profile-phone');
     
     let lastKnownStatus = null;
+    let hasCheckedInitialOrder = false;
     onValue(ref(db, 'orders'), (snapshot) => {
         const data = snapshot.val();
         const banner = document.getElementById('active-order-banner');
         banner.innerHTML = "";
         if(data && userProfile) {
             const activeOrder = Object.values(data).find(o => o.cliente && o.cliente.contato === userProfile.contato && (o.status === 'pendente' || o.status === 'pago_confirmado' || o.status === 'preparando' || o.status === 'caminho'));
+            
             if(activeOrder) {
-
-                if (lastKnownStatus && lastKnownStatus !== activeOrder.status && activeOrder.status === 'caminho') {
-                    if (Notification.permission === "granted") {
-                        new Notification("RedLine Delivery", {
-                            body: "Seu pedido saiu para entrega! 🛵",
-                            icon: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/logoo.png"
-                        });
-                    }
+                if (activeOrder.status === 'pendente' && !hasCheckedInitialOrder) {
+                    const formattedTotal = 'R$ ' + activeOrder.total.toFixed(2).replace('.', ',');
+                    document.getElementById('pay-total-val').innerText = formattedTotal;
+                    changeTab('payment');
                 }
+                
+                if (activeOrder.status !== 'pendente' && document.getElementById('payment-screen').classList.contains('active')) {
+                    changeTab('home');
+                }
+
                 lastKnownStatus = activeOrder.status;
 
                 let statusMsg = "Aguardando confirmação";
@@ -893,6 +892,7 @@ let currentObStep = 1;
                     </div>
                 `;
             }
+            hasCheckedInitialOrder = true;
         }
     });
 
@@ -929,12 +929,6 @@ let currentObStep = 1;
         updateUserProfileUI();
         updateLocationUI();
         updateFloatingCart();
-
-        const pendingTotal = localStorage.getItem('pendingPaymentTotal');
-        if (pendingTotal) {
-            document.getElementById('pay-total-val').innerText = pendingTotal;
-            setTimeout(() => changeTab('payment'), 500);
-        }
     }
 
     const productsRef = ref(db, 'products');
@@ -1839,7 +1833,6 @@ document.getElementById('back-home').onclick = () => changeTab('home');
                 status: 'pendente'
             }).then(() => {
                 const formattedTotal = 'R$ ' + finalTotal.toFixed(2).replace('.', ',');
-                localStorage.setItem('pendingPaymentTotal', formattedTotal);
                 document.getElementById('pay-total-val').innerText = formattedTotal;
                 cart = [];
                 saveCart();
