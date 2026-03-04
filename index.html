@@ -749,7 +749,7 @@
         </div>
     </div>
     <div style="text-align: center; padding: 20px; color: #ccc; font-size: 10px; margin-bottom: 20px;">
-        Versão 1.0.8
+        Versão 1.0.9
     </div>
 </section>
 
@@ -1691,6 +1691,8 @@ document.getElementById('back-home').onclick = () => changeTab('home');
 
         if(storeSettings.inauguration) {
             status = "inauguracao";
+        } else if(storeSettings.forcedOpen) {
+            status = "aberto";
         } else if(storeSettings.closedToday) {
             status = "fechado";
         } else if(hour >= 18 && hour < 23) {
