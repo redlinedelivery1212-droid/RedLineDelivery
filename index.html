@@ -785,7 +785,7 @@
         </div>
     </div>
     <div style="text-align: center; padding: 20px; color: #ccc; font-size: 10px; margin-bottom: 20px;">
-        Versão 1.1.2
+        Versão 1.1.3
     </div>
 </section>
 
@@ -824,6 +824,15 @@
     <div class="nav-item" id="nav-reviews"><i class="fa-solid fa-heart"></i></div>
     <div class="nav-item" id="nav-profile"><i class="fa-solid fa-user"></i></div>
 </nav>
+
+<div id="modal-combo-drink" class="modal-overlay" style="z-index: 8000;">
+    <div class="modal-content">
+        <h3>Escolha sua Bebida</h3>
+        <p style="font-size: 13px; color: var(--text-gray); margin-bottom: 10px;">Este item inclui uma bebida:</p>
+        <div id="combo-drinks-options" style="display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto;"></div>
+        <button class="btn-next" id="btn-confirm-drink" style="margin-top: 15px;">Adicionar ao Carrinho</button>
+    </div>
+</div>
 </div>
 
 <script type="module">
@@ -869,14 +878,26 @@ let currentObStep = 1;
 
     const formatPhone = (id) => {
         const input = document.getElementById(id);
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && input.value.length <= 4) {
+                e.preventDefault();
+            }
+        });
         input.addEventListener('input', (e) => {
-            let value = e.target.value.replace(/\D/g, "");
-            if (!value.startsWith("5598")) value = "5598" + value;
-            value = value.substring(0, 13);
-            let formatted = "+55 (98) ";
-            if (value.length > 4) {
-                formatted += value.substring(4, 9);
-                if (value.length > 9) formatted += "-" + value.substring(9, 13);
+            if (!e.target.value.startsWith("+55 ")) {
+                e.target.value = "+55 " + e.target.value.replace(/^\+55\s*/, "");
+            }
+            let cursor = e.target.selectionStart;
+            let raw = e.target.value.substring(4).replace(/\D/g, "");
+            let formatted = "+55 ";
+            if (raw.length > 0) {
+                formatted += "(" + raw.substring(0, 2);
+                if (raw.length > 2) {
+                    formatted += ") " + raw.substring(2, 7);
+                    if (raw.length > 7) {
+                        formatted += "-" + raw.substring(7, 11);
+                    }
+                }
             }
             e.target.value = formatted;
         });
@@ -1427,14 +1448,49 @@ function renderFakeReviews() {
 
     function addToCart(id) {
         const item = allProducts.find(p => p.id === id);
-        const inCart = cart.find(c => c.id === id);
-        if(inCart) {
-            inCart.qty++;
+        if (item.isCombo) {
+            onValue(ref(db, 'settings/combo_drinks'), (snap) => {
+                const drinksStr = snap.val() || "";
+                const drinks = drinksStr.split(',').map(d => d.trim()).filter(d => d !== "");
+                const container = document.getElementById('combo-drinks-options');
+                container.innerHTML = "";
+                
+                if (drinks.length === 0) {
+                    alert("Nenhuma bebida disponível para o combo no momento.");
+                    return;
+                }
+
+                drinks.forEach((drink, idx) => {
+                    const label = document.createElement('label');
+                    label.style = "display: flex; align-items: center; gap: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px; cursor: pointer;";
+                    label.innerHTML = `<input type="radio" name="selected-drink" value="${drink}" ${idx === 0 ? 'checked' : ''}> <span style="font-size: 14px;">${drink}</span>`;
+                    container.appendChild(label);
+                });
+
+                document.getElementById('modal-combo-drink').style.display = 'flex';
+                document.getElementById('btn-confirm-drink').onclick = () => {
+                    const selected = document.querySelector('input[name="selected-drink"]:checked').value;
+                    const cartItem = {...item, qty: 1, drink: selected, id: item.id + '_' + selected.replace(/\s/g, '')};
+                    const inCart = cart.find(c => c.id === cartItem.id);
+                    if(inCart) inCart.qty++;
+                    else cart.push(cartItem);
+                    
+                    document.getElementById('modal-combo-drink').style.display = 'none';
+                    saveCart();
+                    updateFloatingCart();
+                    if(document.getElementById('details-screen').classList.contains('active')) changeTab('home');
+                };
+            }, { onlyOnce: true });
         } else {
-            cart.push({...item, qty: 1});
+            const inCart = cart.find(c => c.id === id);
+            if(inCart) {
+                inCart.qty++;
+            } else {
+                cart.push({...item, qty: 1});
+            }
+            saveCart();
+            updateFloatingCart();
         }
-        saveCart();
-        updateFloatingCart();
     }
 
     function saveCart() {
@@ -1474,7 +1530,7 @@ function renderFakeReviews() {
                 <img src="${item.img}">
                 <div class="cart-item-info">
                     <p class="p-name">${item.name}</p>
-                    <p class="p-weight">${item.weight}</p>
+                    <p class="p-weight">${item.weight}${item.drink ? ` <span style="color:var(--primary-orange); font-weight:bold;">[${item.drink}]</span>` : ''}</p>
                     <p class="p-price">R$ ${item.price.toFixed(2).replace('.',',')}</p>
                 </div>
                 <div class="qty-controls">
