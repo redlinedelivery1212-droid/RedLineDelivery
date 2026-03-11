@@ -571,7 +571,7 @@
             <h2 style="margin: 5px 0; display: flex; align-items: center; flex-wrap: wrap; gap: 5px;">
                 RedLine Delivery 
                 <span id="store-status-badge" class="store-status" style="background:#eee; color:#888;">Carregando...</span>
-                <a href="https://wa.me/5598984376365" target="_blank" style="color: #25d366; font-size: 18px; text-decoration: none; margin-left: 5px; display: flex; align-items: center;"><i class="fa-brands fa-whatsapp"></i></a>
+                <a href="https://wa.me/559881422644" target="_blank" style="color: #25d366; font-size: 18px; text-decoration: none; margin-left: 5px; display: flex; align-items: center;"><i class="fa-brands fa-whatsapp"></i></a>
             </h2>
             <p class="location">Travessa Roma, 790 <i class="fa-solid fa-chevron-down"></i></p>
         </div>
@@ -651,12 +651,19 @@
                 <input type="checkbox" id="opt-ketchup">
             </div>
 
-            <div class="extra-item" id="item-brinde" style="display: none;">
-                <img src="https://assets.jokrtech.com/small_PROD_150802003_P1_28e61fdaa9.png">
-                <span style="font-size: 14px; font-weight: 500;">Ouro Branco</span>
+            <div class="extra-item">
+                <img src="https://cdn.awsli.com.br/600x450/650/650873/produto/34449945/c7d8015879.jpg">
+                <span style="font-size: 14px; font-weight: 500;">Molho Tasty</span>
                 <span class="free-label">Grátis</span>
-                <input type="checkbox" id="opt-brinde">
+                <input type="checkbox" id="opt-tasty">
             </div>
+
+            <div class="extra-item" id="item-brinde" style="display: none;">
+            <img id="img-brinde-rotator" src="https://bretas.vtexassets.com/arquivos/ids/202606/65730c75dddb07d995cdb46b.jpg?v=638376354488570000">
+            <span style="font-size: 14px; font-weight: 500;">Chocolate Lacta</span>
+            <span class="free-label">Grátis</span>
+            <input type="checkbox" id="opt-brinde">
+        </div>
 
             <h4 style="margin-top: 20px;">Detalhes do pagamento</h4>
             <div class="row" style="margin-top: 15px;">
@@ -778,7 +785,7 @@
         </div>
     </div>
     <div style="text-align: center; padding: 20px; color: #ccc; font-size: 10px; margin-bottom: 20px;">
-        Versão 1.1.1
+        Versão 1.1.2
     </div>
 </section>
 
@@ -795,14 +802,14 @@
         
         <div style="background: #f8f9fa; padding: 15px; border-radius: 12px; border: 1px dashed #ddd; margin-bottom: 20px;">
             <p style="font-size: 12px; color: var(--text-gray); margin-bottom: 5px;">Chave PIX (Celular):</p>
-            <strong id="pix-key" style="font-size: 18px; letter-spacing: 1px;">98984376365</strong>
+            <strong id="pix-key" style="font-size: 18px; letter-spacing: 1px;">8195434762</strong>
             <button onclick="copyPix()" style="display: block; width: 100%; margin-top: 10px; background: #eee; border: 1px solid #ccc; padding: 5px; border-radius: 5px; font-size: 12px; cursor: pointer; font-weight: bold;"> <i class="fa-solid fa-copy"></i> COPIAR CHAVE </button>
         </div>
 
         <p style="font-size: 14px; line-height: 1.5; color: var(--text-dark);">
             Ao efetuar o pagamento, envie o comprovante no whatsapp:
             <br><br>
-            <a href="https://wa.me/5598984376365" target="_blank" style="background: #25d366; color: white; text-decoration: none; padding: 12px 25px; border-radius: 10px; font-weight: bold; display: inline-block;">
+            <a href="https://wa.me/559881422644" target="_blank" style="background: #25d366; color: white; text-decoration: none; padding: 12px 25px; border-radius: 10px; font-weight: bold; display: inline-block;">
                 <i class="fa-brands fa-whatsapp" style="font-size: 24px;"></i>
             </a>
         </p>
@@ -957,19 +964,37 @@ let currentObStep = 1;
 
     const productsRef = ref(db, 'products');
     onValue(productsRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            allProducts = Object.values(data);
-            const activeCat = document.querySelector('.cat-item.active-cat');
-            if (activeCat && activeCat.id !== 'cat-all') {
-                const catName = activeCat.getAttribute('data-catname');
-                products = allProducts.filter(p => p.category === catName);
-            } else {
-                products = [...allProducts];
-            }
+    const data = snapshot.val();
+    if (data) {
+        allProducts = Object.entries(data).map(([key, val]) => ({ id: key, ...val }));
+        const activeCat = document.querySelector('.cat-item.active-cat');
+        if (activeCat && activeCat.id !== 'cat-all') {
+            const catName = activeCat.getAttribute('data-catname');
+            products = allProducts.filter(p => p.category === catName);
+        } else {
+            products = [...allProducts];
         }
-        renderProducts();
-    });
+    }
+    renderProducts();
+});
+
+const brindeImages = [
+    "https://bretas.vtexassets.com/arquivos/ids/202606/65730c75dddb07d995cdb46b.jpg?v=638376354488570000",
+    "https://www.drogariaminasbrasil.com.br/media/webp/catalog/product/cache/74c1057f7991b4edb2bc7bdaa94de933/image/109818741e/chocolate-ao-leite-com-recheio-sonho-de-valsa-98g-lacta_jpg.webp",
+    "https://cdn.awsli.com.br/600x450/298/298064/produto/13537946/c73ebb34bf.jpg",
+    "https://drogariasantaterezinha.com.br/BACKOFFICE/Uploads/Produto/Normal/7622210674319.png",
+    "https://phygital-files.mercafacil.com/tartufo-bucket/uploads/produto/bombom_ouro_branco_20g_lacta_44763371-2a0e-4948-ad4a-80656415a96e.png",
+    "https://images.tcdn.com.br/img/img_prod/1106817/bombom_lacta_ouro_branco_25g_15175_1_3e1517d75602cd4ab7b7b53afdf6888c.jpg",
+    "https://www.havan.com.br/media/catalog/product/cache/73a52df140c4d19dbec2b6c485ea6a50/t/a/tablete-chocolate-ao-leite-lacta_924299.jpg"
+];
+let brindeIdx = 0;
+setInterval(() => {
+    const imgEl = document.getElementById('img-brinde-rotator');
+    if(imgEl) {
+        brindeIdx = (brindeIdx + 1) % brindeImages.length;
+        imgEl.src = brindeImages[brindeIdx];
+    }
+}, 2000);
 }
 
 function updateUserProfileUI() {
@@ -1850,9 +1875,10 @@ document.getElementById('back-home').onclick = () => changeTab('home');
             const newOrderRef = push(ordersRef);
             
             const extras = [];
-            if(document.getElementById('opt-maionese').checked) extras.push("Maionese");
-            if(document.getElementById('opt-ketchup').checked) extras.push("Ketchup");
-            if(document.getElementById('opt-brinde').checked) extras.push("Ouro Branco");
+        if(document.getElementById('opt-maionese').checked) extras.push("Maionese");
+        if(document.getElementById('opt-ketchup').checked) extras.push("Ketchup");
+        if(document.getElementById('opt-tasty').checked) extras.push("Molho Tasty");
+        if(document.getElementById('opt-brinde').checked) extras.push("Chocolate Lacta");
 
             set(newOrderRef, {
                 cliente: userProfile,
