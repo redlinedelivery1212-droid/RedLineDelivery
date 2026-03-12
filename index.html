@@ -664,6 +664,13 @@
             <input type="checkbox" id="opt-brinde">
         </div>
 
+        <div class="extra-item" style="border: 1px dashed #e74c3c; background: #fffafa;">
+            <i class="fa-solid fa-gift" style="font-size: 22px; color: #e74c3c; margin-left: 10px;"></i>
+            <span style="font-size: 14px; font-weight: 500;">Modo Presente</span>
+            <span class="free-label" style="color: #e74c3c;">Ocultar valor na nota</span>
+            <input type="checkbox" id="opt-presente">
+        </div>
+
             <h4 style="margin-top: 20px;">Detalhes do pagamento</h4>
             <div class="row" style="margin-top: 15px;">
                 <span>Subtotal</span>
@@ -784,7 +791,7 @@
         </div>
     </div>
     <div style="text-align: center; padding: 20px; color: #ccc; font-size: 10px; margin-bottom: 20px;">
-        Versão 1.1.5
+        Versão 1.1.6
     </div>
 </section>
 
@@ -1942,6 +1949,7 @@ document.getElementById('back-home').onclick = () => changeTab('home');
                 sticker: selectedSticker,
                 total: finalTotal,
                 deliveryFee: deliveryFee,
+                modoPresente: document.getElementById('opt-presente').checked,
                 timestamp: Date.now(),
                 status: 'pendente'
             }).then(() => {
