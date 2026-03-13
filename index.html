@@ -657,6 +657,13 @@
                 <input type="checkbox" id="opt-tasty">
             </div>
 
+            <div class="extra-item">
+                <img src="https://redemix.vteximg.com.br/arquivos/ids/217427-1000-1000/7892840822309.jpg?v=638499976254100000">
+                <span style="font-size: 14px; font-weight: 500;">Cheetos</span>
+                <span class="free-label">Grátis</span>
+                <input type="checkbox" id="opt-cheetos">
+            </div>
+
             <div class="extra-item" id="item-brinde" style="display: none;">
             <img id="img-brinde-rotator" src="https://bretas.vtexassets.com/arquivos/ids/202606/65730c75dddb07d995cdb46b.jpg?v=638376354488570000">
             <span style="font-size: 14px; font-weight: 500;">Chocolate Lacta</span>
@@ -791,7 +798,7 @@
         </div>
     </div>
     <div style="text-align: center; padding: 20px; color: #ccc; font-size: 10px; margin-bottom: 20px;">
-        Versão 1.1.6
+        Versão 1.1.7
     </div>
 </section>
 
@@ -1940,6 +1947,7 @@ document.getElementById('back-home').onclick = () => changeTab('home');
         if(document.getElementById('opt-maionese').checked) extras.push("Maionese");
         if(document.getElementById('opt-ketchup').checked) extras.push("Ketchup");
         if(document.getElementById('opt-tasty').checked) extras.push("Molho Tasty");
+        if(document.getElementById('opt-cheetos').checked) extras.push("Cheetos");
         if(document.getElementById('opt-brinde').checked) extras.push("Chocolate Lacta");
 
             set(newOrderRef, {
