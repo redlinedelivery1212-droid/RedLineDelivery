@@ -657,19 +657,7 @@
                 <input type="checkbox" id="opt-tasty">
             </div>
 
-            <div class="extra-item">
-                <img src="https://redemix.vteximg.com.br/arquivos/ids/217427-1000-1000/7892840822309.jpg?v=638499976254100000">
-                <span style="font-size: 14px; font-weight: 500;">Cheetos</span>
-                <span class="free-label">Grátis</span>
-                <input type="checkbox" id="opt-cheetos">
-            </div>
-
-            <div class="extra-item" id="item-brinde" style="display: none;">
-            <img id="img-brinde-rotator" src="https://bretas.vtexassets.com/arquivos/ids/202606/65730c75dddb07d995cdb46b.jpg?v=638376354488570000">
-            <span style="font-size: 14px; font-weight: 500;">Chocolate Lacta</span>
-            <span class="free-label">Grátis</span>
-            <input type="checkbox" id="opt-brinde">
-        </div>
+            <div id="brindes-container"></div>
 
         <div class="extra-item" style="border: 1px dashed #e74c3c; background: #fffafa;">
             <i class="fa-solid fa-gift" style="font-size: 22px; color: #e74c3c; margin-left: 10px;"></i>
@@ -708,6 +696,28 @@
         </div>
 
         <div id="status-error-msg" style="color: red; font-size: 13px; font-weight: bold; margin-top: 10px; text-align: center; display: none;"></div>
+        
+        <div style="margin-top: 20px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+            <h4 style="margin-bottom: 12px; font-size: 14px;">Forma de Pagamento</h4>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #eee; border-radius: 8px; cursor: pointer;">
+                    <input type="radio" name="pay-method" value="pix" checked style="accent-color: var(--primary-orange);">
+                    <i class="fa-solid fa-pix" style="color: #32bcad;"></i>
+                    <span style="font-size: 14px; font-weight: 500;">PIX (Pague Agora)</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #eee; border-radius: 8px; cursor: pointer;">
+                    <input type="radio" name="pay-method" value="especie" style="accent-color: var(--primary-orange);">
+                    <i class="fa-solid fa-money-bill-1-wave" style="color: #a29bfe;"></i>
+                    <span style="font-size: 14px; font-weight: 500;">Dinheiro (Na Entrega)</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #eee; border-radius: 8px; cursor: pointer;">
+                    <input type="radio" name="pay-method" value="credito" style="accent-color: var(--primary-orange);">
+                    <i class="fa-solid fa-credit-card" style="color: #0984e3;"></i>
+                    <span style="font-size: 14px; font-weight: 500;">Cartão Maquininha</span>
+                </label>
+            </div>
+        </div>
+
         <button id="finish-order" style="width: 100%; background: var(--primary-orange); color: white; border: none; padding: 15px; border-radius: 12px; margin-top: 20px; font-weight: bold; cursor: pointer;">Finalizar Pedido</button>
     </div>
 </section>
@@ -798,7 +808,7 @@
         </div>
     </div>
     <div style="text-align: center; padding: 20px; color: #ccc; font-size: 10px; margin-bottom: 20px;">
-        Versão 1.1.7
+        Versão 1.1.8
     </div>
 </section>
 
@@ -969,10 +979,23 @@ let currentObStep = 1;
         }
     });
 
-    onValue(ref(db, 'settings/brinde_ativo'), (snapshot) => {
-        const ativo = snapshot.val();
-        const itemBrinde = document.getElementById('item-brinde');
-        if(itemBrinde) itemBrinde.style.display = ativo ? 'flex' : 'none';
+    onValue(ref(db, 'settings/brindes_extras'), (snapshot) => {
+        const container = document.getElementById('brindes-container');
+        container.innerHTML = "";
+        const data = snapshot.val();
+        if (data) {
+            Object.entries(data).forEach(([key, b]) => {
+                const div = document.createElement('div');
+                div.className = 'extra-item';
+                div.innerHTML = `
+                    <img src="${b.url}">
+                    <span style="font-size: 14px; font-weight: 500;">${b.nome}</span>
+                    <span class="free-label">Grátis</span>
+                    <input type="checkbox" class="opt-brinde-dinamico" data-nome="${b.nome}">
+                `;
+                container.appendChild(div);
+            });
+        }
     });
 
     onValue(ref(db, 'stickers'), (snapshot) => {
@@ -1944,11 +1967,15 @@ document.getElementById('back-home').onclick = () => changeTab('home');
             const newOrderRef = push(ordersRef);
             
             const extras = [];
-        if(document.getElementById('opt-maionese').checked) extras.push("Maionese");
-        if(document.getElementById('opt-ketchup').checked) extras.push("Ketchup");
-        if(document.getElementById('opt-tasty').checked) extras.push("Molho Tasty");
-        if(document.getElementById('opt-cheetos').checked) extras.push("Cheetos");
-        if(document.getElementById('opt-brinde').checked) extras.push("Chocolate Lacta");
+            if(document.getElementById('opt-maionese').checked) extras.push("Maionese");
+            if(document.getElementById('opt-ketchup').checked) extras.push("Ketchup");
+            if(document.getElementById('opt-tasty').checked) extras.push("Molho Tasty");
+            
+            document.querySelectorAll('.opt-brinde-dinamico:checked').forEach(cb => {
+                extras.push(cb.getAttribute('data-nome'));
+            });
+
+            const paymentMethod = document.querySelector('input[name="pay-method"]:checked').value;
 
             set(newOrderRef, {
                 cliente: userProfile,
@@ -1957,6 +1984,7 @@ document.getElementById('back-home').onclick = () => changeTab('home');
                 sticker: selectedSticker,
                 total: finalTotal,
                 deliveryFee: deliveryFee,
+                paymentMethod: paymentMethod,
                 modoPresente: document.getElementById('opt-presente').checked,
                 timestamp: Date.now(),
                 status: 'pendente'
@@ -1969,7 +1997,13 @@ document.getElementById('back-home').onclick = () => changeTab('home');
                 document.getElementById('sticker-preview').innerHTML = `<i class="fa-solid fa-face-smile" style="color: var(--primary-orange);"></i>`;
                 document.getElementById('sticker-status-label').innerText = "Clique para escolher uma imagem";
                 document.getElementById('sticker-status-label').style.color = "var(--text-gray)";
-                changeTab('payment');
+                
+                if (paymentMethod === 'pix') {
+                    changeTab('payment');
+                } else {
+                    alert("Pedido realizado com sucesso! Aguarde a entrega.");
+                    changeTab('home');
+                }
             });
         }, { onlyOnce: true });
     };
