@@ -454,6 +454,7 @@
 
     <div id="step-2" class="onboarding-step">
         <h2>Endereço de entrega</h2>
+        <p style="color: red; font-weight: bold; font-size: 11px; margin-bottom: 0;">NAO ENVIAMOS PARA PACAS VILA FILUCAS E REGIOES FORA DA REGIAO DE PINHEIRO</p>
         <p>Nome da rua?</p>
         <input type="text" id="ob-rua" placeholder="Nome da rua">
         <input type="text" id="ob-bairro" placeholder="Bairro">
@@ -476,6 +477,7 @@
 <div id="modal-address" class="modal-overlay">
     <div class="modal-content">
         <h3>Editar Endereço</h3>
+        <p style="color: red; font-weight: bold; font-size: 10px; text-align: center; margin-bottom: 5px;">NAO ENVIAMOS PARA PACAS VILA FILUCAS E REGIOES FORA DA REGIAO DE PINHEIRO</p>
         <input type="text" id="edit-rua" placeholder="Rua">
         <input type="text" id="edit-bairro" placeholder="Bairro">
         <input type="text" id="edit-numero" placeholder="Número">
@@ -701,17 +703,20 @@
             <h4 style="margin-bottom: 12px; font-size: 14px;">Forma de Pagamento</h4>
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #eee; border-radius: 8px; cursor: pointer;">
-                    <input type="radio" name="pay-method" value="pix" checked style="accent-color: var(--primary-orange);">
+                    <input type="radio" name="pay-method" value="pix" checked onchange="document.getElementById('change-field-container').style.display = 'none'" style="accent-color: var(--primary-orange);">
                     <i class="fa-solid fa-pix" style="color: #32bcad;"></i>
                     <span style="font-size: 14px; font-weight: 500;">PIX (Pague Agora)</span>
                 </label>
                 <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #eee; border-radius: 8px; cursor: pointer;">
-                    <input type="radio" name="pay-method" value="especie" style="accent-color: var(--primary-orange);">
+                    <input type="radio" name="pay-method" value="especie" onchange="document.getElementById('change-field-container').style.display = 'block'" style="accent-color: var(--primary-orange);">
                     <i class="fa-solid fa-money-bill-1-wave" style="color: #a29bfe;"></i>
                     <span style="font-size: 14px; font-weight: 500;">Dinheiro (Na Entrega)</span>
                 </label>
+                <div id="change-field-container" style="display: none; padding: 5px 10px; border-left: 2px solid var(--primary-orange); margin-left: 10px;">
+                    <input type="text" id="pay-change" placeholder="Precisa de troco? Ex: Para 50 ou 100" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; outline: none;">
+                </div>
                 <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #eee; border-radius: 8px; cursor: pointer;">
-                    <input type="radio" name="pay-method" value="credito" style="accent-color: var(--primary-orange);">
+                    <input type="radio" name="pay-method" value="credito" onchange="document.getElementById('change-field-container').style.display = 'none'" style="accent-color: var(--primary-orange);">
                     <i class="fa-solid fa-credit-card" style="color: #0984e3;"></i>
                     <span style="font-size: 14px; font-weight: 500;">Cartão Maquininha</span>
                 </label>
@@ -956,12 +961,23 @@ let currentObStep = 1;
                 if(activeOrder.status === 'preparando') { statusMsg = "Aguardando coleta do entregador"; icon = "fa-fire-burner"; }
                 if(activeOrder.status === 'caminho') { statusMsg = "Saiu para entrega!"; icon = "fa-motorcycle"; }
                 
+                const queueStatuses = ['pendente', 'pago_confirmado', 'preparando'];
+                const ordersAhead = Object.values(data).filter(o => 
+                    queueStatuses.includes(o.status) && 
+                    o.timestamp < activeOrder.timestamp
+                ).length;
+
+                const minTime = Math.max(10, ordersAhead * 10);
+                const maxTime = minTime + 10;
+                const timeMsg = activeOrder.status === 'caminho' ? 'Entrega em andamento' : `Prazo Minimo: ${minTime}-${maxTime} min`;
+
                 banner.innerHTML = `
                     <div class="order-tracker-banner">
                         <i class="fa-solid ${icon}" style="color: var(--primary-orange); font-size: 24px;"></i>
                         <div style="flex:1">
                             <p style="font-size: 11px; color: var(--text-gray); font-weight: bold; text-transform: uppercase;">Acompanhe seu pedido</p>
                             <p style="font-size: 14px; font-weight: bold; color: var(--text-dark);">${statusMsg}</p>
+                            <p style="font-size: 12px; color: var(--primary-orange); font-weight: bold; margin-top: 2px;"><i class="fa-regular fa-clock"></i> ${timeMsg}</p>
                         </div>
                         <i class="fa-solid fa-chevron-right" style="color: #ddd;"></i>
                     </div>
@@ -1976,6 +1992,7 @@ document.getElementById('back-home').onclick = () => changeTab('home');
             });
 
             const paymentMethod = document.querySelector('input[name="pay-method"]:checked').value;
+            const changeVal = document.getElementById('pay-change').value;
 
             set(newOrderRef, {
                 cliente: userProfile,
@@ -1985,6 +2002,7 @@ document.getElementById('back-home').onclick = () => changeTab('home');
                 total: finalTotal,
                 deliveryFee: deliveryFee,
                 paymentMethod: paymentMethod,
+                change: paymentMethod === 'especie' ? changeVal : null,
                 modoPresente: document.getElementById('opt-presente').checked,
                 timestamp: Date.now(),
                 status: 'pendente'
@@ -2002,6 +2020,8 @@ document.getElementById('back-home').onclick = () => changeTab('home');
                     changeTab('payment');
                 } else {
                     alert("Pedido realizado com sucesso! Aguarde a entrega.");
+                    document.getElementById('pay-change').value = "";
+                    document.getElementById('change-field-container').style.display = 'none';
                     changeTab('home');
                 }
             });
