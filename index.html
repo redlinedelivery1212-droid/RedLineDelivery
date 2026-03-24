@@ -599,12 +599,12 @@
         </div>
 
         <div class="promo-banner" style="position: relative;">
-        <div class="promo-badge">Grátis</div>
+        <div class="promo-badge" style="display: none;"></div>
         <div>
-            <h2 style="font-size: 20px;">Ganhe 1L Guaraná</h2>
-            <p style="font-size: 13px;">Na compra de 2 Camarões Internacionais!</p>
+            <h2 style="font-size: 20px;">Carregando...</h2>
+            <p style="font-size: 13px;">Buscando promoções</p>
         </div>
-        <img src="https://www.guaranaantarctica.com.br/sites/g/files/wnfebl12341/files/styles/webp/public/paragraphs/product_size/2021-05/1l.png.webp?itok=ZbVZG7qD" alt="promo">
+        <img src="" alt="promo" style="opacity: 0;">
     </div>
 
         <div class="categories" id="home-categories">
@@ -786,7 +786,7 @@
                 <i class="fa-solid fa-star"></i>
                 <i class="fa-solid fa-star"></i>
             </div>
-            <p style="font-size: 12px; color: var(--text-gray);">Média baseada em 62 avaliações</p>
+            <p style="font-size: 12px; color: var(--text-gray);">Média baseada em 172 avaliações</p>
         </div>
     </div>
     <div id="reviews-list">
@@ -1014,6 +1014,24 @@ let currentObStep = 1;
         if(data) {
             storeSettings = data;
             updateStoreStatusUI();
+        }
+    });
+
+    onValue(ref(db, 'settings/promo_banner'), (snapshot) => {
+        const data = snapshot.val();
+        if(data) {
+            const banner = document.querySelector('.promo-banner');
+            const badge = banner.querySelector('.promo-badge');
+            const title = banner.querySelector('h2');
+            const desc = banner.querySelector('p');
+            const img = banner.querySelector('img');
+
+            title.innerText = data.title || "";
+            desc.innerText = data.desc || "";
+            img.src = data.img || "";
+            img.style.opacity = "1";
+            badge.style.display = data.showBadge ? 'block' : 'none';
+            badge.innerText = "Grátis";
         }
     });
 
@@ -1620,6 +1638,23 @@ function renderFakeReviews() {
             container.appendChild(div);
         });
 
+        const marmitaQty = cart.filter(i => i.category === 'Marmitas').reduce((acc, curr) => acc + curr.qty, 0);
+        if (marmitaQty >= 2) {
+            const promoDiv = document.createElement('div');
+            promoDiv.className = 'cart-item';
+            promoDiv.style.border = "1px dashed #28a745";
+            promoDiv.innerHTML = `
+                <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/0000newgu%20(1).png?width=250&quality=50">
+                <div class="cart-item-info">
+                    <p class="p-name">Guaraná 1L</p>
+                    <p class="p-weight">Promoção 2 Marmitas</p>
+                    <p class="p-price" style="color: #28a745;">GRÁTIS</p>
+                </div>
+                <div style="color: #28a745; font-weight: bold; font-size: 12px; margin-right: 10px;">GRÁTIS</div>
+            `;
+            container.appendChild(promoDiv);
+        }
+
         const threshold = 64.90;
         const deliveryFee = (subtotal > 0 && subtotal < threshold) ? 4.99 : 0;
         
@@ -2016,9 +2051,21 @@ document.getElementById('back-home').onclick = () => changeTab('home');
             const paymentMethod = document.querySelector('input[name="pay-method"]:checked').value;
             const changeVal = document.getElementById('pay-change').value;
 
+            const finalItems = [...cart];
+            const marmitaQty = cart.filter(i => i.category === 'Marmitas').reduce((acc, curr) => acc + curr.qty, 0);
+            if (marmitaQty >= 2) {
+                finalItems.push({
+                    id: 'promo_guarana',
+                    name: 'Guaraná 1L (BRINDE)',
+                    price: 0,
+                    qty: 1,
+                    img: 'https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/0000newgu%20(1).png?width=250&quality=50'
+                });
+            }
+
             set(newOrderRef, {
                 cliente: userProfile,
-                items: cart,
+                items: finalItems,
                 extras: extras,
                 sticker: selectedSticker,
                 total: finalTotal,
