@@ -687,11 +687,11 @@
             </div>
 
             <div class="extra-item">
-                <img src="https://cdn.awsli.com.br/600x450/650/650873/produto/34449945/c7d8015879.jpg">
-                <span style="font-size: 14px; font-weight: 500;">Molho Tasty</span>
-                <span class="free-label">Grátis</span>
-                <input type="checkbox" id="opt-tasty">
-            </div>
+            <img src="https://phygital-files.mercafacil.com/princesa/uploads/produto/molho_billy_jack_200g_tasty_7f76ce26-2e26-424d-b412-aacadb52ea86.png">
+            <span style="font-size: 14px; font-weight: 500;">Molho Tasty <small style="color: #f46b21; font-weight: bold;">( no lanche )</small></span>
+            <span class="free-label">Grátis</span>
+            <input type="checkbox" id="opt-tasty">
+        </div>
 
             <div id="brindes-container"></div>
             <div id="brindes-premium-container"></div>
@@ -730,6 +730,11 @@
                 <p id="sticker-status-label" style="font-size: 11px; color: var(--text-gray);">Clique para escolher uma imagem</p>
             </div>
             <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: var(--text-gray);"></i>
+        </div>
+
+        <div style="margin-top: 15px;">
+            <p style="font-size: 13px; font-weight: bold; color: var(--text-dark); margin-bottom: 8px;">Alguma observação?</p>
+            <textarea id="order-observation" placeholder="Ex: Tirar cebola, ponto da carne, etc..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; font-size: 13px; outline: none; resize: none; height: 80px; font-family: inherit;"></textarea>
         </div>
 
         <div id="status-error-msg" style="color: red; font-size: 13px; font-weight: bold; margin-top: 10px; text-align: center; display: none;"></div>
@@ -2102,6 +2107,7 @@ document.getElementById('back-home').onclick = () => changeTab('home');
                 cliente: userProfile,
                 items: finalItems,
                 extras: extras,
+                observacao: document.getElementById('order-observation').value,
                 sticker: selectedSticker,
                 total: finalTotal,
                 deliveryFee: deliveryFee,
@@ -2116,6 +2122,7 @@ document.getElementById('back-home').onclick = () => changeTab('home');
                 cart = [];
                 saveCart();
                 selectedSticker = null;
+                document.getElementById('order-observation').value = "";
                 document.getElementById('sticker-preview').innerHTML = `<i class="fa-solid fa-face-smile" style="color: var(--primary-orange);"></i>`;
                 document.getElementById('sticker-status-label').innerText = "Clique para escolher uma imagem";
                 document.getElementById('sticker-status-label').style.color = "var(--text-gray)";
