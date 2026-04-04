@@ -224,6 +224,63 @@
             border: 2px solid #ffd700 !important;
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.3) !important;
         }
+        .mega-promo-card {
+            border: 2px solid #f46b21 !important;
+            box-shadow: 0 0 12px rgba(244, 107, 33, 0.2) !important;
+        }
+        .mega-promo-tag {
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        background: #f46b21;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 8px;
+        font-weight: 900;
+        z-index: 10;
+        text-transform: uppercase;
+        pointer-events: none;
+        width: fit-content;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .fire-container {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        animation: fireShake 0.4s infinite alternate ease-in-out;
+    }
+    .fire-container i {
+        font-size: 13px;
+        color: #ffde00;
+        -webkit-text-stroke: 0.5px #f46b21;
+    }
+    .fire-container .percent {
+        position: absolute;
+        font-size: 6px;
+        color: white;
+        font-weight: 900;
+        top: 60%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-shadow: 1px 1px 0px rgba(0,0,0,0.2);
+    }
+    @keyframes fireShake {
+        from { transform: rotate(-12deg); }
+        to { transform: rotate(12deg); }
+    }
+        .fire-badge {
+            position: absolute;
+            top: -12px;
+            right: -8px;
+            width: 35px;
+            height: 35px;
+            z-index: 100;
+            pointer-events: none;
+        }
 
         .order-tracker-banner {
             background: #fff;
@@ -767,7 +824,26 @@
     </div>
 </section>
 
-    <section id="details-screen" class="screen" style="padding: 0; background: white; overflow-y: scroll;">
+    <section id="subline-builder-screen" class="screen" style="padding: 0; background: #fff; z-index: 6000;">
+    <div class="cart-header" style="padding: 20px; background: white; position: sticky; top: 0; z-index: 100;">
+        <i class="fa-solid fa-arrow-left" onclick="changeTab('home')"></i>
+        <h3 style="flex: 1; text-align: center; margin-right: 30px;">Monte seu SubLine</h3>
+    </div>
+    <div style="padding: 10px 20px 120px 20px;">
+        <div id="subline-steps-container">
+            <!-- Passos da montagem via JS -->
+        </div>
+    </div>
+    <div style="position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 400px; background: white; padding: 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; z-index: 7000; box-shadow: 0 -5px 20px rgba(0,0,0,0.05);">
+        <div>
+            <p style="font-size: 11px; color: var(--text-gray); text-transform: uppercase; font-weight: bold;">Total do Sub</p>
+            <h2 id="subline-total-display" style="color: var(--primary-orange); font-size: 24px;">R$ 0,00</h2>
+        </div>
+        <button id="btn-add-subline-cart" class="btn-next" style="padding: 10px 18px; border-radius: 10px; box-shadow: 0 4px 10px rgba(244, 107, 33, 0.3); font-size: 13px; margin-right: -8px;">Confirmar SubLine</button>
+    </div>
+</section>
+
+<section id="details-screen" class="screen" style="padding: 0; background: white; overflow-y: scroll;">
     <div style="position: relative;">
         <div class="back-float" id="btn-back-details">
             <i class="fa-solid fa-arrow-left"></i>
@@ -1442,10 +1518,12 @@ function renderFakeReviews() {
         const recSection = document.getElementById('section-recommended');
         const activeCat = document.querySelector('.cat-item.active-cat');
         
+        list.innerHTML = "";
+        recList.innerHTML = "";
+        
         const listFragment = document.createDocumentFragment();
         const recFragment = document.createDocumentFragment();
 
-        // Ordenar todos os produtos pela propriedade order definida no admin
         const sortedAllProducts = [...allProducts].sort((a, b) => (a.order || 0) - (b.order || 0));
 
         if (!activeCat || activeCat.id === 'cat-all') {
@@ -1462,10 +1540,53 @@ function renderFakeReviews() {
                     sectionTitle.style.marginTop = "20px";
                     sectionTitle.innerHTML = `<h3>${cat.name}</h3><span style="color: var(--text-gray); font-size: 12px;">Ver todos ></span>`;
                     listFragment.appendChild(sectionTitle);
+                    
+                    if (cat.name.toLowerCase() === 'subline') {
+                        onValue(ref(db, 'settings/subline_config'), (snap) => {
+                            const subConfig = snap.val();
+                            if (subConfig && subConfig.active) {
+                                const banner = document.createElement('div');
+                                banner.className = 'promo-banner';
+                                banner.style.gridColumn = "1 / -1";
+                                banner.style.marginBottom = "15px";
+                                banner.innerHTML = `
+                                    <div style="flex: 1;">
+                                        <h2 style="font-size: 18px;">Monte seu SubLine</h2>
+                                        <p style="font-size: 12px; margin-bottom: 10px;">Escolha pão, recheio e molhos!</p>
+                                        <button onclick="openSubLineBuilder()" style="background: white; color: var(--primary-orange); border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer;">MONTAR AGORA</button>
+                                    </div>
+                                    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/-2e2.png" style="width: 100px; height: 100px; object-fit: contain;">
+                                `;
+                                sectionTitle.after(banner);
+                            }
+                        }, { onlyOnce: true });
+                    }
+                    
                     catProducts.forEach(p => listFragment.appendChild(createProductCard(p)));
                 }
             });
         } else {
+            const catName = activeCat.getAttribute('data-catname');
+            if(catName && catName.toLowerCase() === 'subline') {
+                onValue(ref(db, 'settings/subline_config'), (snap) => {
+                    const subConfig = snap.val();
+                    if(subConfig && subConfig.active) {
+                        const banner = document.createElement('div');
+                        banner.className = 'promo-banner';
+                        banner.style.gridColumn = "1 / -1";
+                        banner.style.marginBottom = "15px";
+                        banner.innerHTML = `
+                            <div style="flex: 1;">
+                                <h2 style="font-size: 18px;">Monte o seu SubLine</h2>
+                                <p style="font-size: 12px; margin-bottom: 10px;">Personalize seu lanche completo!</p>
+                                <button onclick="openSubLineBuilder()" style="background: white; color: var(--primary-orange); border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer;">MONTAR</button>
+                            </div>
+                            <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/-2e2.png" style="width: 100px; height: 100px; object-fit: contain;">
+                        `;
+                        list.prepend(banner);
+                    }
+                }, { onlyOnce: true });
+            }
             const filteredAndSorted = sortedAllProducts.filter(p => products.some(prod => prod.id === p.id));
             filteredAndSorted.forEach(p => listFragment.appendChild(createProductCard(p)));
         }
@@ -1497,8 +1618,6 @@ function renderFakeReviews() {
             recSection.style.display = 'none';
         }
 
-        list.innerHTML = "";
-        recList.innerHTML = "";
         list.appendChild(listFragment);
         recList.appendChild(recFragment);
     }
@@ -1512,7 +1631,10 @@ function renderFakeReviews() {
 
     function createProductCard(p) {
         const card = document.createElement('div');
-        card.className = p.isSoldOut ? 'product-card esgotado' : 'product-card';
+        let cardClass = p.isSoldOut ? 'product-card esgotado' : 'product-card';
+        if (p.isMegaPromo && !p.isSoldOut) cardClass += ' mega-promo-card';
+        card.className = cardClass;
+        
         const originalPrice = (p.price / 0.8).toFixed(2).replace('.', ',');
         const currentPrice = p.price.toFixed(2).replace('.', ',');
         
@@ -1523,6 +1645,7 @@ function renderFakeReviews() {
 
         card.innerHTML = `
             ${p.isSoldOut ? '<div class="esgotado-label">ESGOTADO VOLTA AMANHÃ</div>' : ''}
+            ${p.isMegaPromo && !p.isSoldOut ? `<div class="mega-promo-tag"><div class="fire-container"><i class="fa-solid fa-fire"></i><span class="percent">%</span></div>MEGA PROMO</div>` : ''}
             <img src="${getThumb(p.img)}" alt="${p.name}" class="product-img-click" loading="lazy" onload="this.classList.add('img-loaded')">
             <p class="p-name">${p.name}</p>
             <p class="p-weight">${p.weight}</p>
@@ -1681,7 +1804,7 @@ function renderFakeReviews() {
                 <img src="${item.img}">
                 <div class="cart-item-info">
                     <p class="p-name">${item.name}</p>
-                    <p class="p-weight">${item.weight}${item.drink ? ` <span style="color:var(--primary-orange); font-weight:bold;">[${item.drink}]</span>` : ''}</p>
+                    <div class="p-weight">${item.weight}${item.drink ? ` <span style="color:var(--primary-orange); font-weight:bold;">[${item.drink}]</span>` : ''}</div>
                     <p class="p-price">R$ ${item.price.toFixed(2).replace('.',',')}</p>
                 </div>
                 <div class="qty-controls">
@@ -2163,7 +2286,201 @@ document.getElementById('back-home').onclick = () => changeTab('home');
         }
     };
 
-    init();
+    let sublineSelections = {};
+
+window.openSubLineBuilder = function() {
+    onValue(ref(db, 'settings/subline_config/ingredients'), (snap) => {
+        const ings = snap.val();
+        if(!ings) return alert("Nenhum ingrediente configurado.");
+        
+        const typeLabels = {
+            'pães': 'Escolha o seu Pão',
+            'proteína': 'Escolha a sua Proteína',
+            'recheios': 'Escolha os Recheios',
+            'saladas': 'Escolha as Saladas',
+            'molhos': 'Escolha os Molhos'
+        };
+
+        sublineSelections = {};
+        const container = document.getElementById('subline-steps-container');
+        container.innerHTML = "";
+        
+        // Define a ordem fixa das categorias
+        const order = ['pães', 'proteína', 'recheios', 'saladas', 'molhos'];
+        const sortedEntries = Object.entries(ings).sort((a, b) => order.indexOf(a[0].toLowerCase()) - order.indexOf(b[0].toLowerCase()));
+
+        sortedEntries.forEach(([type, items]) => {
+            const stepDiv = document.createElement('div');
+            stepDiv.style.marginBottom = "30px";
+            
+            const labelText = typeLabels[type.toLowerCase()] || `Escolha o seu ${type}`;
+            stepDiv.innerHTML = `<h3 style="font-size: 18px; margin-bottom: 15px; color: var(--text-dark); display: flex; align-items: center; gap: 10px;">
+                <span style="background: var(--primary-orange); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px;">${container.children.length + 1}</span>
+                ${labelText}
+            </h3>`;
+            
+            const grid = document.createElement('div');
+            grid.style.display = "grid";
+            grid.style.gridTemplateColumns = "1fr 1fr";
+            grid.style.gap = "12px";
+
+            Object.entries(items).forEach(([key, ing]) => {
+                const item = document.createElement('label');
+                const lowerType = type.toLowerCase();
+                const isMultiple = (lowerType === 'saladas' || lowerType === 'molhos' || lowerType === 'recheios');
+                const inputType = isMultiple ? 'checkbox' : 'radio';
+                
+                item.className = 'subline-option-card';
+                item.style = `
+                    position: relative;
+                    background: white;
+                    border: 2px solid #f0f0f0;
+                    border-radius: 15px;
+                    padding: 10px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+                    cursor: pointer;
+                    transition: 0.2s;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+                `;
+
+                item.innerHTML = `
+                    <input type="${inputType}" name="sub-${type}" value="${key}" data-type="${type}" data-name="${ing.name}" data-price="${ing.price}" 
+                        style="position: absolute; opacity: 0;" onchange="handleSubSelection(this)">
+                    <img src="${ing.img || 'https://via.placeholder.com/100'}" style="width: 100%; height: 100px; object-fit: contain; margin-bottom: 10px; border-radius: 10px;">
+                    <span style="font-size: 13px; font-weight: bold; color: var(--text-dark); line-height: 1.2; height: 32px; display: flex; align-items: center;">${ing.name}</span>
+                    <span style="font-size: 12px; color: #28a745; font-weight: 800; margin-top: 5px;">${ing.price > 0 ? 'R$ '+ing.price.toFixed(2).replace('.', ',') : 'GRÁTIS'}</span>
+                    <div class="check-badge" style="position: absolute; top: 8px; right: 8px; background: var(--primary-orange); color: white; width: 20px; height: 20px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 10px;">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                `;
+                
+                grid.appendChild(item);
+            });
+            stepDiv.appendChild(grid);
+            container.appendChild(stepDiv);
+        });
+        
+        window.handleSubSelection = (input) => {
+            const type = input.getAttribute('name');
+            const isMultiple = input.type === 'checkbox';
+            
+            if (!isMultiple) {
+                document.querySelectorAll(`input[name="${type}"]`).forEach(inp => {
+                    inp.parentElement.style.borderColor = "#f0f0f0";
+                    inp.parentElement.style.background = "white";
+                    inp.parentElement.querySelector('.check-badge').style.display = "none";
+                });
+            }
+            
+            if (input.checked) {
+                input.parentElement.style.borderColor = "var(--primary-orange)";
+                input.parentElement.style.background = "#fff9f5";
+                input.parentElement.querySelector('.check-badge').style.display = "flex";
+            } else {
+                input.parentElement.style.borderColor = "#f0f0f0";
+                input.parentElement.style.background = "white";
+                input.parentElement.querySelector('.check-badge').style.display = "none";
+            }
+            updateSubLineTotal();
+        };
+
+        updateSubLineTotal();
+        changeTab('subline-builder');
+    }, { onlyOnce: true });
+};
+
+window.updateSubLineTotal = function() {
+    let total = 0;
+    const selected = document.querySelectorAll('#subline-steps-container input:checked');
+    selected.forEach(input => {
+        total += parseFloat(input.dataset.price);
+    });
+    document.getElementById('subline-total-display').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+};
+
+document.getElementById('btn-add-subline-cart').onclick = () => {
+    const selectedInputs = document.querySelectorAll('#subline-steps-container input:checked');
+    
+    const hasPao = Array.from(selectedInputs).some(i => i.dataset.type.toLowerCase() === 'pães');
+    const proteinaInput = Array.from(selectedInputs).find(i => i.dataset.type.toLowerCase() === 'proteína');
+
+    if(!hasPao || !proteinaInput) {
+        return alert("Por favor, escolha pelo menos o Pão e a Proteína principal!");
+    }
+    
+    let proteinaNome = proteinaInput.dataset.name;
+    let subName = `SubLine Montado de ${proteinaNome}`;
+    let subDescription = [];
+    let subPrice = 0;
+    let ingredientsList = [];
+    
+    selectedInputs.forEach(input => {
+        subDescription.push(input.dataset.name);
+        subPrice += parseFloat(input.dataset.price);
+        ingredientsList.push({
+            name: input.dataset.name,
+            img: input.parentElement.querySelector('img').src
+        });
+    });
+
+    const cartItem = {
+        id: 'subline_' + Date.now(),
+        name: subName,
+        price: subPrice,
+        weight: `<span style="background: #fff3e0; color: #e65100; padding: 2px 8px; border-radius: 4px; font-size: 10px; display: inline-block; margin-top: 4px; border: 1px solid #ffcc80; line-height: 1.4;">${subDescription.join(' • ')}</span>`,
+        img: 'https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/0000000000000000000sub.png?width=250&quality=50',
+        qty: 1,
+        ingredients: ingredientsList
+    };
+
+    cart.push(cartItem);
+    saveCart();
+    updateFloatingCart();
+    changeTab('cart');
+};
+
+window.changeTab = function(tab) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    
+    if(tab === 'home') {
+        document.getElementById('home-screen').classList.add('active');
+        document.getElementById('nav-home').classList.add('active');
+        updateFloatingCart();
+    } else if(tab === 'cart') {
+        document.getElementById('cart-screen').classList.add('active');
+        document.getElementById('nav-cart').classList.add('active');
+        document.getElementById('floating-cart').style.display = 'none';
+        renderCart();
+    } else if(tab === 'search') {
+        document.getElementById('search-screen').classList.add('active');
+        document.getElementById('nav-search').classList.add('active');
+        document.getElementById('floating-cart').style.display = 'none';
+    } else if(tab === 'profile') {
+        document.getElementById('profile-screen').classList.add('active');
+        document.getElementById('nav-profile').classList.add('active');
+        document.getElementById('floating-cart').style.display = 'none';
+    } else if(tab === 'details') {
+        document.getElementById('details-screen').classList.add('active');
+        document.getElementById('floating-cart').style.display = 'none';
+    } else if(tab === 'subline-builder') {
+        document.getElementById('subline-builder-screen').classList.add('active');
+        document.getElementById('floating-cart').style.display = 'none';
+    } else if(tab === 'reviews') {
+        document.getElementById('reviews-screen').classList.add('active');
+        document.getElementById('nav-reviews').classList.add('active');
+        document.getElementById('floating-cart').style.display = 'none';
+        renderFakeReviews();
+    } else if(tab === 'payment') {
+        document.getElementById('payment-screen').classList.add('active');
+        document.getElementById('floating-cart').style.display = 'none';
+    }
+}
+
+init();
 </script>
 
 </body>
