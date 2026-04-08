@@ -269,9 +269,91 @@
         text-shadow: 1px 1px 0px rgba(0,0,0,0.2);
     }
     @keyframes fireShake {
-        from { transform: rotate(-12deg); }
-        to { transform: rotate(12deg); }
-    }
+            from { transform: rotate(-12deg); }
+            to { transform: rotate(12deg); }
+        }
+        @keyframes goldShine {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .gold-tag {
+            background: linear-gradient(90deg, #ffd700, #fff7ad, #ffae00, #ffd700);
+            background-size: 200% auto;
+            color: #5c4300;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 900;
+            animation: goldShine 2s linear infinite;
+            border: 1px solid #e1ad21;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .xp-bar-container {
+            background: white;
+            padding: 12px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: none;
+        }
+        .xp-progress {
+            height: 6px;
+            background: #eee;
+            border-radius: 10px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ffae00);
+            width: 0%;
+            transition: 1s ease;
+        }
+        @keyframes goldShine {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .gold-tag {
+            background: linear-gradient(90deg, #ffd700, #fff7ad, #ffae00, #ffd700);
+            background-size: 200% auto;
+            color: #5c4300;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 900;
+            animation: goldShine 2s linear infinite;
+            border: 1px solid #e1ad21;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .xp-bar-container {
+            background: white;
+            padding: 12px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: none;
+        }
+        .xp-progress {
+            height: 6px;
+            background: #eee;
+            border-radius: 10px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ffae00);
+            width: 0%;
+            transition: 1s ease;
+        }
         .fire-badge {
             position: absolute;
             top: -12px;
@@ -598,10 +680,10 @@
 <h3>Escolha um Sticker</h3>
 <i class="fa-solid fa-xmark" id="close-stickers" style="font-size: 20px; cursor: pointer;"></i>
 </div>
+<button class="btn-next" id="confirm-sticker" style="width: 100%; margin-bottom: 15px;">Confirmar Seleção</button>
 <p style="font-size: 13px; color: var(--text-gray);">O sticker escolhido aparecerá na sua notinha de pedido!</p>
 <input type="file" id="user-photo-upload" accept="image/*" style="display:none;">
 <div class="stickers-grid" id="stickers-gallery"></div>
-<button class="btn-next" id="confirm-sticker" style="width: 100%; margin-top: 20px;">Confirmar Seleção</button>
 </div>
 </div>
 <!-- MODAL SELEÇÃO DE AVATAR -->
@@ -661,10 +743,23 @@
             <p class="greeting">Olá, Camila!</p>
             <h2 style="margin: 5px 0; display: flex; align-items: center; flex-wrap: wrap; gap: 5px;">
                 RedLine Delivery 
+                <span id="gold-tag-home" class="gold-tag" style="display: none;"><i class="fa-solid fa-crown"></i> CLIENTE GOLD</span>
                 <span id="store-status-badge" class="store-status" style="background:#eee; color:#888;">Carregando...</span>
                 <a href="https://wa.me/559881422644" target="_blank" style="color: #25d366; font-size: 18px; text-decoration: none; margin-left: 5px; display: flex; align-items: center;"><i class="fa-brands fa-whatsapp"></i></a>
             </h2>
             <p class="location">Travessa Roma, 790 <i class="fa-solid fa-chevron-down"></i></p>
+        </div>
+
+
+        <div id="xp-card" class="xp-bar-container">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: bold; color: #333;">Seu progresso para ser um Cliente Gold</span>
+                <span id="xp-text" style="font-size: 10px; color: #f46b21; font-weight: bold;">0 / 600 XP</span>
+            </div>
+            <div class="xp-progress">
+                <div id="xp-fill-bar" class="xp-fill"></div>
+            </div>
+            <p style="font-size: 10px; color: #888; margin-top: 6px;">Evolua seu nível para se tornar Cliente Gold e desbloquear prêmios!</p>
         </div>
 
         <div class="promo-banner" style="position: relative;">
@@ -789,6 +884,21 @@
             <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: var(--text-gray);"></i>
         </div>
 
+        <div id="photo-selection-btn" onclick="document.getElementById('user-photo-upload').click()" style="background: #fff; border: 1px dashed #3498db; padding: 12px; border-radius: 12px; margin-top: 10px; display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <div id="photo-preview" style="width: 40px; height: 40px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                <i class="fa-solid fa-camera" style="color: #3498db;"></i>
+            </div>
+            <div style="flex: 1;">
+                <p style="font-size: 13px; font-weight: bold; color: var(--text-dark);">Foto personalizada no pedido</p>
+                <p id="photo-status-label" style="font-size: 11px; color: var(--text-gray);">Ex: Foto de casal, filhos ou amigos</p>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: var(--text-gray);"></i>
+        </div>
+
+        <button id="btn-remove-selection" onclick="clearImageSelection()" style="display: none; width: 100%; background: #fff; color: #e74c3c; border: 1px solid #e74c3c; padding: 8px; border-radius: 10px; margin-top: 10px; font-weight: bold; font-size: 12px; cursor: pointer;">
+            <i class="fa-solid fa-trash-can"></i> REMOVER IMAGEM SELECIONADA
+        </button>
+
         <div style="margin-top: 15px;">
             <p style="font-size: 13px; font-weight: bold; color: var(--text-dark); margin-bottom: 8px;">Alguma observação?</p>
             <textarea id="order-observation" placeholder="Ex: Tirar cebola, ponto da carne, etc..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; font-size: 13px; outline: none; resize: none; height: 80px; font-family: inherit;"></textarea>
@@ -906,17 +1016,7 @@
         <h2 id="profile-name-display" style="font-size: 20px;">Nome do Usuário</h2>
         <p id="profile-phone-display" style="color: var(--text-gray); font-size: 14px;"></p>
         
-        <div class="loyalty-card" id="loyalty-section">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span id="loyalty-title" style="font-size: 13px; font-weight: bold; color: var(--text-dark);">Progresso de Recompensas</span>
-                <span id="loyalty-count" style="font-size: 12px; color: var(--primary-orange); font-weight: bold;">0/3</span>
-            </div>
-            <div class="loyalty-progress-container">
-                <div class="loyalty-progress-bar" id="loyalty-bar"></div>
-            </div>
-            <p id="loyalty-msg" style="font-size: 11px; color: var(--text-gray);">Faça mais 3 pedidos para ganhar um BIG Cheddar Duplo grátis!</p>
-            <button id="btn-redeem-reward" class="admin-btn" style="width: 100%; margin-top: 10px; display: none;">Resgatar Recompensa</button>
-        </div>
+        <div class="loyalty-card" id="loyalty-section" style="display: none;"></div>
     </div>
 
     <div style="margin-top: 20px;">
@@ -1182,17 +1282,87 @@ let currentObStep = 1;
         if (file) {
             const reader = new FileReader();
             reader.onload = (ev) => {
-                tempSticker = ev.target.result;
-                selectedSticker = tempSticker;
-                const preview = document.getElementById('sticker-preview');
-                const statusLabel = document.getElementById('sticker-status-label');
-                preview.innerHTML = `<img src="${selectedSticker}" style="width:100%; height:100%; object-fit:cover;">`;
-                statusLabel.innerText = "Sua foto foi carregada!";
-                statusLabel.style.color = "#28a745";
+                selectedSticker = ev.target.result;
+                tempSticker = null;
+
+                // 1. Ocultar especificamente o botão de MEME
+                document.getElementById('sticker-selection-btn').style.display = 'none';
+                
+                // 2. Atualizar UI da FOTO
+                const previewP = document.getElementById('photo-preview');
+                const statusP = document.getElementById('photo-status-label');
+                previewP.innerHTML = `<img src="${selectedSticker}" style="width:100%; height:100%; object-fit:cover;">`;
+                statusP.innerText = "Sua foto foi selecionada!";
+                statusP.style.color = "#28a745";
+
+                // 3. Mostrar botão de remover
+                document.getElementById('btn-remove-selection').style.display = 'block';
                 document.getElementById('modal-stickers').style.display = 'none';
             };
             reader.readAsDataURL(file);
         }
+    };
+
+    window.clearImageSelection = () => {
+        selectedSticker = null;
+        tempSticker = null;
+        
+        const stickerBtn = document.getElementById('sticker-selection-btn');
+        const photoBtn = document.getElementById('photo-selection-btn');
+        const removeBtn = document.getElementById('btn-remove-selection');
+
+        if(stickerBtn) stickerBtn.style.setProperty('display', 'flex', 'important');
+        if(photoBtn) photoBtn.style.setProperty('display', 'flex', 'important');
+        if(removeBtn) removeBtn.style.display = 'none';
+        
+        const stickerPrev = document.getElementById('sticker-preview');
+        const stickerStatus = document.getElementById('sticker-status-label');
+        if(stickerPrev) stickerPrev.innerHTML = `<i class="fa-solid fa-face-smile" style="color: var(--primary-orange);"></i>`;
+        if(stickerStatus) {
+            stickerStatus.innerText = "Clique para escolher uma imagem";
+            stickerStatus.style.color = "var(--text-gray)";
+        }
+        
+        const photoPrev = document.getElementById('photo-preview');
+        const photoStatus = document.getElementById('photo-status-label');
+        if(photoPrev) photoPrev.innerHTML = `<i class="fa-solid fa-camera" style="color: #3498db;"></i>`;
+        if(photoStatus) {
+            photoStatus.innerText = "Ex: Foto de casal, filhos ou amigos";
+            photoStatus.style.color = "var(--text-gray)";
+        }
+        
+        document.querySelectorAll('.sticker-option').forEach(opt => opt.classList.remove('selected'));
+    };
+
+    window.clearImageSelection = () => {
+        selectedSticker = null;
+        tempSticker = null;
+        
+        const stickerBtn = document.getElementById('sticker-selection-btn');
+        const photoBtn = document.getElementById('photo-selection-btn');
+        const removeBtn = document.getElementById('btn-remove-selection');
+
+        if(stickerBtn) stickerBtn.style.setProperty('display', 'flex', 'important');
+        if(photoBtn) photoBtn.style.setProperty('display', 'flex', 'important');
+        if(removeBtn) removeBtn.style.display = 'none';
+        
+        const stickerPrev = document.getElementById('sticker-preview');
+        const stickerStatus = document.getElementById('sticker-status-label');
+        if(stickerPrev) stickerPrev.innerHTML = `<i class="fa-solid fa-face-smile" style="color: var(--primary-orange);"></i>`;
+        if(stickerStatus) {
+            stickerStatus.innerText = "Clique para escolher uma imagem";
+            stickerStatus.style.color = "var(--text-gray)";
+        }
+        
+        const photoPrev = document.getElementById('photo-preview');
+        const photoStatus = document.getElementById('photo-status-label');
+        if(photoPrev) photoPrev.innerHTML = `<i class="fa-solid fa-camera" style="color: #3498db;"></i>`;
+        if(photoStatus) {
+            photoStatus.innerText = "Ex: Foto de casal, filhos ou amigos";
+            photoStatus.style.color = "var(--text-gray)";
+        }
+        
+        document.querySelectorAll('.sticker-option').forEach(opt => opt.classList.remove('selected'));
     };
 
     const catRef = ref(db, 'categories');
@@ -1259,77 +1429,32 @@ function updateLoyaltyUI() {
     if(!userProfile) return;
     onValue(ref(db, 'orders'), (snapshot) => {
         const data = snapshot.val();
-        
-        const bar = document.getElementById('loyalty-bar');
-        const countText = document.getElementById('loyalty-count');
-        const title = document.getElementById('loyalty-title');
-        const msg = document.getElementById('loyalty-msg');
-        const btn = document.getElementById('btn-redeem-reward');
+        if(!data) return;
 
-        if(!data) {
-            bar.style.width = '0%';
-            countText.innerText = '0/3';
-            btn.style.display = 'none';
-            return;
-        }
+        const myOrders = Object.values(data).filter(o => o.cliente && o.cliente.contato === userProfile.contato && o.status === 'pago');
+        const totalSpent = myOrders.reduce((acc, curr) => acc + curr.total, 0);
+        const currentXP = Math.floor(totalSpent * 2);
+        const targetXP = 600;
         
-        const deliveredCount = Object.values(data).filter(o => o.cliente && o.cliente.contato === userProfile.contato && o.status === 'pago').length;
-        const rewardClaimed = localStorage.getItem('reward_redeemed') === 'true';
+        const xpCard = document.getElementById('xp-card');
+        const xpFill = document.getElementById('xp-fill-bar');
+        const xpText = document.getElementById('xp-text');
+        const goldTag = document.getElementById('gold-tag-home');
 
-        // LÓGICA DE RESGATE (PEDIDO 3)
-        if (deliveredCount >= 3 && !rewardClaimed) {
-            bar.style.width = '100%';
-            countText.innerText = `3/3`;
-            title.innerText = "Recompensa Liberada!";
-            msg.innerText = "Você ganhou um Big Cheddar cremoso grátis!";
-            msg.style.color = "#28a745";
-            btn.style.display = 'block';
-            btn.innerText = "RESGATAR BIG CHEDDAR";
-            btn.onclick = () => {
-                const exists = cart.find(c => c.id === 'reward_big_cheddar');
-                if(exists) {
-                    alert("O Big Cheddar cremoso já está no seu carrinho!");
-                    changeTab('cart');
-                    return;
-                }
-                const bigCheddar = { 
-                    id: 'reward_big_cheddar', 
-                    name: 'Big Cheddar cremoso', 
-                    price: 17.90, 
-                    weight: 'Recompensa 3 Pedidos', 
-                    img: 'https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/0000000000000000000000000s.png', 
-                    qty: 1, 
-                    isReward: true 
-                };
-                cart.push(bigCheddar);
-                saveCart();
-                localStorage.setItem('reward_redeemed', 'true');
-                alert("Big Cheddar cremoso adicionado ao seu carrinho!");
-                changeTab('cart');
-            };
-        } 
-        // LÓGICA DE FRETE GRÁTIS PERMANENTE (PEDIDO 6+)
-        else if (deliveredCount >= 6) {
-            bar.style.width = '100%';
-            countText.innerText = `6/6`;
-            title.innerText = "Recompensa: Frete Grátis Ativo";
-            msg.innerText = "Parabéns! Você agora possui Frete Grátis em todos os pedidos.";
-            msg.style.color = "#28a745";
-            btn.style.display = 'none';
-        } 
-        // PROGRESSO NORMAL
-        else {
-            // Se já resgatou o do 3, começa contar pro 6
-            const isSecondCycle = deliveredCount >= 3;
-            const currentProgress = isSecondCycle ? deliveredCount - 3 : deliveredCount;
-            const prog = (currentProgress / 3) * 100;
+        if(currentXP > 0) {
+            xpCard.style.display = 'block';
+            const progress = Math.min((currentXP / targetXP) * 100, 100);
+            xpFill.style.width = progress + '%';
+            xpText.innerText = `${currentXP} / ${targetXP} XP`;
             
-            bar.style.width = prog + '%';
-            countText.innerText = `${currentProgress}/3`;
-            title.innerText = isSecondCycle ? "Missão: Frete Grátis" : "Missão: Big Cheddar cremoso";
-            msg.innerText = isSecondCycle ? `Faça mais ${3 - currentProgress} pedidos para ganhar Frete Grátis!` : `Faça mais ${3 - currentProgress} pedidos para ganhar um Big Cheddar cremoso!`;
-            msg.style.color = "var(--text-gray)";
-            btn.style.display = 'none';
+            if(currentXP >= targetXP) {
+                goldTag.style.display = 'inline-flex';
+                xpCard.style.display = 'none';
+            } else {
+                goldTag.style.display = 'none';
+            }
+        } else {
+            xpCard.style.display = 'none';
         }
     });
 }
@@ -1827,6 +1952,14 @@ function renderFakeReviews() {
         const threshold = 64.90;
         const deliveryFee = (subtotal > 0 && subtotal < threshold) ? 4.99 : 0;
         
+        const xpToGain = Math.floor(subtotal * 2);
+        if(subtotal > 0) {
+            const xpInfo = document.createElement('div');
+            xpInfo.style = "text-align: center; margin-top: 10px; color: #f46b21; font-size: 12px; font-weight: bold;";
+            xpInfo.innerHTML = `<i class="fa-solid fa-star"></i> Ganhe +${xpToGain} XP com este pedido!`;
+            container.appendChild(xpInfo);
+        }
+
         const progress = Math.min((subtotal / threshold) * 100, 100);
         const progressBar = document.getElementById('free-shipping-progress');
         const statusText = document.getElementById('coupon-status-text');
@@ -1867,10 +2000,6 @@ function renderFakeReviews() {
         const deliveryValEl = document.getElementById('delivery-val');
 
         onValue(ref(db, 'orders'), (snap) => {
-            const orders = snap.val();
-            const deliveredCount = (orders && userProfile) ? Object.values(orders).filter(o => o.cliente && o.cliente.contato === userProfile.contato && o.status === 'pago').length : 0;
-            if(deliveredCount >= 6) deliveryFee = 0;
-            
             if (subtotal > 0) {
                 deliveryRow.style.display = 'flex';
             } else {
@@ -1889,7 +2018,7 @@ function renderFakeReviews() {
 
             countTitle.innerText = `${itemsCount.toString().padStart(2, '0')} itens`;
             document.getElementById('subtotal-val').innerText = `R$ ${subtotal.toFixed(2).replace('.',',')}`;
-            document.getElementById('total-val').innerText = `R$ ${(subtotal + deliveryFee - rewardDiscount).toFixed(2).replace('.',',')}`;
+            document.getElementById('total-val').innerText = `R$ ${(subtotal + deliveryFee).toFixed(2).replace('.',',')}`;
         }, { onlyOnce: true });
     }
 
@@ -1947,13 +2076,21 @@ document.getElementById('close-stickers').onclick = () => {
 };
 
 document.getElementById('confirm-sticker').onclick = () => {
-    selectedSticker = tempSticker;
-    const preview = document.getElementById('sticker-preview');
-    const statusLabel = document.getElementById('sticker-status-label');
-    if(selectedSticker) {
+    if(tempSticker) {
+        selectedSticker = tempSticker;
+
+        // 1. Ocultar especificamente o botão de FOTO PERSONALIZADA
+        document.getElementById('photo-selection-btn').style.display = 'none';
+
+        // 2. Atualizar UI do MEME
+        const preview = document.getElementById('sticker-preview');
+        const statusLabel = document.getElementById('sticker-status-label');
         preview.innerHTML = `<img src="${selectedSticker}" style="width:100%; height:100%; object-fit:cover;">`;
         statusLabel.innerText = "Sticker selecionado!";
         statusLabel.style.color = "#28a745";
+        
+        // 3. Mostrar botão de remover
+        document.getElementById('btn-remove-selection').style.display = 'block';
     }
     document.getElementById('modal-stickers').style.display = 'none';
 };
@@ -2195,21 +2332,11 @@ document.getElementById('back-home').onclick = () => changeTab('home');
 
         if(cart.length === 0) return alert("Seu carrinho está vazio!");
         
-        const rewardItem = cart.find(i => i.isReward);
-        const subtotalNormal = cart.filter(i => !i.isReward).reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
-        
-        if(rewardItem && subtotalNormal < 10) {
-            return alert("Para resgatar o Big Cheddar cremoso grátis, você precisa adicionar mais R$ " + (10 - subtotalNormal).toFixed(2) + " em produtos no carrinho!");
-        }
-
         const subtotal = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
-        let rewardDiscount = rewardItem ? 17.90 : 0;
         
         onValue(ref(db, 'orders'), (snap) => {
-            const orders = snap.val();
-            const deliveredCount = orders ? Object.values(orders).filter(o => o.cliente && o.cliente.contato === userProfile.contato && o.status === 'pago').length : 0;
-            const deliveryFee = (subtotal >= 64.90 || deliveredCount >= 6) ? 0 : 4.99;
-            const finalTotal = subtotal + deliveryFee - rewardDiscount;
+            const deliveryFee = (subtotal >= 64.90) ? 0 : 4.99;
+            const finalTotal = subtotal + deliveryFee;
             
             const ordersRef = ref(db, 'orders');
             const newOrderRef = push(ordersRef);
@@ -2228,8 +2355,16 @@ document.getElementById('back-home').onclick = () => changeTab('home');
 
             const finalItems = [...cart];
 
-            set(newOrderRef, {
+            onValue(ref(db, 'orders'), (snapXp) => {
+                const allO = snapXp.val() || {};
+                const currentSpent = Object.values(allO)
+                    .filter(o => o.cliente && o.cliente.contato === userProfile.contato && o.status === 'pago')
+                    .reduce((acc, curr) => acc + curr.total, 0);
+                const currentXP = Math.floor(currentSpent * 2);
+
+                set(newOrderRef, {
                 cliente: userProfile,
+                clienteXP: currentXP,
                 items: finalItems,
                 extras: extras,
                 observacao: document.getElementById('order-observation').value,
@@ -2244,13 +2379,12 @@ document.getElementById('back-home').onclick = () => changeTab('home');
             }).then(() => {
                 const formattedTotal = 'R$ ' + finalTotal.toFixed(2).replace('.', ',');
                 document.getElementById('pay-total-val').innerText = formattedTotal;
+                
                 cart = [];
                 saveCart();
-                selectedSticker = null;
+                clearImageSelection(true); // Reseta a UI de fotos e figurinhas e restaura visibilidade
+                
                 document.getElementById('order-observation').value = "";
-                document.getElementById('sticker-preview').innerHTML = `<i class="fa-solid fa-face-smile" style="color: var(--primary-orange);"></i>`;
-                document.getElementById('sticker-status-label').innerText = "Clique para escolher uma imagem";
-                document.getElementById('sticker-status-label').style.color = "var(--text-gray)";
                 
                 if (paymentMethod === 'pix') {
                     changeTab('payment');
@@ -2261,6 +2395,7 @@ document.getElementById('back-home').onclick = () => changeTab('home');
                     changeTab('home');
                 }
             });
+            }, { onlyOnce: true });
         }, { onlyOnce: true });
     };
 
