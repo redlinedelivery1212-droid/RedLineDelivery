@@ -847,6 +847,7 @@
 
             <div id="brindes-container"></div>
             <div id="brindes-premium-container"></div>
+            <div id="brindes-gold-container"></div>
 
         <div class="extra-item" style="border: 1px dashed #e74c3c; background: #fffafa;">
             <i class="fa-solid fa-gift" style="font-size: 22px; color: #e74c3c; margin-left: 10px;"></i>
@@ -1081,7 +1082,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    import { getDatabase, ref, onValue, set, push, remove, get, query, limitToLast } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCZkks4TsMP5sIAe2b0_y63OsplgLYL2iI",
@@ -1151,12 +1152,16 @@ let currentObStep = 1;
     
     let lastKnownStatus = null;
     let hasCheckedInitialOrder = false;
-    onValue(ref(db, 'orders'), (snapshot) => {
+    // Otimização: Escuta apenas os pedidos mais recentes para reduzir carga
+    const ordersQuery = query(ref(db, 'orders'), limitToLast(50));
+    
+    onValue(ordersQuery, (snapshot) => {
         const data = snapshot.val();
         const banner = document.getElementById('active-order-banner');
+        if(!banner) return;
         banner.innerHTML = "";
         if(data && userProfile) {
-            const activeOrder = Object.values(data).find(o => o.cliente && o.cliente.contato === userProfile.contato && (o.status === 'pendente' || o.status === 'pago_confirmado' || o.status === 'preparando' || o.status === 'caminho'));
+            const activeOrder = Object.values(data).find(o => o.cliente && o.cliente.contato === userProfile.contato && (['pendente', 'pago_confirmado', 'preparando', 'caminho'].includes(o.status)));
             
             if(activeOrder) {
                 if (activeOrder.status === 'pendente' && !hasCheckedInitialOrder) {
@@ -1170,7 +1175,6 @@ let currentObStep = 1;
                 }
 
                 lastKnownStatus = activeOrder.status;
-
                 let statusMsg = "Aguardando confirmação";
                 let icon = "fa-clock";
                 if(activeOrder.status === 'pago_confirmado') { statusMsg = "Seu pedido está sendo preparado"; icon = "fa-check-double"; }
@@ -1178,10 +1182,7 @@ let currentObStep = 1;
                 if(activeOrder.status === 'caminho') { statusMsg = "Saiu para entrega!"; icon = "fa-motorcycle"; }
                 
                 const queueStatuses = ['pendente', 'pago_confirmado', 'preparando'];
-                const ordersAhead = Object.values(data).filter(o => 
-                    queueStatuses.includes(o.status) && 
-                    o.timestamp < activeOrder.timestamp
-                ).length;
+                const ordersAhead = Object.values(data).filter(o => queueStatuses.includes(o.status) && o.timestamp < activeOrder.timestamp).length;
 
                 const minTime = Math.max(10, ordersAhead * 10);
                 const maxTime = minTime + 10;
@@ -1203,6 +1204,15 @@ let currentObStep = 1;
         }
     });
 
+    // Prioridade máxima no carregamento do status da loja
+    get(ref(db, 'settings/store_status')).then((snapshot) => {
+        const data = snapshot.val();
+        if(data) {
+            storeSettings = data;
+            updateStoreStatusUI();
+        }
+    });
+    // Mantém a escuta em tempo real depois do primeiro carregamento rápido
     onValue(ref(db, 'settings/store_status'), (snapshot) => {
         const data = snapshot.val();
         if(data) {
@@ -1267,6 +1277,85 @@ let currentObStep = 1;
                     `;
                     container.appendChild(div);
                 });
+            }
+        });
+    });
+
+    onValue(ref(db, 'settings/brindes_gold'), (snapshot) => {
+        const container = document.getElementById('brindes-gold-container');
+        container.innerHTML = "";
+        const data = snapshot.val();
+
+        onValue(ref(db, 'settings/brinde_gold_ativo'), (activeSnap) => {
+            if (activeSnap.val() === true && data) {
+                onValue(ref(db, 'orders'), (snapOrders) => {
+                    const allO = snapOrders.val() || {};
+                    const currentSpent = Object.values(allO)
+                        .filter(o => o.cliente && o.cliente.contato === userProfile.contato && o.status === 'pago')
+                        .reduce((acc, curr) => acc + curr.total, 0);
+                    const currentXP = Math.floor(currentSpent * 2);
+                    const isGold = currentXP >= 600;
+
+                    if (!isGold) {
+                        const targetXP = 600;
+                        const progress = Math.min((currentXP / targetXP) * 100, 100);
+
+                        let previewsHtml = "";
+                        Object.values(data).forEach(b => {
+                            previewsHtml += `
+                                <div style="display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.03); padding: 5px; border-radius: 10px; border: 1px solid #eee; margin-bottom: 5px; min-width: 160px; flex-shrink: 0;">
+                                    <div style="position: relative; width: 40px; height: 40px; flex-shrink: 0; background: #eee; border-radius: 6px; overflow: hidden; border: 1px solid #ddd;">
+                                        <img src="${b.url}" style="width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%);">
+                                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center;">
+                                            <i class="fa-solid fa-lock" style="color: white; font-size: 10px; text-shadow: 0 0 4px rgba(0,0,0,0.5);"></i>
+                                        </div>
+                                    </div>
+                                    <span style="font-size: 12px; color: #888; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;">${b.nome}</span>
+                                </div>
+                            `;
+                        });
+
+                        const notice = document.createElement('div');
+                        notice.style = "background: #fffdf0; border: 1px dashed #f1c40f; padding: 15px; border-radius: 12px; margin-bottom: 15px; position: relative;";
+                        notice.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                <div style="background: #f1c40f; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+                                    <i class="fa-solid fa-lock"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <p style="font-size: 13px; font-weight: bold; color: #b8860b;">Recompensas Gold Bloqueadas</p>
+                                    <p style="font-size: 11px; color: #666;">Atinga 600 XP para liberar estes itens:</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;">
+                                ${previewsHtml}
+                            </div>
+
+                            <div style="height: 6px; background: #eee; border-radius: 10px;">
+                                <div style="height: 100%; background: #f1c40f; width: ${progress}%; border-radius: 10px; transition: 1s;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                                <p style="font-size: 10px; color: #b8860b; font-weight: bold;"><i class="fa-solid fa-crown"></i> Progresso</p>
+                                <p style="font-size: 10px; color: #b8860b; font-weight: bold;">${currentXP} / ${targetXP} XP</p>
+                            </div>
+                        `;
+                        container.appendChild(notice);
+                    } else {
+                        Object.entries(data).forEach(([key, b]) => {
+                            const div = document.createElement('div');
+                            div.className = 'extra-item premium-glow';
+                            div.style.borderColor = "#f1c40f";
+                            div.innerHTML = `
+                                <img src="${b.url}" style="border: 1px solid #f1c40f;">
+                                <span style="font-size: 14px; font-weight: bold; color: #b8860b;">${b.nome}</span>
+                                <span class="free-label" style="color: #b8860b;"><i class="fa-solid fa-crown"></i> GOLD</span>
+                                <input type="checkbox" class="opt-brinde-dinamico" data-nome="${b.nome} (Recompensa Gold)">
+                            `;
+                            container.appendChild(div);
+                        });
+                    }
+                }, { onlyOnce: true });
             }
         });
     });
@@ -1427,7 +1516,8 @@ function updateUserProfileUI() {
 
 function updateLoyaltyUI() {
     if(!userProfile) return;
-    onValue(ref(db, 'orders'), (snapshot) => {
+    // Otimização: Usa get() para não ficar re-processando milhares de pedidos toda hora no XP
+    get(ref(db, 'orders')).then((snapshot) => {
         const data = snapshot.val();
         if(!data) return;
 
@@ -1444,14 +1534,14 @@ function updateLoyaltyUI() {
         if(currentXP > 0) {
             xpCard.style.display = 'block';
             const progress = Math.min((currentXP / targetXP) * 100, 100);
-            xpFill.style.width = progress + '%';
-            xpText.innerText = `${currentXP} / ${targetXP} XP`;
+            if(xpFill) xpFill.style.width = progress + '%';
+            if(xpText) xpText.innerText = `${currentXP} / ${targetXP} XP`;
             
             if(currentXP >= targetXP) {
-                goldTag.style.display = 'inline-flex';
+                if(goldTag) goldTag.style.display = 'inline-flex';
                 xpCard.style.display = 'none';
             } else {
-                goldTag.style.display = 'none';
+                if(goldTag) goldTag.style.display = 'none';
             }
         } else {
             xpCard.style.display = 'none';
@@ -1725,7 +1815,7 @@ function renderFakeReviews() {
                 item.style = "background: white; border-radius: 15px; padding: 12px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; position: relative;";
                 item.innerHTML = `
                     ${p.isSoldOut ? '<div class="esgotado-label" style="font-size:10px;">ESGOTADO</div>' : ''}
-                    <img src="${getThumb(p.img)}" style="width: 80px; height: 80px; border-radius: 10px; object-fit: cover;" loading="lazy">
+                    <img src="${getThumb(p.img)}" style="width: 80px; height: 80px; border-radius: 10px; object-fit: cover;" loading="lazy" onerror="this.src='https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg'">
                     <div style="flex: 1;">
                         <p style="font-weight: bold; font-size: 14px;">${p.name}</p>
                         <p style="font-size: 11px; color: var(--text-gray);">${p.weight}</p>
@@ -1748,7 +1838,8 @@ function renderFakeReviews() {
     }
 
     function getThumb(url) {
-        if (!url) return "";
+        const fallback = 'https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg';
+        if (!url || url.length < 5) return fallback;
         if (url.includes('supabase.co')) return url + (url.includes('?') ? '&' : '?') + 'width=250&quality=50';
         if (url.includes('cdn.shopify.com')) return url + (url.includes('?') ? '&' : '?') + 'width=250';
         return url;
@@ -1773,7 +1864,7 @@ function renderFakeReviews() {
         card.innerHTML = `
             ${p.isSoldOut ? '<div class="esgotado-label">ESGOTADO VOLTA AMANHÃ</div>' : ''}
             ${p.isMegaPromo && !p.isSoldOut ? `<div class="mega-promo-tag"><div class="fire-container"><i class="fa-solid fa-fire"></i><span class="percent">%</span></div>MEGA PROMO</div>` : ''}
-            <img src="${getThumb(p.img)}" alt="${p.name}" class="product-img-click" loading="lazy" onload="this.classList.add('img-loaded')">
+            <img src="${getThumb(p.img)}" alt="${p.name}" class="product-img-click" loading="lazy" onload="this.classList.add('img-loaded')" onerror="this.src='https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg'">
             <p class="p-name">${p.name}</p>
             <p class="p-weight">${p.weight}</p>
             <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
@@ -2486,7 +2577,7 @@ window.openSubLineBuilder = function() {
                 item.innerHTML = `
                     <input type="${inputType}" name="sub-${type}" value="${key}" data-type="${type}" data-name="${ing.name}" data-price="${ing.price}" 
                         style="position: absolute; opacity: 0;" onchange="handleSubSelection(this)">
-                    <img src="${ing.img || 'https://via.placeholder.com/100'}" style="width: 100%; height: 100px; object-fit: contain; margin-bottom: 10px; border-radius: 10px;">
+                    <img src="${ing.img || 'https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg'}" style="width: 100%; height: 100px; object-fit: contain; margin-bottom: 10px; border-radius: 10px;" onerror="this.src='https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg'">
                     <span style="font-size: 13px; font-weight: bold; color: var(--text-dark); line-height: 1.2; height: 32px; display: flex; align-items: center;">${ing.name}</span>
                     <span style="font-size: 12px; color: #28a745; font-weight: 800; margin-top: 5px;">${ing.price > 0 ? 'R$ '+ing.price.toFixed(2).replace('.', ',') : 'GRÁTIS'}</span>
                     <div class="check-badge" style="position: absolute; top: 8px; right: 8px; background: var(--primary-orange); color: white; width: 20px; height: 20px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 10px;">
