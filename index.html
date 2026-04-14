@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://api.dicebear.com">
     <link rel="icon" type="image/png" href="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         :root {
             --primary-orange: #f46b21;
@@ -51,17 +53,69 @@
         .bell-icon { float: right; color: var(--text-dark); position: relative; }
         .bell-icon::after { content: ''; width: 8px; height: 8px; background: var(--primary-orange); border-radius: 50%; position: absolute; top: 0; right: 0; }
 
-        .promo-banner {
+        .promo-slider-container { position: relative; width: 100%; overflow: hidden; border-radius: 15px; margin-bottom: 20px; }
+        .promo-wrapper { display: flex; transition: transform 0.5s ease-in-out; }
+        .promo-banner { 
+            min-width: 100%; 
             background: var(--primary-orange);
-            border-radius: 15px;
             padding: 20px;
             color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 0 !important; 
+            border-radius: 0 !important; 
+            position: relative;
+            overflow: hidden;
         }
-        .promo-banner img { width: 140px; height: 120px; object-fit: contain; }
+        .promo-banner::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='rgba(255,255,255,0.2)' d='M0,224L48,213.3C96,203,192,181,288,192C384,203,480,245,576,234.7C672,224,768,160,864,149.3C960,139,1056,181,1152,186.7C1248,192,1344,160,1392,144L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: cover;
+            background-position: bottom;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .promo-banner::after {
+            content: none;
+        }
+        .promo-banner h2 { 
+            text-transform: uppercase; 
+            font-weight: 900; 
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.15);
+        }
+        .subline-banner::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 1440'%3E%3Cpath fill='none' stroke='rgba(255,255,255,0.15)' stroke-width='40' d='M160,0C300,320,0,420,160,720C320,1020,20,1120,160,1440'/%3E%3Cpath fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='40' d='M260,0C400,320,100,420,260,720C420,1020,120,1120,260,1440'/%3E%3C/svg%3E");
+            background-size: cover;
+            background-position: center;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .promo-banner > * { position: relative; z-index: 2; }
+        .promo-indicators { position: absolute; bottom: 10px; left: 20px; display: flex; gap: 5px; z-index: 20; }
+        .indicator-bar { width: 12px; height: 3px; background: rgba(255,255,255,0.3); border-radius: 10px; transition: 0.3s; }
+        .indicator-bar.active { background: white; width: 22px; }
+        .promo-banner img { 
+            width: 140px; 
+            height: 120px; 
+            object-fit: contain; 
+            transform: rotate(-8deg); 
+            animation: floatBannerImg 3s ease-in-out infinite; 
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+        }
+        @keyframes floatBannerImg {
+            0%, 100% { transform: translateY(0) rotate(-8deg); }
+            50% { transform: translateY(-10px) rotate(-8deg); }
+        }
+        @keyframes floatBannerSub {
+            0%, 100% { transform: translateY(0) rotate(15deg); }
+            50% { transform: translateY(-10px) rotate(15deg); }
+        }
         .promo-badge {
             background: #ffde00;
             color: #d32f2f;
@@ -109,6 +163,30 @@
             100% { background-position: -200% 0; }
         }
         .img-loaded { animation: none !important; background: transparent !important; }
+
+        .cat-skeleton {
+            min-width: 75px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .cat-skeleton-circle {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: #eee linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        .cat-skeleton-text {
+            width: 40px;
+            height: 10px;
+            background: #eee linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+        }
         .product-grid, #recommended-list, #reviews-list, #order-history-container {
             content-visibility: auto;
             contain-intrinsic-size: 1px 500px;
@@ -466,6 +544,30 @@
         .btn-next { background: var(--primary-orange); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; flex: 1; cursor: pointer; }
         .btn-back { background: #eee; color: var(--text-dark); border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; }
         
+        /* Toast Notification */
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #2d3436;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 10000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 14px;
+            font-weight: 500;
+            width: fit-content;
+            white-space: nowrap;
+        }
+        .toast-notification.active { transform: translateX(-50%) translateY(0); }
+        .toast-notification i { color: #2ecc71; font-size: 18px; }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
         /* Modal de Endereço */
@@ -686,6 +788,33 @@
 <div class="stickers-grid" id="stickers-gallery"></div>
 </div>
 </div>
+<!-- MODAL MAPA -->
+<div id="modal-map" class="modal-overlay" style="z-index: 9000;">
+    <div class="modal-content" style="max-width: 95%; height: 85vh; padding: 15px; display: flex; flex-direction: column;">
+        <h3 style="text-align: center; margin-bottom: 10px;">Marcar Local no Mapa</h3>
+        <p style="font-size: 11px; color: var(--text-gray); text-align: center; margin-bottom: 10px;">Arraste o mapa para posicionar o alfinete na sua casa</p>
+        <div id="map-display" style="flex: 1; width: 100%; border-radius: 15px; border: 2px solid #eee; margin-bottom: 15px; z-index: 1;"></div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn-back" onclick="closeMapModal()" style="flex: 1;">Cancelar</button>
+            <button class="btn-next" onclick="confirmMapLocation()" style="flex: 2;">Confirmar Local</button>
+            <button id="btn-skip-map" class="btn-back" onclick="showMapWarning()" style="width: 100%; margin-top: 5px; font-size: 11px; background: #fff; border: 1px solid #ddd; display: none;">Não quero informar meu local exato para entrega</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL AVISO DE ATRASO -->
+<div id="modal-map-warning" class="modal-overlay" style="z-index: 9100;">
+    <div class="modal-content" style="text-align: center;">
+        <h3 style="color: #e67e22;"><i class="fa-solid fa-triangle-exclamation"></i> Aviso de Entrega</h3>
+        <p style="font-size: 14px; color: #555; margin: 15px 0;">Sem a localização exata, sua entrega pode atrasar, pois o entregador terá dificuldade em encontrar sua casa.</p>
+        <p style="font-size: 14px; font-weight: bold; margin-bottom: 20px;">Você tem certeza que não quer informar?</p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button class="btn-next" onclick="closeWarningAndReturnMap()">Quero informar meu local</button>
+            <button class="btn-back" onclick="confirmDeclineMap()" style="background: #fff; border: 1px solid #ddd;">Não quero informar mesmo assim</button>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL SELEÇÃO DE AVATAR -->
 <div id="modal-avatars" style="display: none;">
 <div class="stickers-content">
@@ -721,6 +850,11 @@
     </div>
 </div>
 </div>
+<div id="custom-toast" class="toast-notification">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="toast-message">Localização salva com sucesso!</span>
+</div>
+
 <div class="app-container">
     
     <section id="search-screen" class="screen">
@@ -762,14 +896,39 @@
             <p style="font-size: 10px; color: #888; margin-top: 6px;">Evolua seu nível para se tornar Cliente Gold e desbloquear prêmios!</p>
         </div>
 
-        <div class="promo-banner" style="position: relative;">
-        <div class="promo-badge" style="display: none;"></div>
-        <div>
-            <h2 style="font-size: 20px;">Carregando...</h2>
-            <p style="font-size: 13px;">Buscando promoções</p>
+        <div class="promo-slider-container">
+            <div class="promo-wrapper" id="promo-wrapper">
+                <div class="promo-banner" id="banner-dinamico" style="position: relative;">
+                    <div class="promo-badge" style="display: none;"></div>
+                    <div>
+                        <h2 style="font-size: 20px;">Carregando...</h2>
+                        <p style="font-size: 13px;">Buscando promoções</p>
+                    </div>
+                    <img src="" alt="promo" style="opacity: 0;">
+                </div>
+                <div class="promo-banner subline-banner" style="background: #e74c3c; cursor: pointer;" onclick="openSubLineBuilder()">
+                    <div style="flex: 1;">
+                        <h2 style="font-size: 18px;">Monte seu SubLine</h2>
+                        <p style="font-size: 12px; margin-bottom: 10px;">Personalize do seu jeito!</p>
+                        <span style="background: white; color: #e74c3c; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold;">MONTAR AGORA</span>
+                    </div>
+                    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/-2e2.png" style="width: 110px; height: 110px; object-fit: contain; transform: rotate(15deg); animation: floatBannerSub 3s ease-in-out infinite;">
+                </div>
+                <div class="promo-banner" style="background: #6c5ce7; cursor: pointer;" id="slide-bag-promo" onclick="changeTab('bags')">
+                    <div style="flex: 1;">
+                        <h2 id="slide-bag-title" style="font-size: 18px;">BAG PROMO!</h2>
+                        <p id="slide-bag-desc" style="font-size: 12px; margin-bottom: 10px;">Economia garantida.</p>
+                        <span style="background: white; color: #6c5ce7; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold;">VER PACOTES</span>
+                    </div>
+                    <img id="slide-bag-img" src="" style="width: 110px; height: 110px; object-fit: contain; transform: rotate(-5deg); animation: floatBannerImg 3s ease-in-out infinite;">
+                </div>
+            </div>
+            <div class="promo-indicators">
+                <div class="indicator-bar active" id="ind-0"></div>
+                <div class="indicator-bar" id="ind-1"></div>
+                <div class="indicator-bar" id="ind-2"></div>
+            </div>
         </div>
-        <img src="" alt="promo" style="opacity: 0;">
-    </div>
 
         <div class="categories" id="home-categories">
             <!-- Categorias dinâmicas -->
@@ -809,12 +968,43 @@
             <span id="cart-count-title" style="font-size: 12px; color: var(--text-gray);">00 itens</span>
         </div>
 
+        <div id="address-checkout-bar" style="background: white; padding: 12px 15px; border-radius: 12px; margin-top: 10px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #eee;">
+            <div onclick="openAddressModal()" style="display: flex; align-items: center; gap: 10px; overflow: hidden; flex: 1; cursor: pointer;">
+                <i class="fa-solid fa-location-dot" style="color: var(--primary-orange); font-size: 18px;"></i>
+                <div style="overflow: hidden;">
+                    <p style="font-size: 10px; color: var(--text-gray); font-weight: bold; text-transform: uppercase; margin-bottom: 2px;">Será entregue em:</p>
+                    <p id="checkout-address-text" style="font-size: 13px; font-weight: bold; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <div onclick="openMapModal()" style="background: #f0f7ff; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: 1px solid #d0e7ff; cursor: pointer; color: #007bff;">
+                    <i class="fa-solid fa-map-location-dot" style="font-size: 16px;"></i>
+                </div>
+                <div onclick="openAddressModal()" style="background: #f8f9fa; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: 1px solid #eee; cursor: pointer;">
+                    <i class="fa-solid fa-pencil" style="font-size: 14px; color: var(--text-gray);"></i>
+                </div>
+            </div>
+        </div>
+
         <div id="cart-items-container"></div>
+
+        <div id="beverage-suggestion-section" style="margin: 25px 0; background: #fff; padding: 18px; border-radius: 20px; border: 1px solid #f0f0f0; display: none;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                <h4 style="font-size: 14px; font-weight: 800; color: #2d3436; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-bottle-water" style="color: #6c5ce7; font-size: 18px;"></i>
+                    Vai uma bebida gelada?
+                </h4>
+                <span style="font-size: 10px; color: #6c5ce7; font-weight: 900; text-transform: uppercase; background: #f3f0ff; padding: 2px 8px; border-radius: 20px;">Sugestão</span>
+            </div>
+            <div id="beverage-list-horizontal" style="display: flex; gap: 15px; overflow-x: auto; padding: 5px 2px 10px 2px; scrollbar-width: none; -webkit-overflow-scrolling: touch; flex-wrap: nowrap;">
+                <!-- Bebidas via JS -->
+            </div>
+        </div>
 
         <div class="coupon-box" style="flex-direction: column; gap: 5px;">
             <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <span style="font-size: 13px;"><i class="fa-solid fa-truck-fast"></i> <span id="coupon-status-text">Frete grátis disponível</span></span>
-                <span style="color: var(--primary-orange); font-weight: bold; font-size: 12px;">Mín. R$ 64,90</span>
+                <span style="color: var(--primary-orange); font-weight: bold; font-size: 12px;">Mín. R$ 84,90</span>
             </div>
             <div class="progress-container">
                 <div class="progress-bar" id="free-shipping-progress"></div>
@@ -874,26 +1064,24 @@
             <span id="total-val">R$ 0,00</span>
         </div>
 
-        <div id="sticker-selection-btn" style="background: #fff; border: 1px dashed var(--primary-orange); padding: 12px; border-radius: 12px; margin-top: 15px; display: flex; align-items: center; gap: 10px; cursor: pointer;">
-            <div id="sticker-preview" style="width: 40px; height: 40px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                <i class="fa-solid fa-face-smile" style="color: var(--primary-orange);"></i>
+        <div id="image-action-btn" onclick="document.getElementById('modal-image-choice').style.display = 'flex'" style="background: #fff; border: 1px dashed #6c5ce7; padding: 12px; border-radius: 12px; margin-top: 15px; display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <div id="image-btn-preview" style="width: 40px; height: 40px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                <i class="fa-solid fa-image" style="color: #6c5ce7;"></i>
             </div>
             <div style="flex: 1;">
-                <p style="font-size: 13px; font-weight: bold; color: var(--text-dark);">Enviar um meme na notinha</p>
-                <p id="sticker-status-label" style="font-size: 11px; color: var(--text-gray);">Clique para escolher uma imagem</p>
+                <p style="font-size: 13px; font-weight: bold; color: var(--text-dark);">Adicionar imagem na notinha</p>
+                <p id="image-btn-status" style="font-size: 11px; color: var(--text-gray);">Escolha um meme ou foto personalizada</p>
             </div>
-            <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: var(--text-gray);"></i>
+            <i class="fa-solid fa-plus" style="font-size: 12px; color: var(--text-gray);"></i>
         </div>
 
-        <div id="photo-selection-btn" onclick="document.getElementById('user-photo-upload').click()" style="background: #fff; border: 1px dashed #3498db; padding: 12px; border-radius: 12px; margin-top: 10px; display: flex; align-items: center; gap: 10px; cursor: pointer;">
-            <div id="photo-preview" style="width: 40px; height: 40px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                <i class="fa-solid fa-camera" style="color: #3498db;"></i>
+        <div id="modal-image-choice" class="modal-overlay" style="z-index: 7500;">
+            <div class="modal-content" style="gap: 15px;">
+                <h3 style="text-align: center;">Personalizar Notinha</h3>
+                <button class="btn-next" onclick="openStickerChoice()" style="background: var(--primary-orange); display: flex; align-items: center; justify-content: center; gap: 10px;"><i class="fa-solid fa-face-grin-tears"></i> Escolher Meme / Sticker</button>
+                <button class="btn-next" onclick="document.getElementById('user-photo-upload').click(); document.getElementById('modal-image-choice').style.display='none';" style="background: #3498db; display: flex; align-items: center; justify-content: center; gap: 10px;"><i class="fa-solid fa-camera"></i> Enviar Foto da Galeria</button>
+                <button class="btn-back" onclick="document.getElementById('modal-image-choice').style.display='none'">Cancelar</button>
             </div>
-            <div style="flex: 1;">
-                <p style="font-size: 13px; font-weight: bold; color: var(--text-dark);">Foto personalizada no pedido</p>
-                <p id="photo-status-label" style="font-size: 11px; color: var(--text-gray);">Ex: Foto de casal, filhos ou amigos</p>
-            </div>
-            <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: var(--text-gray);"></i>
         </div>
 
         <button id="btn-remove-selection" onclick="clearImageSelection()" style="display: none; width: 100%; background: #fff; color: #e74c3c; border: 1px solid #e74c3c; padding: 8px; border-radius: 10px; margin-top: 10px; font-weight: bold; font-size: 12px; cursor: pointer;">
@@ -991,7 +1179,7 @@
                 <i class="fa-solid fa-star"></i>
                 <i class="fa-solid fa-star"></i>
             </div>
-            <p style="font-size: 12px; color: var(--text-gray);">Média baseada em 172 avaliações</p>
+            <p style="font-size: 12px; color: var(--text-gray);">Média baseada em 232 avaliações</p>
         </div>
     </div>
     <div id="reviews-list">
@@ -1062,13 +1250,41 @@
     </div>
 </section>
 
+<section id="bags-screen" class="screen">
+    <div class="cart-header">
+        <i class="fa-solid fa-arrow-left" onclick="changeTab('home')"></i>
+        <span></span>
+        <span></span>
+    </div>
+    <div style="background: #6c5ce7; color: white; padding: 25px 20px; border-radius: 20px; margin-bottom: 25px; position: relative; overflow: hidden; box-shadow: 0 8px 20px rgba(108, 92, 231, 0.2);">
+        <div style="position: relative; z-index: 2;">
+            <h2 style="font-size: 24px; font-weight: 900; letter-spacing: -1px; margin-bottom: 5px;">BAG PROMO! 🔥</h2>
+            <p style="font-size: 13px; opacity: 0.9; font-weight: 500;">Vários itens por um preço único!</p>
+        </div>
+        <i class="fa-solid fa-bag-shopping" style="position: absolute; right: -15px; bottom: -15px; font-size: 100px; color: rgba(255,255,255,0.1); transform: rotate(-15deg);"></i>
+    </div>
+
+    <div class="promo-banner" style="background: #6c5ce7; cursor: pointer; border-radius: 15px !important; margin-bottom: 20px;">
+        <div style="flex: 1;">
+            <h2 id="slide-bag-title-2" style="font-size: 18px;">BAG PROMO!</h2>
+            <p id="slide-bag-desc-2" style="font-size: 12px; margin-bottom: 10px;">Economia garantida.</p>
+            <span style="background: white; color: #6c5ce7; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold;">OFERTAS ATIVAS</span>
+        </div>
+        <img id="slide-bag-img-2" src="" style="width: 110px; height: 110px; object-fit: contain; transform: rotate(-5deg); animation: floatBannerImg 3s ease-in-out infinite;">
+    </div>
+
+    <div id="bags-list-container" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+        <!-- Bags via JS -->
+    </div>
+</section>
+
 <nav class="bottom-nav">
-        <div class="nav-item active" id="nav-home"><i class="fa-solid fa-house"></i></div>
-        <div class="nav-item" id="nav-search"><i class="fa-solid fa-magnifying-glass"></i></div>
-        <div class="nav-item nav-main" id="nav-cart"><i class="fa-solid fa-box-archive"></i></div>
-        <div class="nav-item" id="nav-reviews"><i class="fa-solid fa-heart"></i></div>
-        <div class="nav-item" id="nav-profile"><i class="fa-solid fa-user"></i></div>
-    </nav>
+    <div class="nav-item active" id="nav-home"><i class="fa-solid fa-house"></i></div>
+    <div class="nav-item" id="nav-bags"><i class="fa-solid fa-bag-shopping"></i></div>
+    <div class="nav-item nav-main" id="nav-cart"><i class="fa-solid fa-box-archive"></i></div>
+    <div class="nav-item" id="nav-reviews"><i class="fa-solid fa-heart"></i></div>
+    <div class="nav-item" id="nav-profile"><i class="fa-solid fa-user"></i></div>
+</nav>
 </div>
 
 <div id="modal-combo-drink" class="modal-overlay" style="z-index: 8000;">
@@ -1115,9 +1331,100 @@ let cart = JSON.parse(localStorage.getItem('userCart')) || [];
 let stickersList = [];
 let selectedSticker = null;
 let storeSettings = null;
+let sublineSettings = null;
 let currentObStep = 1;
-    let userProfile = JSON.parse(localStorage.getItem('userProfile')) || null;
-    let editingProductKey = null;
+let userProfile = JSON.parse(localStorage.getItem('userProfile')) || null;
+let editingProductKey = null;
+let cachedOrders = null;
+
+    let map = null;
+    let mapMarker = null;
+
+    window.openMapModal = function(fromCheckout = false) {
+        document.getElementById('modal-map').style.display = 'flex';
+        
+        const btnSkip = document.getElementById('btn-skip-map');
+        if(fromCheckout) {
+            btnSkip.style.display = 'block';
+        } else {
+            btnSkip.style.display = 'none';
+        }
+
+        const defaultLat = -2.5208;
+        const defaultLng = -45.0811;
+
+        if (!map) {
+            map = L.map('map-display').setView([defaultLat, defaultLng], 16);
+            L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                attribution: '© Google',
+                maxZoom: 19
+            }).addTo(map);
+
+            const customIcon = L.divIcon({
+                html: '<i class="fa-solid fa-location-dot" style="color: #f46b21; font-size: 35px; text-shadow: 2px 2px 5px rgba(0,0,0,0.3);"></i>',
+                iconSize: [30, 42],
+                iconAnchor: [15, 42],
+                className: 'custom-div-icon'
+            });
+
+            mapMarker = L.marker([defaultLat, defaultLng], { icon: customIcon }).addTo(map);
+
+            map.on('move', function() {
+                mapMarker.setLatLng(map.getCenter());
+            });
+        } else {
+            setTimeout(() => {
+                map.invalidateSize();
+                map.setView([defaultLat, defaultLng], 16);
+                mapMarker.setLatLng([defaultLat, defaultLng]);
+            }, 200);
+        }
+    };
+
+    window.closeMapModal = function() {
+        document.getElementById('modal-map').style.display = 'none';
+    };
+
+    window.showMapWarning = function() {
+        document.getElementById('modal-map-warning').style.display = 'flex';
+    };
+
+    window.closeWarningAndReturnMap = function() {
+        document.getElementById('modal-map-warning').style.display = 'none';
+    };
+
+    window.confirmDeclineMap = function() {
+        userProfile.declinedMap = true;
+        localStorage.setItem('userProfile', JSON.stringify(userProfile));
+        document.getElementById('modal-map-warning').style.display = 'none';
+        document.getElementById('modal-map').style.display = 'none';
+        document.getElementById('finish-order').click();
+    };
+
+    window.showToast = function(message) {
+        const toast = document.getElementById('custom-toast');
+        document.getElementById('toast-message').innerText = message;
+        toast.classList.add('active');
+        setTimeout(() => {
+            toast.classList.remove('active');
+        }, 3000);
+    };
+
+    window.confirmMapLocation = function() {
+        const center = map.getCenter();
+        userProfile.lat = center.lat;
+        userProfile.lng = center.lng;
+        userProfile.declinedMap = false;
+        userProfile.mapLink = `https://www.google.com/maps/search/?api=1&query=${center.lat},${center.lng}`;
+        
+        localStorage.setItem('userProfile', JSON.stringify(userProfile));
+        
+        closeMapModal();
+        
+        setTimeout(() => {
+            showToast("Localização fixada com sucesso!");
+        }, 300);
+    };
 
     function init() {
 
@@ -1152,56 +1459,73 @@ let currentObStep = 1;
     
     let lastKnownStatus = null;
     let hasCheckedInitialOrder = false;
-    // Otimização: Escuta apenas os pedidos mais recentes para reduzir carga
-    const ordersQuery = query(ref(db, 'orders'), limitToLast(50));
-    
-    onValue(ordersQuery, (snapshot) => {
-        const data = snapshot.val();
-        const banner = document.getElementById('active-order-banner');
-        if(!banner) return;
-        banner.innerHTML = "";
-        if(data && userProfile) {
-            const activeOrder = Object.values(data).find(o => o.cliente && o.cliente.contato === userProfile.contato && (['pendente', 'pago_confirmado', 'preparando', 'caminho'].includes(o.status)));
+
+    // Carregamento ultrarápido: Apenas o status da loja e produtos primeiro
+    const loadEssentialData = async () => {
+        const [statusSnap, catsSnap, prodsSnap] = await Promise.all([
+            get(ref(db, 'settings/store_status')),
+            get(ref(db, 'categories')),
+            get(ref(db, 'products'))
+        ]);
+
+        storeSettings = statusSnap.val();
+        updateStoreStatusUI();
+
+        categories = catsSnap.val() ? Object.entries(catsSnap.val()).map(([key, val]) => ({ key, ...val })) : [];
+        renderHomeCategories();
+
+        if (prodsSnap.val()) {
+            allProducts = Object.entries(prodsSnap.val()).map(([key, val]) => ({ id: key, ...val }));
+            products = [...allProducts];
+            renderProducts();
+        }
+
+        // Após carregar o visual, inicia os listeners em segundo plano
+        startBackgroundListeners();
+    };
+
+    const startBackgroundListeners = () => {
+        // Listener de pedidos focado apenas no usuário atual para performance
+        const ordersRef = ref(db, 'orders');
+        const ordersQuery = query(ordersRef, limitToLast(20)); // Reduzido drasticamente para 20
+
+        onValue(ordersQuery, (snapshot) => {
+            const data = snapshot.val();
+            const banner = document.getElementById('active-order-banner');
+            if(!banner || !userProfile) return;
+            
+            banner.innerHTML = "";
+            const activeOrder = data ? Object.values(data).find(o => o.cliente && o.cliente.contato === userProfile.contato && (['pendente', 'pago_confirmado', 'preparando', 'caminho'].includes(o.status))) : null;
             
             if(activeOrder) {
                 if (activeOrder.status === 'pendente' && !hasCheckedInitialOrder) {
-                    const formattedTotal = 'R$ ' + activeOrder.total.toFixed(2).replace('.', ',');
-                    document.getElementById('pay-total-val').innerText = formattedTotal;
+                    document.getElementById('pay-total-val').innerText = 'R$ ' + activeOrder.total.toFixed(2).replace('.', ',');
                     changeTab('payment');
                 }
                 
-                if (activeOrder.status !== 'pendente' && document.getElementById('payment-screen').classList.contains('active')) {
-                    changeTab('home');
-                }
-
-                lastKnownStatus = activeOrder.status;
                 let statusMsg = "Aguardando confirmação";
                 let icon = "fa-clock";
                 if(activeOrder.status === 'pago_confirmado') { statusMsg = "Seu pedido está sendo preparado"; icon = "fa-check-double"; }
-                if(activeOrder.status === 'preparando') { statusMsg = "Aguardando coleta do entregador"; icon = "fa-fire-burner"; }
+                if(activeOrder.status === 'preparando') { statusMsg = "Aguardando coleta"; icon = "fa-fire-burner"; }
                 if(activeOrder.status === 'caminho') { statusMsg = "Saiu para entrega!"; icon = "fa-motorcycle"; }
                 
-                const queueStatuses = ['pendente', 'pago_confirmado', 'preparando'];
-                const ordersAhead = Object.values(data).filter(o => queueStatuses.includes(o.status) && o.timestamp < activeOrder.timestamp).length;
-
-                const minTime = Math.max(10, ordersAhead * 10);
-                const maxTime = minTime + 10;
-                const timeMsg = activeOrder.status === 'caminho' ? 'Entrega em andamento' : `Prazo Minimo: ${minTime}-${maxTime} min`;
-
                 banner.innerHTML = `
                     <div class="order-tracker-banner">
                         <i class="fa-solid ${icon}" style="color: var(--primary-orange); font-size: 24px;"></i>
                         <div style="flex:1">
-                            <p style="font-size: 11px; color: var(--text-gray); font-weight: bold; text-transform: uppercase;">Acompanhe seu pedido</p>
+                            <p style="font-size: 11px; color: var(--text-gray); font-weight: bold; text-transform: uppercase;">Status do Pedido</p>
                             <p style="font-size: 14px; font-weight: bold; color: var(--text-dark);">${statusMsg}</p>
-                            <p style="font-size: 12px; color: var(--primary-orange); font-weight: bold; margin-top: 2px;"><i class="fa-regular fa-clock"></i> ${timeMsg}</p>
                         </div>
-                        <i class="fa-solid fa-chevron-right" style="color: #ddd;"></i>
                     </div>
                 `;
             }
             hasCheckedInitialOrder = true;
-        }
+        });
+    };
+
+    loadEssentialData().then(() => {
+        updateLoyaltyUI();
+        renderOrderHistory();
     });
 
     // Prioridade máxima no carregamento do status da loja
@@ -1221,10 +1545,27 @@ let currentObStep = 1;
         }
     });
 
+
+    onValue(ref(db, 'settings/bag_promo_slide'), (snap) => {
+        const data = snap.val();
+        if(data) {
+            document.getElementById('slide-bag-title').innerText = data.title;
+            document.getElementById('slide-bag-desc').innerText = data.desc;
+            document.getElementById('slide-bag-img').src = data.img;
+            
+            const title2 = document.getElementById('slide-bag-title-2');
+            const desc2 = document.getElementById('slide-bag-desc-2');
+            const img2 = document.getElementById('slide-bag-img-2');
+            if(title2) title2.innerText = data.title;
+            if(desc2) desc2.innerText = data.desc;
+            if(img2) img2.src = data.img;
+        }
+    });
+
     onValue(ref(db, 'settings/promo_banner'), (snapshot) => {
         const data = snapshot.val();
         if(data) {
-            const banner = document.querySelector('.promo-banner');
+            const banner = document.getElementById('banner-dinamico');
             const badge = banner.querySelector('.promo-badge');
             const title = banner.querySelector('h2');
             const desc = banner.querySelector('p');
@@ -1238,6 +1579,54 @@ let currentObStep = 1;
             badge.innerText = "Grátis";
         }
     });
+
+    onValue(ref(db, 'settings/subline_config'), (snap) => {
+        sublineSettings = snap.val();
+        renderProducts();
+    });
+
+    let currentSlide = 0;
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    const updateSlider = () => {
+        const wrapper = document.getElementById('promo-wrapper');
+        if(wrapper) wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+        const ind0 = document.getElementById('ind-0');
+        const ind1 = document.getElementById('ind-1');
+        const ind2 = document.getElementById('ind-2');
+        if(ind0 && ind1 && ind2) {
+            ind0.classList.toggle('active', currentSlide === 0);
+            ind1.classList.toggle('active', currentSlide === 1);
+            ind2.classList.toggle('active', currentSlide === 2);
+        }
+    };
+
+    let slideInterval = setInterval(() => {
+        currentSlide = (currentSlide + 1) % 3;
+        updateSlider();
+    }, 5000);
+
+    const sliderContainer = document.querySelector('.promo-slider-container');
+    if(sliderContainer) {
+        sliderContainer.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        sliderContainer.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX - touchEndX > 50) {
+                currentSlide = 1;
+                updateSlider();
+                clearInterval(slideInterval);
+            }
+            if (touchEndX - touchStartX > 50) {
+                currentSlide = 0;
+                updateSlider();
+                clearInterval(slideInterval);
+            }
+        }, {passive: true});
+    }
 
     onValue(ref(db, 'settings/brindes_extras'), (snapshot) => {
         const container = document.getElementById('brindes-container');
@@ -1374,17 +1763,12 @@ let currentObStep = 1;
                 selectedSticker = ev.target.result;
                 tempSticker = null;
 
-                // 1. Ocultar especificamente o botão de MEME
-                document.getElementById('sticker-selection-btn').style.display = 'none';
-                
-                // 2. Atualizar UI da FOTO
-                const previewP = document.getElementById('photo-preview');
-                const statusP = document.getElementById('photo-status-label');
-                previewP.innerHTML = `<img src="${selectedSticker}" style="width:100%; height:100%; object-fit:cover;">`;
-                statusP.innerText = "Sua foto foi selecionada!";
-                statusP.style.color = "#28a745";
+                const preview = document.getElementById('image-btn-preview');
+                const status = document.getElementById('image-btn-status');
+                preview.innerHTML = `<img src="${selectedSticker}" style="width:100%; height:100%; object-fit:cover;">`;
+                status.innerText = "Sua foto foi selecionada!";
+                status.style.color = "#28a745";
 
-                // 3. Mostrar botão de remover
                 document.getElementById('btn-remove-selection').style.display = 'block';
                 document.getElementById('modal-stickers').style.display = 'none';
             };
@@ -1392,32 +1776,25 @@ let currentObStep = 1;
         }
     };
 
+    window.openStickerChoice = () => {
+        document.getElementById('modal-image-choice').style.display = 'none';
+        document.getElementById('modal-stickers').style.display = 'flex';
+    };
+
     window.clearImageSelection = () => {
         selectedSticker = null;
         tempSticker = null;
         
-        const stickerBtn = document.getElementById('sticker-selection-btn');
-        const photoBtn = document.getElementById('photo-selection-btn');
         const removeBtn = document.getElementById('btn-remove-selection');
-
-        if(stickerBtn) stickerBtn.style.setProperty('display', 'flex', 'important');
-        if(photoBtn) photoBtn.style.setProperty('display', 'flex', 'important');
         if(removeBtn) removeBtn.style.display = 'none';
         
-        const stickerPrev = document.getElementById('sticker-preview');
-        const stickerStatus = document.getElementById('sticker-status-label');
-        if(stickerPrev) stickerPrev.innerHTML = `<i class="fa-solid fa-face-smile" style="color: var(--primary-orange);"></i>`;
-        if(stickerStatus) {
-            stickerStatus.innerText = "Clique para escolher uma imagem";
-            stickerStatus.style.color = "var(--text-gray)";
-        }
+        const preview = document.getElementById('image-btn-preview');
+        const status = document.getElementById('image-btn-status');
         
-        const photoPrev = document.getElementById('photo-preview');
-        const photoStatus = document.getElementById('photo-status-label');
-        if(photoPrev) photoPrev.innerHTML = `<i class="fa-solid fa-camera" style="color: #3498db;"></i>`;
-        if(photoStatus) {
-            photoStatus.innerText = "Ex: Foto de casal, filhos ou amigos";
-            photoStatus.style.color = "var(--text-gray)";
+        if(preview) preview.innerHTML = `<i class="fa-solid fa-image" style="color: #6c5ce7;"></i>`;
+        if(status) {
+            status.innerText = "Escolha um meme ou foto personalizada";
+            status.style.color = "var(--text-gray)";
         }
         
         document.querySelectorAll('.sticker-option').forEach(opt => opt.classList.remove('selected'));
@@ -1465,8 +1842,10 @@ let currentObStep = 1;
         document.getElementById('onboarding').style.display = 'flex';
     } else {
         updateUserProfileUI();
-        updateLocationUI();
-        updateFloatingCart();
+    updateLocationUI();
+    updateFloatingCart();
+    updateLoyaltyUI();
+    renderOrderHistory();
     }
 
     const productsRef = ref(db, 'products');
@@ -1515,36 +1894,43 @@ function updateUserProfileUI() {
 }
 
 function updateLoyaltyUI() {
-    if(!userProfile) return;
-    // Otimização: Usa get() para não ficar re-processando milhares de pedidos toda hora no XP
-    get(ref(db, 'orders')).then((snapshot) => {
-        const data = snapshot.val();
-        if(!data) return;
+    if(!userProfile || !userProfile.contato) return;
+    
+    const userTel = userProfile.contato.replace(/\D/g, '');
+    const xpCard = document.getElementById('xp-card');
+    const goldTag = document.getElementById('gold-tag-home');
 
-        const myOrders = Object.values(data).filter(o => o.cliente && o.cliente.contato === userProfile.contato && o.status === 'pago');
-        const totalSpent = myOrders.reduce((acc, curr) => acc + curr.total, 0);
+    onValue(ref(db, 'orders'), (snapshot) => {
+        const data = snapshot.val();
+        let totalSpent = 0;
+
+        if(data) {
+            totalSpent = Object.values(data).reduce((acc, o) => {
+                if(o.status === 'pago' && o.cliente && o.cliente.contato) {
+                    const orderTel = o.cliente.contato.replace(/\D/g, '');
+                    if(orderTel === userTel) return acc + (o.total || 0);
+                }
+                return acc;
+            }, 0);
+        }
+
         const currentXP = Math.floor(totalSpent * 2);
         const targetXP = 600;
-        
-        const xpCard = document.getElementById('xp-card');
-        const xpFill = document.getElementById('xp-fill-bar');
-        const xpText = document.getElementById('xp-text');
-        const goldTag = document.getElementById('gold-tag-home');
 
-        if(currentXP > 0) {
-            xpCard.style.display = 'block';
-            const progress = Math.min((currentXP / targetXP) * 100, 100);
-            if(xpFill) xpFill.style.width = progress + '%';
-            if(xpText) xpText.innerText = `${currentXP} / ${targetXP} XP`;
-            
-            if(currentXP >= targetXP) {
-                if(goldTag) goldTag.style.display = 'inline-flex';
-                xpCard.style.display = 'none';
-            } else {
-                if(goldTag) goldTag.style.display = 'none';
-            }
+        if(currentXP >= targetXP) {
+            if(goldTag) goldTag.style.display = 'inline-flex';
+            if(xpCard) xpCard.style.display = 'none';
         } else {
-            xpCard.style.display = 'none';
+            if(goldTag) goldTag.style.display = 'none';
+            if(xpCard) {
+                xpCard.style.display = 'block';
+                // Garante que a barra mostre 0 se não houver XP, mas continue visível
+                const progress = targetXP > 0 ? Math.min((currentXP / targetXP) * 100, 100) : 0;
+                const xpFill = document.getElementById('xp-fill-bar');
+                const xpText = document.getElementById('xp-text');
+                if(xpFill) xpFill.style.width = progress + '%';
+                if(xpText) xpText.innerText = `${currentXP} / ${targetXP} XP`;
+            }
         }
     });
 }
@@ -1552,14 +1938,12 @@ function updateLoyaltyUI() {
 function renderOrderHistory() {
     if(!userProfile) return;
     const container = document.getElementById('order-history-container');
-    onValue(ref(db, 'orders'), (snapshot) => {
-        const data = snapshot.val();
+    const processHistory = (data) => {
         container.innerHTML = "";
         if(!data) {
             container.innerHTML = "<p style='text-align:center; color:gray; font-size:12px;'>Nenhum pedido realizado ainda.</p>";
             return;
         }
-
         const myOrders = Object.values(data)
             .filter(o => o.cliente && o.cliente.contato === userProfile.contato)
             .sort((a,b) => b.timestamp - a.timestamp);
@@ -1568,8 +1952,7 @@ function renderOrderHistory() {
             container.innerHTML = "<p style='text-align:center; color:gray; font-size:12px;'>Nenhum pedido realizado ainda.</p>";
             return;
         }
-
-        myOrders.forEach(order => {
+        myOrders.slice(0, 10).forEach(order => {
             const date = new Date(order.timestamp).toLocaleDateString('pt-BR');
             const div = document.createElement('div');
             div.className = 'order-history-card';
@@ -1585,7 +1968,16 @@ function renderOrderHistory() {
             `;
             container.appendChild(div);
         });
-    });
+    };
+
+    if(cachedOrders) processHistory(cachedOrders);
+    else {
+        const q = query(ref(db, 'orders'), limitToLast(100));
+        onValue(q, (snap) => {
+            cachedOrders = snap.val();
+            processHistory(cachedOrders);
+        });
+    }
 }
 
 window.recomprar = function(items) {
@@ -1621,9 +2013,34 @@ function renderFakeReviews() {
     const fakes = [
         { name: "Lukinha", text: "Melhor lanche de Pinheiro! A entrega foi muita rapida e chegou quentinho.", stars: 5, img: "Felix" },
         { name: "Bianca", text: "Muito bom, as batatas estavam crocantes e o brinde de ouro branco amei kkkkskks com certeza pedirei mais vezes", stars: 5, img: "Aneka" },
+        { name: "Marcelo P.", text: "O lanche é muito bom, mas hoje demorou quase 40 minutos pra chegar. Sorte que veio quente ainda, mas podiam melhorar no tempo.", stars: 3, img: "Oliver" },
         { name: "Ricardo Oliveira", text: "O hambúrguer de bacon e gigante, vale muito a pena pelo preço. Qualidade nota mil ta maluco.", stars: 4, img: "Charlie" },
         { name: "Mariana Ferreira", text: "Adorei a opção de mandar figurinha na nota kkkkk vou mandar pra minha amiga o gatim segurando flor kkkkkkk, achei muito criativo! Atendimento top.", stars: 5, img: "Max" },
-        { name: "Julia", text: "E Tudo muito bem embalado eu amei poxa", stars: 5, img: "George" }
+        { name: "Julia", text: "E Tudo muito bem embalado eu amei poxa", stars: 5, img: "George" },
+        { name: "Carlos Eduardo", text: "Pense num lanche que vale cada centavo! O molho tasty deles é diferenciado demais, viciei.", stars: 5, img: "Oliver" },
+        { name: "Sandro Lima", text: "Lanche bem direto ao ponto. Sem frescura e muito saboroso. Recomendo o Big Cheddar.", stars: 5, img: "Jack" },
+        { name: "Ana Beatriz", text: "A Bag Promo salvou minha noite kkkkk vem muita coisa e o preço é muito justo. Recomendo!", stars: 5, img: "Lilly" },
+        { name: "Thiago Soares", text: "O lanche em si é excelente, porém esqueceram de mandar os guardanapos. No mais, tudo certo.", stars: 4, img: "Casper" },
+        { name: "Rodrigo Silva", text: "O lanche chegou aqui no Antigo Aeroporto super rápido, menos de 20 minutos. Parabéns pela agilidade.", stars: 5, img: "Jack" },
+        { name: "Amanda Costa", text: "Mandei a foto do meu gato na notinha kkkkkkk achei a ideia mais genial de todas, o atendimento é nota 10.", stars: 5, img: "Luna" },
+        { name: "Roberto", text: "Lanche de qualidade. Carne suculenta. Entrega no prazo prometido.", stars: 5, img: "Felix" },
+        { name: "Felipe Mendes", text: "O Subline montado é sacanagem de bom, o pão é bem macio. Melhor que qualquer franquia famosa.", stars: 5, img: "Leo" },
+        { name: "Camila V.", text: "Demorou um pouco mais do que o esperado hoje, mas o atendimento pelo WhatsApp foi muito educado e resolveu rápido.", stars: 4, img: "Aneka" },
+        { name: "Patrícia Souza", text: "Maionese caseira deles é a melhor da cidade sem dúvidas. Pedirei sempre!", stars: 5, img: "Daisy" },
+        { name: "Matheus Lima", text: "Lanche bem grande mesmo, não consegui nem comer todo kkkk qualidade top e o entregador muito gente boa.", stars: 4, img: "Milo" },
+        { name: "Sabrina Rocha", text: "Amei o capricho da embalagem, tudo bem organizado e limpinho. O sabor então nem se fala.", stars: 5, img: "Bella" },
+        { name: "Igor Vieira", text: "A carne é bem suculenta e o queijo derrete na boca. Redline é brabo demais!", stars: 5, img: "Buster" },
+        { name: "Jonas Silva", text: "Pedido veio correto. Temperatura boa. Sabor padrão Redline.", stars: 4, img: "George" },
+        { name: "Fernanda Lima", text: "O combo com a batata e o refrigerante geladinho é a melhor opção pra maratonar série.", stars: 5, img: "Mimi" },
+        { name: "Gabriel Henrique", text: "Top demais, o bacon estava bem crocante do jeito que eu gosto. Melhor delivery de Pinheiro.", stars: 5, img: "Casper" },
+        { name: "Hélio Neto", text: "O sabor é incrível, mas a batata podia vir um pouco mais salgada pro meu gosto. No geral muito bom.", stars: 4, img: "Charlie" },
+        { name: "Vanessa Alves", text: "Sempre compro aqui e nunca me decepciono. O brinde sempre vem e o carinho na nota é lindo.", stars: 5, img: "Sophie" },
+        { name: "Lucas Ramos", text: "Preço justo, lanche de qualidade e entrega rápida. O que mais a gente quer? kkkk Show!", stars: 5, img: "Tigger" },
+        { name: "Dani Moreira", text: "Lanche chegou um pouco amassado por causa da mochila do entregador, mas o sabor continua imbatível.", stars: 3, img: "Lilly" },
+        { name: "Bruna Oliveira", text: "Adorei o sistema de pontos XP, já já viro cliente Gold pra ganhar meus brindes kkkkk.", stars: 5, img: "Lola" },
+        { name: "Renan Castro", text: "O Cheddar desse lugar é outro nível, surreal de bom. Nota mil!", stars: 5, img: "Toby" },
+        { name: "Marcos Paulo", text: "Sem erro. Pediu, chegou, comeu. Melhor de Pinheiro.", stars: 5, img: "Felix" },
+        { name: "Eliane Costa", text: "Atrasou 15 minutos, mas mandaram um brinde extra pra compensar. Atitude nota 10.", stars: 4, img: "Luna" }
     ];
 
     list.innerHTML = "";
@@ -1647,6 +2064,18 @@ function renderFakeReviews() {
 
     function renderHomeCategories() {
         const container = document.getElementById('home-categories');
+        
+        if (categories.length === 0) {
+            container.innerHTML = `
+                <div class="cat-skeleton"><div class="cat-skeleton-circle"></div><div class="cat-skeleton-text"></div></div>
+                <div class="cat-skeleton"><div class="cat-skeleton-circle"></div><div class="cat-skeleton-text"></div></div>
+                <div class="cat-skeleton"><div class="cat-skeleton-circle"></div><div class="cat-skeleton-text"></div></div>
+                <div class="cat-skeleton"><div class="cat-skeleton-circle"></div><div class="cat-skeleton-text"></div></div>
+                <div class="cat-skeleton"><div class="cat-skeleton-circle"></div><div class="cat-skeleton-text"></div></div>
+            `;
+            return;
+        }
+
         container.innerHTML = "";
         
         const allBtn = document.createElement('div');
@@ -1756,52 +2185,58 @@ function renderFakeReviews() {
                     sectionTitle.innerHTML = `<h3>${cat.name}</h3><span style="color: var(--text-gray); font-size: 12px;">Ver todos ></span>`;
                     listFragment.appendChild(sectionTitle);
                     
-                    if (cat.name.toLowerCase() === 'subline') {
-                        onValue(ref(db, 'settings/subline_config'), (snap) => {
-                            const subConfig = snap.val();
-                            if (subConfig && subConfig.active) {
-                                const banner = document.createElement('div');
-                                banner.className = 'promo-banner';
-                                banner.style.gridColumn = "1 / -1";
-                                banner.style.marginBottom = "15px";
-                                banner.innerHTML = `
-                                    <div style="flex: 1;">
-                                        <h2 style="font-size: 18px;">Monte seu SubLine</h2>
-                                        <p style="font-size: 12px; margin-bottom: 10px;">Escolha pão, recheio e molhos!</p>
-                                        <button onclick="openSubLineBuilder()" style="background: white; color: var(--primary-orange); border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer;">MONTAR AGORA</button>
-                                    </div>
-                                    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/-2e2.png" style="width: 100px; height: 100px; object-fit: contain;">
-                                `;
-                                sectionTitle.after(banner);
-                            }
-                        }, { onlyOnce: true });
+                    if (cat.name.toLowerCase() === 'subline' && sublineSettings && sublineSettings.active) {
+                        const banner = document.createElement('div');
+                        banner.className = 'promo-banner subline-banner';
+                        banner.style = "grid-column: 1 / -1; margin-bottom: 15px; background: #e74c3c; cursor: pointer; border-radius: 15px !important; overflow: hidden;";
+                        banner.onclick = () => openSubLineBuilder();
+                        banner.innerHTML = `
+                            <div style="flex: 1;">
+                                <h2 style="font-size: 18px;">Monte seu SubLine</h2>
+                                <p style="font-size: 12px; margin-bottom: 10px;">Escolha pão, recheio e molhos!</p>
+                                <span style="background: white; color: #e74c3c; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold;">MONTAR AGORA</span>
+                            </div>
+                            <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/-2e2.png" style="width: 100px; height: 100px; object-fit: contain; transform: rotate(15deg); animation: floatBannerSub 3s ease-in-out infinite;">
+                        `;
+                        sectionTitle.after(banner);
                     }
-                    
                     catProducts.forEach(p => listFragment.appendChild(createProductCard(p)));
                 }
             });
         } else {
             const catName = activeCat.getAttribute('data-catname');
-            if(catName && catName.toLowerCase() === 'subline') {
-                onValue(ref(db, 'settings/subline_config'), (snap) => {
-                    const subConfig = snap.val();
-                    if(subConfig && subConfig.active) {
-                        const banner = document.createElement('div');
-                        banner.className = 'promo-banner';
-                        banner.style.gridColumn = "1 / -1";
-                        banner.style.marginBottom = "15px";
-                        banner.innerHTML = `
-                            <div style="flex: 1;">
-                                <h2 style="font-size: 18px;">Monte o seu SubLine</h2>
-                                <p style="font-size: 12px; margin-bottom: 10px;">Personalize seu lanche completo!</p>
-                                <button onclick="openSubLineBuilder()" style="background: white; color: var(--primary-orange); border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer;">MONTAR</button>
-                            </div>
-                            <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/-2e2.png" style="width: 100px; height: 100px; object-fit: contain;">
-                        `;
-                        list.prepend(banner);
-                    }
-                }, { onlyOnce: true });
+            if(catName && catName.toLowerCase() === 'subline' && sublineSettings && sublineSettings.active) {
+                const banner = document.createElement('div');
+                banner.className = 'promo-banner subline-banner';
+                banner.style = "grid-column: 1 / -1; margin-bottom: 15px; background: #e74c3c; cursor: pointer; border-radius: 15px !important; overflow: hidden;";
+                banner.onclick = () => openSubLineBuilder();
+                banner.innerHTML = `
+                    <div style="flex: 1;">
+                        <h2 style="font-size: 18px;">Monte o seu SubLine</h2>
+                        <p style="font-size: 12px; margin-bottom: 10px;">Personalize seu lanche completo!</p>
+                        <span style="background: white; color: #e74c3c; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold;">MONTAR</span>
+                    </div>
+                    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/-2e2.png" style="width: 100px; height: 100px; object-fit: contain; transform: rotate(15deg); animation: floatBannerSub 3s ease-in-out infinite;">
+                `;
+                list.prepend(banner);
             }
+
+            if(catName && catName.toLowerCase() === 'lanches') {
+                const bagBanner = document.createElement('div');
+                bagBanner.className = 'promo-banner';
+                bagBanner.style = "grid-column: 1 / -1; margin-bottom: 15px; background: #6c5ce7; cursor: pointer; border-radius: 15px !important; overflow: hidden; display: flex; align-items: center; padding: 15px;";
+                bagBanner.onclick = () => changeTab('bags');
+                bagBanner.innerHTML = `
+                    <div style="flex: 1;">
+                        <h2 style="font-size: 18px; color: white; font-weight: 900;">BAG PROMO! 🔥</h2>
+                        <p style="font-size: 11px; color: white; opacity: 0.9; margin-bottom: 10px;">Vários itens por um preço único.</p>
+                        <span style="background: white; color: #6c5ce7; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold;">VER PACOTES</span>
+                    </div>
+                    <i class="fa-solid fa-bag-shopping" style="font-size: 50px; color: rgba(255,255,255,0.2); transform: rotate(-15deg);"></i>
+                `;
+                list.prepend(bagBanner);
+            }
+
             const filteredAndSorted = sortedAllProducts.filter(p => products.some(prod => prod.id === p.id));
             filteredAndSorted.forEach(p => listFragment.appendChild(createProductCard(p)));
         }
@@ -1815,7 +2250,7 @@ function renderFakeReviews() {
                 item.style = "background: white; border-radius: 15px; padding: 12px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; position: relative;";
                 item.innerHTML = `
                     ${p.isSoldOut ? '<div class="esgotado-label" style="font-size:10px;">ESGOTADO</div>' : ''}
-                    <img src="${getThumb(p.img)}" style="width: 80px; height: 80px; border-radius: 10px; object-fit: cover;" loading="lazy" onerror="this.src='https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg'">
+                    <img src="${getThumb(p.img)}" style="width: 80px; height: 80px; border-radius: 10px; object-fit: cover;" loading="lazy">
                     <div style="flex: 1;">
                         <p style="font-weight: bold; font-size: 14px;">${p.name}</p>
                         <p style="font-size: 11px; color: var(--text-gray);">${p.weight}</p>
@@ -1832,7 +2267,6 @@ function renderFakeReviews() {
         } else {
             recSection.style.display = 'none';
         }
-
         list.appendChild(listFragment);
         recList.appendChild(recFragment);
     }
@@ -1840,8 +2274,8 @@ function renderFakeReviews() {
     function getThumb(url) {
         const fallback = 'https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg';
         if (!url || url.length < 5) return fallback;
-        if (url.includes('supabase.co')) return url + (url.includes('?') ? '&' : '?') + 'width=250&quality=50';
-        if (url.includes('cdn.shopify.com')) return url + (url.includes('?') ? '&' : '?') + 'width=250';
+        if (url.includes('supabase.co')) return url + (url.includes('?') ? '&' : '?') + 'width=180&quality=30';
+        if (url.includes('cdn.shopify.com')) return url + (url.includes('?') ? '&' : '?') + 'width=180';
         return url;
     }
 
@@ -1935,10 +2369,101 @@ function renderFakeReviews() {
     } else if(tab === 'payment') {
         document.getElementById('payment-screen').classList.add('active');
         document.getElementById('floating-cart').style.display = 'none';
+    } else if(tab === 'bags') {
+        document.getElementById('bags-screen').classList.add('active');
+        document.getElementById('nav-bags').classList.add('active');
+        document.getElementById('floating-cart').style.display = 'none';
+        renderBagsPromo();
     }
 }
 
-    function addToCart(id) {
+window.renderBagsPromo = function() {
+    onValue(ref(db, 'promo_bags'), (snap) => {
+        const data = snap.val();
+        const container = document.getElementById('bags-list-container');
+        if(!container) return;
+        container.innerHTML = "";
+        if(!data) {
+            container.innerHTML = "<p style='text-align:center; color:gray; margin-top:50px;'>Nenhuma Bag disponível no momento.</p>";
+            return;
+        }
+        const sortedBags = Object.entries(data).sort((a,b) => (a[1].order || 0) - (b[1].order || 0));
+        sortedBags.forEach(([key, bag]) => {
+            const items = bag.items || [];
+            let imagesHtml = '';
+            
+            if(items.length > 0) {
+                imagesHtml = `<div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; background: #f0f0f0; border-radius: 15px; margin-bottom: 15px; border: 1px solid #e0e0e0;">
+                    ${items.map(it => `
+                        <div style="width: 65px; height: 65px; border: 2px solid white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); background: white;">
+                            <img src="${getThumb(it.img)}" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                    `).join('')}
+                </div>`;
+            }
+
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.style = "background: white; border-radius: 20px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); position: relative; margin-bottom: 20px; border: 1px solid #eee;";
+            div.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                    <div>
+                        <h3 style="margin-bottom: 2px; font-size: 18px; color: var(--text-dark);">${bag.name}</h3>
+                        <span style="background: #f3f0ff; color: #6c5ce7; font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase;">Pacote Promocional</span>
+                    </div>
+                    <div style="background: #6c5ce7; color: #fff; padding: 4px 10px; border-radius: 8px; font-weight: 900; font-size: 10px; box-shadow: 0 4px 10px rgba(108, 92, 231, 0.2);">BAG PROMO</div>
+                </div>
+                
+                ${imagesHtml}
+                
+                <div style="background: #fdfdfd; padding: 10px; border-radius: 10px; margin-bottom: 15px;">
+                    <p style="font-size: 12px; color: #555; line-height: 1.4;">
+                        <i class="fa-solid fa-box-open" style="color: var(--primary-orange); margin-right: 5px;"></i>
+                        <strong>Conteúdo:</strong> ${bag.internal}
+                    </p>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #eee; padding-top: 15px;">
+                    <div>
+                        <p style="font-size: 10px; color: #999; text-transform: uppercase; font-weight: bold; margin-bottom: 2px;">Economize levando a Bag</p>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="text-decoration: line-through; color: #888; font-size: 13px; font-weight: 500;">R$ ${bag.totalOriginal ? bag.totalOriginal.toFixed(2).replace('.',',') : (bag.items ? bag.items.reduce((acc, i) => acc + (i.price || 0), 0).toFixed(2).replace('.',',') : '0,00')}</span>
+                            <span style="font-size: 22px; font-weight: 900; color: var(--primary-orange);">R$ ${bag.price.toFixed(2).replace('.',',')}</span>
+                            <i class="fa-solid fa-fire" style="color: #e67e22; font-size: 18px; animation: fireShake 0.5s infinite alternate;"></i>
+                        </div>
+                    </div>
+                    <button class="btn-next" style="padding: 8px 18px; border-radius: 10px; font-weight: bold; font-size: 13px; box-shadow: 0 4px 10px rgba(244, 107, 33, 0.3);" onclick="addBagToCart('${key}')">ADICIONAR</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    });
+}
+
+window.addBagToCart = (key) => {
+    get(ref(db, `promo_bags/${key}`)).then((snap) => {
+        const bag = snap.val();
+        if(bag) {
+            const cartItem = {
+                id: 'bag_' + key,
+                name: bag.name,
+                price: bag.price,
+                img: bag.items && bag.items[0] ? getThumb(bag.items[0].img) : 'https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg',
+                weight: 'Bag: ' + bag.internal,
+                qty: 1,
+                isBag: true
+            };
+            const inCart = cart.find(c => c.id === cartItem.id);
+            if(inCart) inCart.qty++;
+            else cart.push(cartItem);
+            saveCart();
+            updateFloatingCart();
+            changeTab('cart');
+        }
+    });
+};
+
+    window.addToCart = function(id) {
         const item = allProducts.find(p => p.id === id);
         if (item.isCombo) {
             onValue(ref(db, 'settings/combo_drinks'), (snap) => {
@@ -2006,22 +2531,61 @@ function renderFakeReviews() {
         }
     }
 
-    function renderCart() {
+    window.renderCart = function() {
         const container = document.getElementById('cart-items-container');
         const countTitle = document.getElementById('cart-count-title');
         container.innerHTML = "";
         let subtotal = 0;
         let itemsCount = 0;
 
+        // Sugestão de Bebidas
+        const bevSection = document.getElementById('beverage-suggestion-section');
+        const bevList = document.getElementById('beverage-list-horizontal');
+        if(bevSection && bevList) {
+            const drinks = allProducts
+                .filter(p => p.category && (p.category.toLowerCase().includes('bebida') || p.category.toLowerCase().includes('bebidas')) && !p.isSoldOut)
+                .sort((a, b) => (a.order || 0) - (b.order || 0));
+            
+            if(drinks.length > 0) {
+                bevSection.style.display = 'block';
+                bevList.innerHTML = drinks.map(d => `
+                    <div style="min-width: 140px; flex-shrink: 0; background: #fff; padding: 10px; border-radius: 20px; text-align: center; border: 1px solid #eee; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center;">
+                        <div style="width: 100%; height: 110px; background: #f9f9f9; border: 1px solid #eee; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; overflow: hidden;">
+                            <img src="${getThumb(d.img)}" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div style="width: 100%; padding: 0 5px;">
+                            <p style="font-size: 11px; font-weight: 700; color: #333; margin-bottom: 8px; height: 26px; overflow: hidden; line-height: 1.2;">${d.name}</p>
+                            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                                <span style="font-size: 14px; font-weight: 900; color: var(--primary-orange);">R$ ${d.price.toFixed(2).replace('.',',')}</span>
+                                <button onclick="addToCart('${d.id}'); renderCart();" style="width: 32px; height: 32px; background: var(--primary-orange); color: white; border: none; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(244, 107, 33, 0.3);">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                bevSection.style.display = 'none';
+            }
+        }
+
+        if(userProfile) {
+            document.getElementById('checkout-address-text').innerText = `${userProfile.rua}, ${userProfile.numero}`;
+        }
+
         cart.forEach(item => {
             subtotal += (item.price * item.qty);
             itemsCount += item.qty;
             const div = document.createElement('div');
             div.className = 'cart-item';
+            if(item.isBag) {
+                div.style.border = "2px solid #6c5ce7";
+                div.style.boxShadow = "0 4px 12px rgba(108, 92, 231, 0.15)";
+            }
             div.innerHTML = `
                 <img src="${item.img}">
                 <div class="cart-item-info">
-                    <p class="p-name">${item.name}</p>
+                    <p class="p-name">${item.isBag ? '<i class="fa-solid fa-fire" style="color:#6c5ce7; font-size:10px;"></i> ' : ''}${item.name}</p>
                     <div class="p-weight">${item.weight}${item.drink ? ` <span style="color:var(--primary-orange); font-weight:bold;">[${item.drink}]</span>` : ''}</div>
                     <p class="p-price">R$ ${item.price.toFixed(2).replace('.',',')}</p>
                 </div>
@@ -2040,7 +2604,7 @@ function renderFakeReviews() {
 
         
 
-        const threshold = 64.90;
+        const threshold = 84.90;
         const deliveryFee = (subtotal > 0 && subtotal < threshold) ? 4.99 : 0;
         
         const xpToGain = Math.floor(subtotal * 2);
@@ -2158,9 +2722,11 @@ function renderStickersGallery() {
 }
 
 let tempSticker = null;
-document.getElementById('sticker-selection-btn').onclick = () => {
-    document.getElementById('modal-stickers').style.display = 'flex';
-};
+if(document.getElementById('sticker-selection-btn')) {
+    document.getElementById('sticker-selection-btn').onclick = () => {
+        document.getElementById('modal-stickers').style.display = 'flex';
+    };
+}
 
 document.getElementById('close-stickers').onclick = () => {
     document.getElementById('modal-stickers').style.display = 'none';
@@ -2170,27 +2736,23 @@ document.getElementById('confirm-sticker').onclick = () => {
     if(tempSticker) {
         selectedSticker = tempSticker;
 
-        // 1. Ocultar especificamente o botão de FOTO PERSONALIZADA
-        document.getElementById('photo-selection-btn').style.display = 'none';
-
-        // 2. Atualizar UI do MEME
-        const preview = document.getElementById('sticker-preview');
-        const statusLabel = document.getElementById('sticker-status-label');
+        const preview = document.getElementById('image-btn-preview');
+        const statusLabel = document.getElementById('image-btn-status');
         preview.innerHTML = `<img src="${selectedSticker}" style="width:100%; height:100%; object-fit:cover;">`;
         statusLabel.innerText = "Sticker selecionado!";
         statusLabel.style.color = "#28a745";
         
-        // 3. Mostrar botão de remover
         document.getElementById('btn-remove-selection').style.display = 'block';
     }
     document.getElementById('modal-stickers').style.display = 'none';
 };
 
     document.getElementById('nav-home').onclick = () => changeTab('home');
-document.getElementById('nav-search').onclick = () => changeTab('search');
-document.getElementById('nav-cart').onclick = () => changeTab('cart');
-document.getElementById('nav-reviews').onclick = () => changeTab('reviews');
-document.getElementById('nav-profile').onclick = () => changeTab('profile');
+    if(document.getElementById('nav-search')) document.getElementById('nav-search').onclick = () => changeTab('search');
+    document.getElementById('nav-cart').onclick = () => changeTab('cart');
+    document.getElementById('nav-bags').onclick = () => changeTab('bags');
+    document.getElementById('nav-reviews').onclick = () => changeTab('reviews');
+    document.getElementById('nav-profile').onclick = () => changeTab('profile');
 document.getElementById('btn-back-details').onclick = () => changeTab('home');
 document.getElementById('back-home').onclick = () => changeTab('home');
 
@@ -2246,6 +2808,13 @@ document.getElementById('back-home').onclick = () => changeTab('home');
     document.getElementById('edit-bairro').value = userProfile.bairro;
     document.getElementById('edit-numero').value = userProfile.numero;
     document.getElementById('edit-ref').value = userProfile.ref;
+    
+    delete userProfile.lat;
+    delete userProfile.lng;
+    delete userProfile.mapLink;
+    userProfile.declinedMap = false;
+    localStorage.setItem('userProfile', JSON.stringify(userProfile));
+    
     document.getElementById('modal-address').style.display = 'flex';
 }
 
@@ -2289,6 +2858,7 @@ document.getElementById('back-home').onclick = () => changeTab('home');
 
         localStorage.setItem('userProfile', JSON.stringify(userProfile));
         updateLocationUI();
+        if(document.getElementById('cart-screen').classList.contains('active')) renderCart();
         document.getElementById('modal-address').style.display = 'none';
     };
 
@@ -2308,17 +2878,23 @@ document.getElementById('back-home').onclick = () => changeTab('home');
         if (!storeSettings) return "fechado";
 
         const now = new Date();
-        const hour = now.getHours();
+        const df = new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: 'numeric', minute: 'numeric', weekday: 'long' });
+        const parts = df.formatToParts(now);
+        const hour = parseInt(parts.find(p => p.type === 'hour').value);
+        const minute = parseInt(parts.find(p => p.type === 'minute').value);
+        const weekday = new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', weekday: 'long' }).format(now).toLowerCase();
         
         let status = "fechado"; 
+        const isMonday = weekday.includes('segunda');
+        const isWorkingHours = (hour >= 18 && (hour < 22 || (hour === 22 && minute <= 30)));
 
         if(storeSettings.inauguration) {
             status = "inauguracao";
         } else if(storeSettings.forcedOpen) {
             status = "aberto";
-        } else if(storeSettings.closedToday) {
+        } else if(storeSettings.closedToday || isMonday) {
             status = "fechado";
-        } else if(hour >= 18 && hour < 23) {
+        } else if(isWorkingHours) {
             status = "aberto";
         } else {
             status = "fechado";
@@ -2410,23 +2986,37 @@ document.getElementById('back-home').onclick = () => changeTab('home');
         const status = updateStoreStatusUI();
         const errorMsg = document.getElementById('status-error-msg');
         
+        const now = new Date();
+        const weekday = new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', weekday: 'long' }).format(now).toLowerCase();
+        const isMonday = weekday.includes('segunda');
+
         if (status !== 'aberto') {
             errorMsg.style.display = 'block';
             if (status === 'inauguracao') {
                 errorMsg.innerText = "A loja ainda não inaugurou";
+            } else if (isMonday) {
+                errorMsg.innerText = "A loja não abre às segundas-feiras";
             } else {
-                errorMsg.innerText = "A loja está fechada, ela abrirá às 18:00";
+                errorMsg.innerText = "A loja está fechada. Aberto: 18:00 às 22:30";
             }
             return;
         }
         errorMsg.style.display = 'none';
 
-        if(cart.length === 0) return alert("Seu carrinho está vazio!");
+        if(cart.length === 0) {
+            showToast("Seu carrinho está vazio!");
+            return;
+        }
+
+        if (!userProfile.lat && !userProfile.declinedMap) {
+            openMapModal(true);
+            return;
+        }
         
         const subtotal = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
         
         onValue(ref(db, 'orders'), (snap) => {
-            const deliveryFee = (subtotal >= 64.90) ? 0 : 4.99;
+            const deliveryFee = (subtotal >= 84.90) ? 0 : 4.99;
             const finalTotal = subtotal + deliveryFee;
             
             const ordersRef = ref(db, 'orders');
@@ -2706,10 +3296,15 @@ window.changeTab = function(tab) {
         document.getElementById('floating-cart').style.display = 'none';
         renderFakeReviews();
     } else if(tab === 'payment') {
-        document.getElementById('payment-screen').classList.add('active');
-        document.getElementById('floating-cart').style.display = 'none';
+            document.getElementById('payment-screen').classList.add('active');
+            document.getElementById('floating-cart').style.display = 'none';
+        } else if(tab === 'bags') {
+            document.getElementById('bags-screen').classList.add('active');
+            document.getElementById('nav-bags').classList.add('active');
+            document.getElementById('floating-cart').style.display = 'none';
+            renderBagsPromo();
+        }
     }
-}
 
 init();
 </script>
