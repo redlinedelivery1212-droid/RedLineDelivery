@@ -521,6 +521,27 @@
 
         ::-webkit-scrollbar { display: none; }
 
+        .loading-ball-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-light);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 25000;
+            transition: opacity 0.5s;
+        }
+        .rolling-ball {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #eee;
+            border-top: 4px solid var(--primary-orange);
+            border-radius: 50%;
+            animation: spinBall 0.8s linear infinite;
+        }
+        @keyframes spinBall {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         /* Onboarding Styles */
         .onboarding-overlay {
             position: fixed;
@@ -570,62 +591,7 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
-        #splash-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #e31b13;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 30000;
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .splash-logo {
-            width: 250px;
-            height: 250px;
-            animation: logoEntrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            margin-bottom: 40px;
-            object-fit: contain;
-        }
-
-        @keyframes logoEntrance {
-            from { transform: scale(0) rotate(-45deg); opacity: 0; }
-            to { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-
-        @keyframes logoPulse {
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(255,255,255,0)); }
-            50% { transform: scale(1.05); filter: drop-shadow(0 0 15px rgba(255,255,255,0.4)); }
-        }
-
-        .loader-bar-container {
-            width: 200px;
-            height: 4px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .loader-bar-fill {
-            position: absolute;
-            top: 0; left: 0; width: 0%; height: 100%;
-            background: white;
-            box-shadow: 0 0 10px white;
-            transition: width 0.4s cubic-bezier(0.1, 0.7, 1.0, 0.1);
-        }
-
-        .splash-text {
-            color: white;
-            font-weight: 900;
-            letter-spacing: 2px;
-            margin-top: 20px;
-            font-size: 12px;
-            text-transform: uppercase;
-            opacity: 0;
-            animation: fadeInText 0.5s ease forwards 0.5s;
-        }
-
-        @keyframes fadeInText { to { opacity: 0.8; } }
+        
 
         /* Modal de Endereço */
         .modal-overlay {
@@ -773,14 +739,11 @@
 </head>
 <body>
 
-<div id="splash-screen">
-    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg" class="splash-logo">
-    <div class="loader-bar-container">
-        <div class="loader-bar-fill"></div>
-    </div>
-    <p style="color: white; margin-top: 15px; font-size: 10px; font-weight: bold; opacity: 0.8; letter-spacing: 1px; text-transform: uppercase;">Carregando...</p>
-    <p class="splash-text">RedLine Delivery</p>
+<div id="initial-loader" class="loading-ball-container">
+    <div class="rolling-ball"></div>
 </div>
+
+
 
 <!-- ONBOARDING -->
 <div id="onboarding" class="onboarding-overlay" style="display: none;">
@@ -957,7 +920,7 @@
             <h2 style="margin: 5px 0; display: flex; align-items: center; flex-wrap: wrap; gap: 5px;">
                 RedLine Delivery 
                 <span id="gold-tag-home" class="gold-tag" style="display: none;"><i class="fa-solid fa-crown"></i> CLIENTE GOLD</span>
-                <span id="store-status-badge" class="store-status" style="background:#eee; color:#888;">Carregando...</span>
+                <span id="store-status-badge" class="store-status" style="display: none;"></span>
                 <a href="https://wa.me/559881422644" target="_blank" style="color: #25d366; font-size: 18px; text-decoration: none; margin-left: 5px; display: flex; align-items: center;"><i class="fa-brands fa-whatsapp"></i></a>
             </h2>
             <p class="location">Travessa Roma, 790 <i class="fa-solid fa-chevron-down"></i></p>
@@ -978,13 +941,13 @@
         <div class="promo-slider-container">
             <div class="promo-wrapper" id="promo-wrapper">
                 <div class="promo-banner" id="banner-dinamico" style="position: relative;">
-                    <div class="promo-badge" style="display: none;"></div>
-                    <div>
-                        <h2 style="font-size: 20px;">Carregando...</h2>
-                        <p style="font-size: 13px;">Buscando promoções</p>
-                    </div>
-                    <img src="" alt="promo" style="opacity: 0;">
-                </div>
+    <div class="promo-badge" style="display: none;"></div>
+    <div>
+        <h2 style="font-size: 20px;"></h2>
+        <p style="font-size: 13px;"></p>
+    </div>
+    <img src="" alt="promo" style="opacity: 0;">
+</div>
                 <div class="promo-banner subline-banner" style="background: #e74c3c; cursor: pointer;" onclick="openSubLineBuilder()">
                     <div style="flex: 1;">
                         <h2 style="font-size: 18px;">Monte seu SubLine</h2>
@@ -1380,13 +1343,13 @@
     import { getDatabase, ref, onValue, set, push, remove, get, query, limitToLast } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
     const firebaseConfig = {
-        apiKey: "AIzaSyCZkks4TsMP5sIAe2b0_y63OsplgLYL2iI",
-        authDomain: "ivilyn-kingdoms-server.firebaseapp.com",
-        databaseURL: "https://ivilyn-kingdoms-server-default-rtdb.firebaseio.com",
-        projectId: "ivilyn-kingdoms-server",
-        storageBucket: "ivilyn-kingdoms-server.firebasestorage.app",
-        messagingSenderId: "849227342580",
-        appId: "1:849227342580:web:30eccfe53d225adc0474a1"
+        apiKey: "AIzaSyBEQaIIAYGSDRteg_jERuHtfjQRMpaQYmU",
+        authDomain: "redline-6eabc.firebaseapp.com",
+        databaseURL: "https://redline-6eabc-default-rtdb.firebaseio.com",
+        projectId: "redline-6eabc",
+        storageBucket: "redline-6eabc.firebasestorage.app",
+        messagingSenderId: "1079987279636",
+        appId: "1:1079987279636:web:0f76a619589e116bd9d401"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -1551,36 +1514,48 @@ let cachedOrders = null;
     let hasCheckedInitialOrder = false;
 
     // Carregamento ultrarápido: Apenas o status da loja e produtos primeiro
-    const loadEssentialData = async () => {
-        const bar = document.querySelector('.loader-bar-fill');
-        if(bar) bar.style.width = '10%';
+    const loadEssentialData = () => {
+        // Escuta produtos e categorias simultaneamente sem bloquear
+        onValue(ref(db, 'products'), (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                allProducts = Object.entries(data).map(([key, val]) => ({ id: key, ...val }));
+                products = [...allProducts];
+                renderProducts();
+                
+                const loader = document.getElementById('initial-loader');
+                if(loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.remove(), 500);
+                }
+            }
+        });
 
-        const [statusSnap, catsSnap, prodsSnap] = await Promise.all([
-            get(ref(db, 'settings/store_status')).then(s => { if(bar) bar.style.width = '35%'; return s; }),
-            get(ref(db, 'categories')).then(s => { if(bar) bar.style.width = '65%'; return s; }),
-            get(ref(db, 'products')).then(s => { if(bar) bar.style.width = '90%'; return s; })
-        ]);
+        onValue(ref(db, 'categories'), (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                categories = Object.entries(data).map(([key, val]) => ({ key, ...val }));
+                renderHomeCategories();
+                renderProducts(); 
+            }
+        });
 
-        storeSettings = statusSnap.val();
-        updateStoreStatusUI();
+        onValue(ref(db, 'settings/store_status'), (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                storeSettings = data;
+                const badge = document.getElementById('store-status-badge');
+                if(badge) badge.style.display = 'inline-block';
+                updateStoreStatusUI();
+            }
+        });
 
-        categories = catsSnap.val() ? Object.entries(catsSnap.val()).map(([key, val]) => ({ key, ...val })) : [];
-        renderHomeCategories();
-
-        if (prodsSnap.val()) {
-            allProducts = Object.entries(prodsSnap.val()).map(([key, val]) => ({ id: key, ...val }));
-            products = [...allProducts];
-            renderProducts();
-        }
-
-        if(bar) bar.style.width = '100%';
         startBackgroundListeners();
     };
 
     const startBackgroundListeners = () => {
-        // Listener de pedidos focado apenas no usuário atual para performance
         const ordersRef = ref(db, 'orders');
-        const ordersQuery = query(ordersRef, limitToLast(20)); // Reduzido drasticamente para 20
+        const ordersQuery = query(ordersRef, limitToLast(20));
 
         onValue(ordersQuery, (snapshot) => {
             const data = snapshot.val();
@@ -1616,18 +1591,9 @@ let cachedOrders = null;
         });
     };
 
-    loadEssentialData().then(() => {
-        updateLoyaltyUI();
-        renderOrderHistory();
-        
-        const splash = document.getElementById('splash-screen');
-        if(splash) {
-            setTimeout(() => {
-                splash.style.opacity = '0';
-                setTimeout(() => splash.remove(), 800);
-            }, 600);
-        }
-    });
+    loadEssentialData();
+    updateLoyaltyUI();
+    renderOrderHistory();
 
     // Prioridade máxima no carregamento do status da loja
     get(ref(db, 'settings/store_status')).then((snapshot) => {
@@ -2001,13 +1967,17 @@ function updateLoyaltyUI() {
     const xpCard = document.getElementById('xp-card');
     const goldTag = document.getElementById('gold-tag-home');
 
-    onValue(ref(db, 'orders'), (snapshot) => {
+    // Usa query limitada para não baixar o banco inteiro e causar lentidão
+    const ordersRef = ref(db, 'orders');
+    const q = query(ordersRef, limitToLast(50)); 
+
+    onValue(q, (snapshot) => {
         const data = snapshot.val();
         let totalSpent = 0;
 
         if(data) {
             totalSpent = Object.values(data).reduce((acc, o) => {
-                if(o.status === 'pago' && o.cliente && o.cliente.contato) {
+                if((o.status === 'pago' || o.status === 'finalizado') && o.cliente && o.cliente.contato) {
                     const orderTel = o.cliente.contato.replace(/\D/g, '');
                     if(orderTel === userTel) return acc + (o.total || 0);
                 }
@@ -2167,13 +2137,7 @@ function renderFakeReviews() {
         const container = document.getElementById('home-categories');
         
         if (categories.length === 0) {
-            container.innerHTML = `
-                <div class="cat-skeleton"><div class="cat-skeleton-circle"></div><div class="cat-skeleton-text"></div></div>
-                <div class="cat-skeleton"><div class="cat-skeleton-circle"></div><div class="cat-skeleton-text"></div></div>
-                <div class="cat-skeleton"><div class="cat-skeleton-circle"></div><div class="cat-skeleton-text"></div></div>
-                <div class="cat-skeleton"><div class="cat-skeleton-circle"></div><div class="cat-skeleton-text"></div></div>
-                <div class="cat-skeleton"><div class="cat-skeleton-circle"></div><div class="cat-skeleton-text"></div></div>
-            `;
+            container.innerHTML = "";
             return;
         }
 
@@ -2269,13 +2233,17 @@ function renderFakeReviews() {
         const listFragment = document.createDocumentFragment();
         const recFragment = document.createDocumentFragment();
 
+        // Ordena produtos individualmente dentro das categorias
         const sortedAllProducts = [...allProducts].sort((a, b) => (a.order || 0) - (b.order || 0));
 
         if (!activeCat || activeCat.id === 'cat-all') {
+            // Exibe populares primeiro
             const popularItems = sortedAllProducts.filter(p => p.popular).slice(0, 4);
             popularItems.forEach(p => listFragment.appendChild(createProductCard(p)));
 
+            // Ordena as categorias de acordo com o campo "order" da categoria
             const sortedCats = [...categories].sort((a, b) => (a.order || 0) - (b.order || 0));
+            
             sortedCats.forEach(cat => {
                 const catProducts = sortedAllProducts.filter(p => p.category === cat.name);
                 if (catProducts.length > 0) {
@@ -2299,7 +2267,7 @@ function renderFakeReviews() {
                             </div>
                             <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/-2e2.png" style="width: 100px; height: 100px; object-fit: contain; transform: rotate(15deg); animation: floatBannerSub 3s ease-in-out infinite;">
                         `;
-                        sectionTitle.after(banner);
+                        listFragment.appendChild(banner);
                     }
                     catProducts.forEach(p => listFragment.appendChild(createProductCard(p)));
                 }
@@ -2338,7 +2306,7 @@ function renderFakeReviews() {
                 list.prepend(bagBanner);
             }
 
-            const filteredAndSorted = sortedAllProducts.filter(p => products.some(prod => prod.id === p.id));
+            const filteredAndSorted = sortedAllProducts.filter(p => p.category === catName);
             filteredAndSorted.forEach(p => listFragment.appendChild(createProductCard(p)));
         }
 
@@ -2373,12 +2341,10 @@ function renderFakeReviews() {
     }
 
     function getThumb(url) {
-        const fallback = 'https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg';
-        if (!url || url.length < 5) return fallback;
-        if (url.includes('supabase.co')) return url + (url.includes('?') ? '&' : '?') + 'width=180&quality=30';
-        if (url.includes('cdn.shopify.com')) return url + (url.includes('?') ? '&' : '?') + 'width=180';
-        return url;
-    }
+    const fallback = 'https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg';
+    if (!url || url.length < 5) return fallback;
+    return url;
+}
 
     function createProductCard(p) {
         const card = document.createElement('div');
@@ -3083,15 +3049,27 @@ document.getElementById('back-home').onclick = () => changeTab('home');
         });
     }
 
-    document.getElementById('finish-order').onclick = () => {
+    document.getElementById('finish-order').onclick = function() {
         const status = updateStoreStatusUI();
-        const errorMsg = document.getElementById('status-error-msg');
         
+        const orderLoader = document.createElement('div');
+        orderLoader.className = 'loading-ball-container';
+        orderLoader.style.background = 'rgba(255,255,255,0.8)';
+        orderLoader.innerHTML = '<div class="rolling-ball"></div>';
+        document.body.appendChild(orderLoader);
+
+        const removeLoader = function() {
+            orderLoader.style.opacity = '0';
+            setTimeout(() => orderLoader.remove(), 400);
+        };
+
+        const errorMsg = document.getElementById('status-error-msg');
         const now = new Date();
         const weekday = new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', weekday: 'long' }).format(now).toLowerCase();
         const isMonday = weekday.includes('segunda');
 
         if (status !== 'aberto') {
+            removeLoader();
             errorMsg.style.display = 'block';
             if (status === 'inauguracao') {
                 errorMsg.innerText = "A loja ainda não inaugurou";
@@ -3105,80 +3083,79 @@ document.getElementById('back-home').onclick = () => changeTab('home');
         errorMsg.style.display = 'none';
 
         if(cart.length === 0) {
+            removeLoader();
             showToast("Seu carrinho está vazio!");
             return;
         }
 
+        const subtotal = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
+        const deliveryFee = (subtotal >= 84.90) ? 0 : 4.99;
+        const totalComFrete = subtotal + deliveryFee;
+
+        if (totalComFrete < 20) {
+            removeLoader();
+            showToast("O total com frete deve ser no mínimo R$ 20,00");
+            return;
+        }
+
         if (!userProfile.lat && !userProfile.declinedMap) {
+            removeLoader();
             document.getElementById('modal-map-ask').style.display = 'flex';
             return;
         }
         
-        const subtotal = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
+        const finalTotal = subtotal + deliveryFee;
+        const extras = [];
+        if(document.getElementById('opt-maionese').checked) extras.push("Maionese");
+        if(document.getElementById('opt-ketchup').checked) extras.push("Ketchup");
+        if(document.getElementById('opt-tasty').checked) extras.push("Molho Tasty");
         
-        onValue(ref(db, 'orders'), (snap) => {
-            const deliveryFee = (subtotal >= 84.90) ? 0 : 4.99;
-            const finalTotal = subtotal + deliveryFee;
-            
-            const ordersRef = ref(db, 'orders');
-            const newOrderRef = push(ordersRef);
-            
-            const extras = [];
-            if(document.getElementById('opt-maionese').checked) extras.push("Maionese");
-            if(document.getElementById('opt-ketchup').checked) extras.push("Ketchup");
-            if(document.getElementById('opt-tasty').checked) extras.push("Molho Tasty");
-            
-            document.querySelectorAll('.opt-brinde-dinamico:checked').forEach(cb => {
-                extras.push(cb.getAttribute('data-nome'));
-            });
+        document.querySelectorAll('.opt-brinde-dinamico:checked').forEach(cb => {
+            extras.push(cb.getAttribute('data-nome'));
+        });
 
-            const paymentMethod = document.querySelector('input[name="pay-method"]:checked').value;
-            const changeVal = document.getElementById('pay-change').value;
+        const paymentMethod = document.querySelector('input[name="pay-method"]:checked').value;
+        const changeVal = document.getElementById('pay-change').value;
 
-            const finalItems = [...cart];
-
-            onValue(ref(db, 'orders'), (snapXp) => {
-                const allO = snapXp.val() || {};
-                const currentSpent = Object.values(allO)
-                    .filter(o => o.cliente && o.cliente.contato === userProfile.contato && o.status === 'pago')
-                    .reduce((acc, curr) => acc + curr.total, 0);
-                const currentXP = Math.floor(currentSpent * 2);
-
-                set(newOrderRef, {
-                cliente: userProfile,
-                clienteXP: currentXP,
-                items: finalItems,
-                extras: extras,
-                observacao: document.getElementById('order-observation').value,
-                sticker: selectedSticker,
-                total: finalTotal,
-                deliveryFee: deliveryFee,
-                paymentMethod: paymentMethod,
-                change: paymentMethod === 'especie' ? changeVal : null,
-                modoPresente: document.getElementById('opt-presente').checked,
-                timestamp: Date.now(),
-                status: 'pendente'
-            }).then(() => {
+        const newOrderRef = push(ref(db, 'orders'));
+        set(newOrderRef, {
+            cliente: userProfile,
+            items: [...cart],
+            extras: extras,
+            observacao: document.getElementById('order-observation').value,
+            sticker: selectedSticker,
+            total: finalTotal,
+            deliveryFee: deliveryFee,
+            paymentMethod: paymentMethod,
+            change: paymentMethod === 'especie' ? changeVal : null,
+            modoPresente: document.getElementById('opt-presente').checked,
+            timestamp: Date.now(),
+            status: 'pendente'
+        }).then(() => {
+            setTimeout(() => {
+                removeLoader();
                 const formattedTotal = 'R$ ' + finalTotal.toFixed(2).replace('.', ',');
                 document.getElementById('pay-total-val').innerText = formattedTotal;
                 
                 cart = [];
                 saveCart();
-                clearImageSelection(true); // Reseta a UI de fotos e figurinhas e restaura visibilidade
-                
+                clearImageSelection(); 
                 document.getElementById('order-observation').value = "";
                 
                 if (paymentMethod === 'pix') {
                     changeTab('payment');
                 } else {
-                    alert("Pedido realizado com sucesso! Aguarde a entrega.");
+                    const msg = `Olá RedLine! Acabei de realizar meu pedido agora pelo site. Gostaria de acompanhar as atualizações sobre a entrega por aqui.`;
+                    const wpUrl = `https://wa.me/559881422644?text=${encodeURIComponent(msg.replace('🚀 ', ''))}`;
+                    
                     document.getElementById('pay-change').value = "";
                     document.getElementById('change-field-container').style.display = 'none';
+                    
+                    window.location.href = wpUrl;
                     changeTab('home');
                 }
-            });
-            }, { onlyOnce: true });
-        }, { onlyOnce: true });
+            }, 300);
+        });
     };
 
     document.getElementById('search-input').oninput = (e) => {
