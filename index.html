@@ -1253,6 +1253,15 @@
             <textarea id="order-observation" placeholder="Ex: Tirar cebola, ponto da carne, etc..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; font-size: 13px; outline: none; resize: none; height: 80px; font-family: inherit;"></textarea>
         </div>
 
+        <div style="margin-top: 20px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+            <h4 style="margin-bottom: 12px; font-size: 14px;"><i class="fa-solid fa-ticket" style="color: var(--primary-orange);"></i> Cupom de Desconto</h4>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="coupon-input" placeholder="Digite seu cupom" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; outline: none; text-transform: uppercase;">
+                <button onclick="applyCoupon()" style="background: var(--primary-orange); color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer;">APLICAR</button>
+            </div>
+            <p id="coupon-msg" style="font-size: 11px; margin-top: 5px; font-weight: bold; display: none;"></p>
+        </div>
+
         <div id="status-error-msg" style="color: red; font-size: 13px; font-weight: bold; margin-top: 10px; text-align: center; display: none;"></div>
         
         <div style="margin-top: 20px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
@@ -1502,6 +1511,8 @@
 let allProducts = [];
 let categories = [];
 let cart = JSON.parse(localStorage.getItem('userCart')) || [];
+let appliedCoupon = null;
+let couponDiscount = 0;
 let stickersList = [];
 let selectedSticker = null;
 let storeSettings = null;
@@ -3055,8 +3066,53 @@ window.addBagToCart = (key) => {
         }
 
         countTitle.innerText = `${itemsCount.toString().padStart(2, '0')} itens`;
+        const subtotalEl = document.getElementById('subtotal-val');
+        const couponRow = document.getElementById('coupon-discount-row');
+        
+        couponDiscount = 0;
+        if (appliedCoupon) {
+            const coupons10 = ["REDLINE10%OFF", "ANACYNTHIA10%OFF", "JOSYBRAGA10%OFF"];
+            const coupons20 = ["QUERIDAS20%OFF"];
+            let percent = 0;
+            if (coupons10.includes(appliedCoupon)) percent = 0.10;
+            else if (coupons20.includes(appliedCoupon)) percent = 0.20;
+            
+            couponDiscount = subtotal * percent;
+            subtotalEl.style.color = "var(--primary-orange)";
+        } else {
+            subtotalEl.style.color = "inherit";
+        }
+
+        const couponRowHtml = document.getElementById('coupon-row-dynamic');
+        if (couponDiscount > 0) {
+            const percLabel = ["QUERIDAS20%OFF"].includes(appliedCoupon) ? "20%" : "10%";
+            if (!couponRowHtml) {
+                const row = document.createElement('div');
+                row.className = 'row';
+                row.id = 'coupon-row-dynamic';
+                row.style.color = "#f46b21";
+                row.style.fontWeight = "bold";
+                row.innerHTML = `<span>Cupom Aplicado (${appliedCoupon})</span><span>${percLabel}</span>`;
+                document.querySelector('.payment-details').insertBefore(row, document.querySelector('.total-row'));
+            } else {
+                couponRowHtml.style.display = 'flex';
+                couponRowHtml.innerHTML = `<span>Cupom Aplicado (${appliedCoupon})</span><span>${percLabel}</span>`;
+            }
+        } else if (couponRowHtml) {
+            couponRowHtml.style.display = 'none';
+        }
+
         document.getElementById('subtotal-val').innerText = `R$ ${subtotal.toFixed(2).replace('.',',')}`;
-        document.getElementById('total-val').innerText = `R$ ${(subtotal + deliveryFee).toFixed(2).replace('.',',')}`;
+        
+        const originalTotal = subtotal + deliveryFee;
+        const finalTotal = subtotal + deliveryFee - couponDiscount;
+        const totalValEl = document.getElementById('total-val');
+
+        if (couponDiscount > 0) {
+            totalValEl.innerHTML = `<span style="text-decoration: line-through; color: #888; font-size: 14px; margin-right: 8px;">R$ ${originalTotal.toFixed(2).replace('.', ',')}</span> R$ ${finalTotal.toFixed(2).replace('.', ',')}`;
+        } else {
+            totalValEl.innerText = `R$ ${originalTotal.toFixed(2).replace('.', ',')}`;
+        }
     }
 
     function updateQty(id, delta) {
@@ -3079,6 +3135,32 @@ function removeItem(id) {
     renderCart();
     updateFloatingCart();
 }
+
+window.applyCoupon = function() {
+    const input = document.getElementById('coupon-input').value.trim().toUpperCase();
+    const msg = document.getElementById('coupon-msg');
+    
+    const coupons10 = ["REDLINE10%OFF", "ANACYNTHIA10%OFF", "JOSYBRAGA10%OFF"];
+    const coupons20 = ["QUERIDAS20%OFF"];
+
+    if (coupons10.includes(input)) {
+        appliedCoupon = input;
+        msg.innerText = "CUPOM DE 10% APLICADO!";
+        msg.style.color = "#28a745";
+        msg.style.display = "block";
+    } else if (coupons20.includes(input)) {
+        appliedCoupon = input;
+        msg.innerText = "CUPOM DE 20% APLICADO!";
+        msg.style.color = "#28a745";
+        msg.style.display = "block";
+    } else {
+        appliedCoupon = null;
+        msg.innerText = "CUPOM INVÁLIDO";
+        msg.style.color = "#e74c3c";
+        msg.style.display = "block";
+    }
+    renderCart();
+};
 
 window.toggleDeliveryType = function(val) {
     const creditOption = document.getElementById('pay-method-credit');
@@ -3497,7 +3579,8 @@ document.getElementById('back-home').onclick = () => changeTab('home');
             extras: extras,
             observacao: document.getElementById('order-observation').value,
             sticker: selectedSticker,
-            total: finalTotal,
+            coupon: appliedCoupon,
+            total: finalTotal - couponDiscount,
             deliveryFee: deliveryFee,
             deliveryType: document.querySelector('input[name="delivery-type"]:checked')?.value || 'delivery',
             paymentMethod: paymentMethod,
