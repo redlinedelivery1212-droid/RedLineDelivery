@@ -481,11 +481,87 @@
             padding: 15px;
             border-radius: 15px;
             display: flex;
-            align-items: center;
-            gap: 15px;
+            flex-direction: column;
+            gap: 12px;
             border-left: 5px solid var(--primary-orange);
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             animation: slideUp 0.3s;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .order-expanded-details {
+            display: none;
+            width: 100%;
+            border-top: 1px dashed #eee;
+            padding-top: 10px;
+            margin-top: 5px;
+        }
+        .order-tracker-banner.expanded .order-expanded-details {
+            display: block;
+        }
+        .order-tracker-banner.expanded .order-collapsed-view {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .status-badge-small {
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-left: 5px;
+        }
+        .order-progress-stepper {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .progress-step {
+            flex: 1;
+            height: 6px;
+            background: #eee;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-step.completed {
+            background: #2ecc71;
+        }
+        .progress-step.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-orange);
+            animation: stepFilling 2s infinite ease-in-out;
+        }
+        @keyframes stepFilling {
+            0% { left: -100%; }
+            50% { left: 0; }
+            100% { left: 100%; }
+        }
+        .progress-step-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            gap: 2px;
+        }
+        .progress-label {
+            font-size: 7px;
+            font-weight: 900;
+            color: #ccc;
+            text-transform: uppercase;
+            text-align: center;
+            flex: 1;
+            line-height: 1;
+        }
+        .progress-label.active {
+            color: var(--primary-orange);
+        }
+        .progress-label.completed {
+            color: #2ecc71;
         }
 
         .loyalty-card {
@@ -745,10 +821,33 @@
         }
 
         .sticker-option img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    #order-processing-loader {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: white;
+        z-index: 20000;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .spinner-orange {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid var(--primary-orange);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
     </style>
 </head>
 <body>
@@ -909,6 +1008,11 @@
 <div id="custom-toast" class="toast-notification">
     <i class="fa-solid fa-circle-check"></i>
     <span id="toast-message">Localização salva com sucesso!</span>
+</div>
+
+<div id="order-processing-loader">
+    <div class="spinner-orange"></div>
+    <p style="margin-top: 15px; font-weight: bold; color: #555; font-size: 14px;">Processando seu pedido...</p>
 </div>
 
 <div class="app-container">
@@ -1152,6 +1256,20 @@
         <div id="status-error-msg" style="color: red; font-size: 13px; font-weight: bold; margin-top: 10px; text-align: center; display: none;"></div>
         
         <div style="margin-top: 20px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+            <h4 style="margin-bottom: 12px; font-size: 14px;">Como deseja receber seu pedido?</h4>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <label style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border: 1px solid var(--primary-orange); border-radius: 8px; cursor: pointer; background: #fff5f0;">
+                    <input type="radio" name="delivery-type" value="delivery" checked onchange="toggleDeliveryType(this.value)" style="display: none;">
+                    <i class="fa-solid fa-truck-fast" style="color: var(--primary-orange);"></i>
+                    <span style="font-size: 13px; font-weight: bold; color: var(--primary-orange);">Entrega</span>
+                </label>
+                <label style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border: 1px solid #eee; border-radius: 8px; cursor: pointer; background: white;">
+                    <input type="radio" name="delivery-type" value="pickup" onchange="toggleDeliveryType(this.value)" style="display: none;">
+                    <i class="fa-solid fa-store" style="color: #666;"></i>
+                    <span style="font-size: 13px; font-weight: bold; color: #666;">Retirada</span>
+                </label>
+            </div>
+
             <h4 style="margin-bottom: 12px; font-size: 14px;">Forma de Pagamento</h4>
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #eee; border-radius: 8px; cursor: pointer;">
@@ -1162,12 +1280,12 @@
                 <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #eee; border-radius: 8px; cursor: pointer;">
                     <input type="radio" name="pay-method" value="especie" onchange="document.getElementById('change-field-container').style.display = 'block'" style="accent-color: var(--primary-orange);">
                     <i class="fa-solid fa-money-bill-1-wave" style="color: #a29bfe;"></i>
-                    <span style="font-size: 14px; font-weight: 500;">Dinheiro (Na Entrega)</span>
+                    <span style="font-size: 14px; font-weight: 500;">Dinheiro</span>
                 </label>
                 <div id="change-field-container" style="display: none; padding: 5px 10px; border-left: 2px solid var(--primary-orange); margin-left: 10px;">
                     <input type="text" id="pay-change" placeholder="Precisa de troco? Ex: Para 50 ou 100" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; outline: none;">
                 </div>
-                <label style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #eee; border-radius: 8px; cursor: pointer;">
+                <label id="pay-method-credit" style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #eee; border-radius: 8px; cursor: pointer;">
                     <input type="radio" name="pay-method" value="credito" onchange="document.getElementById('change-field-container').style.display = 'none'" style="accent-color: var(--primary-orange);">
                     <i class="fa-solid fa-credit-card" style="color: #0984e3;"></i>
                     <span style="font-size: 14px; font-weight: 500;">Cartão Maquininha</span>
@@ -1390,8 +1508,10 @@ let storeSettings = null;
 let sublineSettings = null;
 let currentObStep = 1;
 let userProfile = JSON.parse(localStorage.getItem('userProfile')) || null;
-let editingProductKey = null;
-let cachedOrders = null;
+    let editingProductKey = null;
+    let cachedOrders = null;
+    let isOrderBannerExpanded = false;
+    let activeOrderKeyToEdit = null;
 
     let map = null;
     let mapMarker = null;
@@ -1570,33 +1690,204 @@ let cachedOrders = null;
             const banner = document.getElementById('active-order-banner');
             if(!banner || !userProfile) return;
             
-            banner.innerHTML = "";
-            const activeOrder = data ? Object.values(data).find(o => o.cliente && o.cliente.contato === userProfile.contato && (['pendente', 'pago_confirmado', 'preparando', 'caminho'].includes(o.status))) : null;
+            const activeOrderEntry = data ? Object.entries(data).find(([k, o]) => o.cliente && o.cliente.contato === userProfile.contato && (['pendente', 'pago_confirmado', 'preparando', 'caminho'].includes(o.status))) : null;
+            const [orderKey, activeOrder] = activeOrderEntry || [null, null];
             
             if(activeOrder) {
-                if (activeOrder.status === 'pendente' && !hasCheckedInitialOrder) {
+                if (activeOrder.status === 'pendente' && !hasCheckedInitialOrder && activeOrder.paymentMethod === 'pix') {
                     document.getElementById('pay-total-val').innerText = 'R$ ' + activeOrder.total.toFixed(2).replace('.', ',');
                     changeTab('payment');
                 }
                 
                 let statusMsg = "Aguardando confirmação";
                 let icon = "fa-clock";
+                let color = "var(--primary-orange)";
+
                 if(activeOrder.status === 'pago_confirmado') { statusMsg = "Seu pedido está sendo preparado"; icon = "fa-check-double"; }
-                if(activeOrder.status === 'preparando') { statusMsg = "Aguardando coleta"; icon = "fa-fire-burner"; }
-                if(activeOrder.status === 'caminho') { statusMsg = "Saiu para entrega!"; icon = "fa-motorcycle"; }
+                if(activeOrder.status === 'preparando') { statusMsg = "Entregador a caminho da loja"; icon = "fa-fire-burner"; }
+                if(activeOrder.status === 'caminho') { 
+                    statusMsg = activeOrder.deliveryType === 'pickup' ? "Pronto para Retirada!" : "Saiu para entrega!"; 
+                    icon = activeOrder.deliveryType === 'pickup' ? "fa-store" : "fa-motorcycle"; 
+                    color = "#2ecc71";
+                }
+
+                let itemsHtml = activeOrder.items.map(item => `
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <img src="${item.img}" style="width: 35px; height: 35px; border-radius: 6px; object-fit: cover;">
+                        <div style="flex: 1;">
+                            <p style="font-size: 12px; font-weight: bold; color: #333;">${item.qty}x ${item.name}</p>
+                            <p style="font-size: 10px; color: #888;">R$ ${(item.price * item.qty).toFixed(2).replace('.',',')}</p>
+                        </div>
+                    </div>
+                `).join('');
+
+                let totalOriginal = activeOrder.items.reduce((acc, it) => {
+                    let original = it.isOffer ? (it.price / 0.8) : it.price;
+                    return acc + (original * it.qty);
+                }, 0);
                 
+                let economia = totalOriginal - activeOrder.total + (activeOrder.deliveryFee === 0 ? 4.99 : 0);
+                
+                let payMethodText = "";
+                if(activeOrder.paymentMethod === 'pix') payMethodText = "PIX (Pague Agora)";
+                else if(activeOrder.paymentMethod === 'especie') payMethodText = "Dinheiro (Na entrega)";
+                else if(activeOrder.paymentMethod === 'credito') payMethodText = "Cartão (Maquininha)";
+
+                let s1 = activeOrder.status === 'pendente' ? 'active' : 'completed';
+                let s2 = activeOrder.status === 'pago_confirmado' ? 'active' : (['preparando', 'caminho'].includes(activeOrder.status) ? 'completed' : '');
+                let s3 = activeOrder.status === 'preparando' ? 'active' : (activeOrder.status === 'caminho' ? 'completed' : '');
+                let s4 = activeOrder.status === 'caminho' ? 'active' : '';
+
+                let step4Label = activeOrder.deliveryType === 'pickup' ? "RETIRADA" : "SAIU";
+
+                let progressTrackerHtml = `
+                    <div class="order-progress-stepper">
+                        <div class="progress-step ${s1}"></div>
+                        <div class="progress-step ${s2}"></div>
+                        <div class="progress-step ${s3}"></div>
+                        <div class="progress-step ${s4}"></div>
+                    </div>
+                    <div class="progress-step-labels">
+                        <span class="progress-label ${s1}">CONFIRMANDO</span>
+                        <span class="progress-label ${s2}">PREPARANDO</span>
+                        <span class="progress-label ${s3}">PRONTO</span>
+                        <span class="progress-label ${s4}">${step4Label}</span>
+                    </div>
+                `;
+
+                let statusBanner = "";
+                if (activeOrder.status === 'pendente') {
+                    let msg = activeOrder.paymentMethod === 'pix' ? "Aguardando pagamento PIX para iniciar o preparo do seu pedido." : "Aguardando sua confirmação para iniciar o seu pedido.";
+                    statusBanner = `
+                        <div style="background: #fff9db; border-left: 4px solid #f1c40f; padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(241, 196, 15, 0.1);">
+                            <i class="fa-solid fa-clock-rotate-left" style="color: #f1c40f; font-size: 20px;"></i>
+                            <p style="font-size: 11px; color: #856404; font-weight: 800; line-height: 1.4;">${msg}</p>
+                        </div>`;
+                } else if (activeOrder.status === 'pago_confirmado') {
+                    statusBanner = `
+                        <div style="background: #e8f5e9; border-left: 4px solid #2ecc71; padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(46, 204, 113, 0.1);">
+                            <i class="fa-solid fa-circle-check" style="color: #2ecc71; font-size: 20px;"></i>
+                            <p style="font-size: 11px; color: #1b5e20; font-weight: 800; line-height: 1.4;">Pedido confirmado! Nossa equipe já começou a preparar tudo com muito capricho!</p>
+                        </div>`;
+                } else if (activeOrder.status === 'preparando') {
+                    let msg = activeOrder.deliveryType === 'pickup' ? "Quase lá! Seu lanche está sendo finalizado e em breve estará pronto para retirada." : "O restaurante está finalizando seu pedido e o entregador já está a caminho para coletar.";
+                    statusBanner = `
+                        <div style="background: #f3f0ff; border-left: 4px solid #6c5ce7; padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(108, 92, 231, 0.1);">
+                            <i class="fa-solid fa-fire-burner" style="color: #6c5ce7; font-size: 20px;"></i>
+                            <p style="font-size: 11px; color: #4834d4; font-weight: 800; line-height: 1.4;">${msg}</p>
+                        </div>`;
+                } else if (activeOrder.status === 'caminho') {
+                    let msg = activeOrder.deliveryType === 'pickup' ? "Prontinho! Seu pedido já está no balcão te aguardando. Pode vir buscar!" : "Opa! Seu pedido saiu da loja. Fique atento, o entregador chegará em instantes!";
+                    let icon = activeOrder.deliveryType === 'pickup' ? 'fa-bag-shopping' : 'fa-motorcycle';
+                    statusBanner = `
+                        <div style="background: #e1f5fe; border-left: 4px solid #03a9f4; padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(3, 169, 244, 0.1);">
+                            <i class="fa-solid ${icon}" style="color: #03a9f4; font-size: 20px;"></i>
+                            <p style="font-size: 11px; color: #01579b; font-weight: 800; line-height: 1.4;">${msg}</p>
+                        </div>`;
+                }
+
                 banner.innerHTML = `
-                    <div class="order-tracker-banner">
-                        <i class="fa-solid ${icon}" style="color: var(--primary-orange); font-size: 24px;"></i>
-                        <div style="flex:1">
-                            <p style="font-size: 11px; color: var(--text-gray); font-weight: bold; text-transform: uppercase;">Status do Pedido</p>
-                            <p style="font-size: 14px; font-weight: bold; color: var(--text-dark);">${statusMsg}</p>
+                    <div class="order-tracker-banner ${isOrderBannerExpanded ? 'expanded' : ''}" onclick="toggleOrderBanner()">
+                        <div class="order-collapsed-view" style="display: flex; align-items: center; gap: 15px; width: 100%;">
+                            <i class="fa-solid ${icon}" style="color: ${color}; font-size: 24px;"></i>
+                            <div style="flex:1">
+                                <p style="font-size: 10px; color: var(--text-gray); font-weight: bold; text-transform: uppercase;">
+                                    Status do Pedido
+                                </p>
+                                <p style="font-size: 13px; font-weight: bold; color: var(--text-dark);">${statusMsg}</p>
+                            </div>
+                            <div style="background: var(--primary-orange); color: white; padding: 5px 10px; border-radius: 8px; font-size: 10px; font-weight: 900; text-transform: uppercase; white-space: nowrap;">
+                                Clique aqui
+                            </div>
+                            <i class="fa-solid ${isOrderBannerExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}" style="color: #ccc; font-size: 12px;"></i>
+                        </div>
+                        
+                        <div class="order-expanded-details">
+                            ${progressTrackerHtml}
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: #f8f9fa; padding: 8px 12px; border-radius: 8px; border: 1px solid #eee;">
+                                <span style="font-size: 11px; font-weight: 900; color: #555; text-transform: uppercase;">Modalidade:</span>
+                                <span style="background: var(--primary-orange); color: white; padding: 3px 10px; border-radius: 5px; font-size: 10px; font-weight: 900; text-transform: uppercase;">
+                                    ${activeOrder.deliveryType === 'pickup' ? '<i class="fa-solid fa-store"></i> Retirada' : '<i class="fa-solid fa-truck"></i> Entrega'}
+                                </span>
+                            </div>
+                            ${statusBanner}
+                            <div style="margin-bottom: 15px; border-bottom: 1px dashed #eee; padding-bottom: 10px;">
+                                <p style="font-size: 10px; color: var(--text-gray); font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Informações do Pedido</p>
+                                <p style="font-size: 12px; color: #333;"><i class="fa-solid fa-credit-card" style="width: 15px;"></i> Pagamento: <strong>${payMethodText}</strong></p>
+                                ${activeOrder.deliveryType === 'pickup' ? `
+                                    <p style="font-size: 12px; color: #333; margin: 5px 0;"><i class="fa-solid fa-store" style="width: 15px;"></i> Local: <strong>Loja Vila Nova</strong></p>
+                                    <a href="https://maps.app.goo.gl/TfYr7RXVTg3hz3AF8" target="_blank" onclick="event.stopPropagation()" style="display: block; width: 100%; background: #3498db; color: white; text-align: center; padding: 8px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold; margin-top: 10px;">
+                                        <i class="fa-solid fa-map-location-dot"></i> VER LOCALIZAÇÃO DA LOJA
+                                    </a>
+                                ` : `
+                                    <p style="font-size: 12px; color: #333; margin: 5px 0;">
+                                        <i class="fa-solid fa-location-dot" style="width: 15px;"></i> Endereço: <strong>${activeOrder.cliente.rua}, ${activeOrder.cliente.numero}</strong>
+                                        <span onclick="event.stopPropagation(); openAddressModalForOrder('${orderKey}')" style="color: var(--primary-orange); cursor: pointer; margin-left: 10px; font-size: 11px; font-weight: bold; border-bottom: 1px solid var(--primary-orange);">
+                                            <i class="fa-solid fa-pencil"></i> Alterar endereço
+                                        </span>
+                                    </p>
+                                `}
+                            </div>
+
+                            <div style="max-height: 150px; overflow-y: auto; margin-bottom: 10px;">
+                                ${itemsHtml}
+                            </div>
+                            
+                            <div style="background: #f9f9f9; padding: 10px; border-radius: 10px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
+                                    <span>Subtotal</span>
+                                    <span>R$ ${(activeOrder.total - activeOrder.deliveryFee).toFixed(2).replace('.',',')}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
+                                    <span>Frete</span>
+                                    <span style="color: ${activeOrder.deliveryFee === 0 ? '#2ecc71' : '#333'}; font-weight: ${activeOrder.deliveryFee === 0 ? 'bold' : 'normal'}">
+                                        ${activeOrder.deliveryFee === 0 ? 'GRÁTIS' : 'R$ ' + activeOrder.deliveryFee.toFixed(2).replace('.',',')}
+                                    </span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; margin-top: 5px; color: var(--primary-orange);">
+                                    <span>Total</span>
+                                    <span>R$ ${activeOrder.total.toFixed(2).replace('.',',')}</span>
+                                </div>
+                                
+                                ${economia > 1 ? `
+                                    <div style="margin-top: 8px; background: #e8f5e9; color: #2e7d32; padding: 5px; border-radius: 6px; font-size: 10px; font-weight: bold; text-align: center;">
+                                        <i class="fa-solid fa-piggy-bank"></i> VOCÊ ECONOMIZOU R$ ${economia.toFixed(2).replace('.',',')} NESSA COMPRA!
+                                    </div>
+                                ` : ''}
+                            </div>
+                            
+                            <p style="font-size: 9px; color: #aaa; text-align: center; margin-top: 10px; font-weight: bold;">CLIQUE PARA RECOLHER</p>
                         </div>
                     </div>
                 `;
+            } else {
+                banner.innerHTML = "";
             }
             hasCheckedInitialOrder = true;
         });
+    };
+
+    window.toggleOrderBanner = function() {
+        isOrderBannerExpanded = !isOrderBannerExpanded;
+        const bannerCard = document.querySelector('.order-tracker-banner');
+        const icon = bannerCard.querySelector('.fa-chevron-down, .fa-chevron-up');
+        
+        if (isOrderBannerExpanded) {
+            bannerCard.classList.add('expanded');
+            if(icon) { icon.classList.remove('fa-chevron-down'); icon.classList.add('fa-chevron-up'); }
+        } else {
+            bannerCard.classList.remove('expanded');
+            if(icon) { icon.classList.remove('fa-chevron-up'); icon.classList.add('fa-chevron-down'); }
+        }
+    };
+
+    window.openAddressModalForOrder = function(key) {
+        activeOrderKeyToEdit = key;
+        document.getElementById('edit-rua').value = userProfile.rua;
+        document.getElementById('edit-bairro').value = userProfile.bairro;
+        document.getElementById('edit-numero').value = userProfile.numero;
+        document.getElementById('edit-ref').value = userProfile.ref;
+        document.getElementById('modal-address').style.display = 'flex';
     };
 
     loadEssentialData();
@@ -2248,14 +2539,28 @@ function renderFakeReviews() {
         const sortedAllProducts = [...allProducts].sort((a, b) => (a.order || 0) - (b.order || 0));
 
         if (!activeCat || activeCat.id === 'cat-all') {
-            // Exibe populares primeiro
             const popularItems = sortedAllProducts.filter(p => p.popular).slice(0, 4);
             popularItems.forEach(p => listFragment.appendChild(createProductCard(p)));
 
-            // Ordena as categorias de acordo com o campo "order" da categoria
             const sortedCats = [...categories].sort((a, b) => (a.order || 0) - (b.order || 0));
             
+            const burgerCat = sortedCats.find(c => c.name.toLowerCase() === 'hambúrgueres' || c.name.toLowerCase() === 'hamburgueres');
+            if (burgerCat) {
+                const burgerProducts = sortedAllProducts.filter(p => p.category === burgerCat.name);
+                if (burgerProducts.length > 0) {
+                    const sectionTitle = document.createElement('div');
+                    sectionTitle.className = 'section-title';
+                    sectionTitle.style.gridColumn = "1 / -1";
+                    sectionTitle.style.marginTop = "20px";
+                    sectionTitle.innerHTML = `<h3>${burgerCat.name}</h3><span style="color: var(--text-gray); font-size: 12px;">Ver todos ></span>`;
+                    listFragment.appendChild(sectionTitle);
+                    burgerProducts.forEach(p => listFragment.appendChild(createProductCard(p)));
+                }
+            }
+
             sortedCats.forEach(cat => {
+                if (cat.name.toLowerCase() === 'hambúrgueres' || cat.name.toLowerCase() === 'hamburgueres') return;
+                
                 const catProducts = sortedAllProducts.filter(p => p.category === cat.name);
                 if (catProducts.length > 0) {
                     const sectionTitle = document.createElement('div');
@@ -2683,7 +2988,8 @@ window.addBagToCart = (key) => {
         
 
         const threshold = 84.90;
-        const deliveryFee = (subtotal > 0 && subtotal < threshold) ? 4.99 : 0;
+        const deliveryType = document.querySelector('input[name="delivery-type"]:checked')?.value || 'delivery';
+        const deliveryFee = (deliveryType === 'delivery' && subtotal > 0 && subtotal < threshold) ? 4.99 : 0;
         
         const xpToGain = Math.floor(subtotal * 2);
         if(subtotal > 0) {
@@ -2712,7 +3018,7 @@ window.addBagToCart = (key) => {
 
         const deliveryRow = document.getElementById('delivery-row');
         
-        if (subtotal > 0) {
+        if (deliveryType === 'delivery' && subtotal > 0) {
             deliveryRow.style.display = 'flex';
         } else {
             deliveryRow.style.display = 'none';
@@ -2732,27 +3038,25 @@ window.addBagToCart = (key) => {
 
         const deliveryValEl = document.getElementById('delivery-val');
 
-        onValue(ref(db, 'orders'), (snap) => {
-            if (subtotal > 0) {
-                deliveryRow.style.display = 'flex';
-            } else {
-                deliveryRow.style.display = 'none';
-            }
+        if (deliveryType === 'delivery' && subtotal > 0) {
+            deliveryRow.style.display = 'flex';
+        } else {
+            deliveryRow.style.display = 'none';
+        }
 
-            if (deliveryFee === 0 && subtotal > 0) {
-                deliveryValEl.innerText = "Grátis";
-                deliveryValEl.style.color = "#28a745";
-                deliveryValEl.style.fontWeight = "bold";
-            } else {
-                deliveryValEl.innerText = `R$ ${deliveryFee.toFixed(2).replace('.',',')}`;
-                deliveryValEl.style.color = "inherit";
-                deliveryValEl.style.fontWeight = "normal";
-            }
+        if (deliveryFee === 0 && subtotal > 0 && deliveryType === 'delivery') {
+            deliveryValEl.innerText = "Grátis";
+            deliveryValEl.style.color = "#28a745";
+            deliveryValEl.style.fontWeight = "bold";
+        } else {
+            deliveryValEl.innerText = `R$ ${deliveryFee.toFixed(2).replace('.',',')}`;
+            deliveryValEl.style.color = "inherit";
+            deliveryValEl.style.fontWeight = "normal";
+        }
 
-            countTitle.innerText = `${itemsCount.toString().padStart(2, '0')} itens`;
-            document.getElementById('subtotal-val').innerText = `R$ ${subtotal.toFixed(2).replace('.',',')}`;
-            document.getElementById('total-val').innerText = `R$ ${(subtotal + deliveryFee).toFixed(2).replace('.',',')}`;
-        }, { onlyOnce: true });
+        countTitle.innerText = `${itemsCount.toString().padStart(2, '0')} itens`;
+        document.getElementById('subtotal-val').innerText = `R$ ${subtotal.toFixed(2).replace('.',',')}`;
+        document.getElementById('total-val').innerText = `R$ ${(subtotal + deliveryFee).toFixed(2).replace('.',',')}`;
     }
 
     function updateQty(id, delta) {
@@ -2775,6 +3079,41 @@ function removeItem(id) {
     renderCart();
     updateFloatingCart();
 }
+
+window.toggleDeliveryType = function(val) {
+    const creditOption = document.getElementById('pay-method-credit');
+    const labels = document.querySelectorAll('input[name="delivery-type"]');
+    
+    labels.forEach(input => {
+        const label = input.parentElement;
+        if(input.checked) {
+            label.style.borderColor = "var(--primary-orange)";
+            label.style.background = "#fff5f0";
+            label.querySelector('i').style.color = "var(--primary-orange)";
+            label.querySelector('span').style.color = "var(--primary-orange)";
+        } else {
+            label.style.borderColor = "#eee";
+            label.style.background = "white";
+            label.querySelector('i').style.color = "#666";
+            label.querySelector('span').style.color = "#666";
+        }
+    });
+
+    if (val === 'pickup') {
+        creditOption.style.display = 'none';
+        const currentPay = document.querySelector('input[name="pay-method"]:checked');
+        if(currentPay && currentPay.value === 'credito') {
+            document.querySelector('input[name="pay-method"][value="pix"]').checked = true;
+        }
+        document.getElementById('address-checkout-bar').style.opacity = '0.4';
+        document.getElementById('address-checkout-bar').style.pointerEvents = 'none';
+    } else {
+        creditOption.style.display = 'flex';
+        document.getElementById('address-checkout-bar').style.opacity = '1';
+        document.getElementById('address-checkout-bar').style.pointerEvents = 'auto';
+    }
+    renderCart();
+};
 
 function renderStickersGallery() {
     const gallery = document.getElementById('stickers-gallery');
@@ -2930,12 +3269,34 @@ document.getElementById('back-home').onclick = () => changeTab('home');
     };
 
     document.getElementById('btn-save-addr').onclick = () => {
-        userProfile.rua = document.getElementById('edit-rua').value;
-        userProfile.bairro = document.getElementById('edit-bairro').value;
-        userProfile.numero = document.getElementById('edit-numero').value;
-        userProfile.ref = document.getElementById('edit-ref').value;
+        const newRua = document.getElementById('edit-rua').value;
+        const newBairro = document.getElementById('edit-bairro').value;
+        const newNumero = document.getElementById('edit-numero').value;
+        const newRef = document.getElementById('edit-ref').value;
+
+        userProfile.rua = newRua;
+        userProfile.bairro = newBairro;
+        userProfile.numero = newNumero;
+        userProfile.ref = newRef;
+
+        // Se estiver editando um pedido ativo, removemos as coordenadas antigas para evitar confusão no GPS do entregador
+        if (activeOrderKeyToEdit) {
+            delete userProfile.lat;
+            delete userProfile.lng;
+            delete userProfile.mapLink;
+            
+            // Atualiza o pedido específico no Firebase
+            set(ref(db, `orders/${activeOrderKeyToEdit}/cliente`), userProfile);
+            showToast("Endereço do pedido atualizado!");
+            activeOrderKeyToEdit = null;
+        }
 
         localStorage.setItem('userProfile', JSON.stringify(userProfile));
+        
+        // Atualiza a base global do usuário
+        const userKey = userProfile.contato.replace(/\D/g, '');
+        set(ref(db, 'users/' + userKey), userProfile);
+
         updateLocationUI();
         if(document.getElementById('cart-screen').classList.contains('active')) renderCart();
         document.getElementById('modal-address').style.display = 'none';
@@ -3063,16 +3424,14 @@ document.getElementById('back-home').onclick = () => changeTab('home');
 
     document.getElementById('finish-order').onclick = function() {
         const status = updateStoreStatusUI();
+        const loader = document.getElementById('order-processing-loader');
         
-        const orderLoader = document.createElement('div');
-        orderLoader.className = 'loading-ball-container';
-        orderLoader.style.background = 'rgba(255,255,255,0.8)';
-        orderLoader.innerHTML = '<div class="rolling-ball"></div>';
-        document.body.appendChild(orderLoader);
+        loader.style.display = 'flex';
 
         const removeLoader = function() {
-            orderLoader.style.opacity = '0';
-            setTimeout(() => orderLoader.remove(), 400);
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500);
         };
 
         const errorMsg = document.getElementById('status-error-msg');
@@ -3101,16 +3460,18 @@ document.getElementById('back-home').onclick = () => changeTab('home');
         }
 
         const subtotal = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
-        const deliveryFee = (subtotal >= 84.90) ? 0 : 4.99;
+        const deliveryType = document.querySelector('input[name="delivery-type"]:checked')?.value || 'delivery';
+        const deliveryFee = (deliveryType === 'delivery' && subtotal < 84.90) ? 4.99 : 0;
         const totalComFrete = subtotal + deliveryFee;
+        const minVal = deliveryType === 'delivery' ? 20 : 15;
 
-        if (totalComFrete < 20) {
+        if (totalComFrete < minVal) {
             removeLoader();
-            showToast("O total com frete deve ser no mínimo R$ 20,00");
+            showToast(deliveryType === 'delivery' ? "O total com frete deve ser no mínimo R$ 20,00" : "O total deve ser no mínimo R$ 15,00 para retirada");
             return;
         }
 
-        if (!userProfile.lat && !userProfile.declinedMap) {
+        if (deliveryType === 'delivery' && !userProfile.lat && !userProfile.declinedMap) {
             removeLoader();
             document.getElementById('modal-map-ask').style.display = 'flex';
             return;
@@ -3138,6 +3499,7 @@ document.getElementById('back-home').onclick = () => changeTab('home');
             sticker: selectedSticker,
             total: finalTotal,
             deliveryFee: deliveryFee,
+            deliveryType: document.querySelector('input[name="delivery-type"]:checked')?.value || 'delivery',
             paymentMethod: paymentMethod,
             change: paymentMethod === 'especie' ? changeVal : null,
             modoPresente: document.getElementById('opt-presente').checked,
