@@ -3240,7 +3240,11 @@ window.addBagToCart = (key) => {
 
         const threshold = 84.90;
         const deliveryType = document.querySelector('input[name="delivery-type"]:checked')?.value || 'delivery';
-        const deliveryFee = (deliveryType === 'delivery' && subtotal > 0 && subtotal < threshold) ? 4.99 : 0;
+        let deliveryFee = (deliveryType === 'delivery' && subtotal > 0 && subtotal < threshold) ? 4.99 : 0;
+
+        if (appliedCoupon === "AMORDEPESSOA100%OFF") {
+            deliveryFee = 0;
+        }
         
         const xpToGain = Math.floor(subtotal * 2);
         if(subtotal > 0) {
@@ -3311,11 +3315,13 @@ window.addBagToCart = (key) => {
         
         couponDiscount = 0;
         if (appliedCoupon) {
-            const coupons10 = ["REDLINE10%OFF", "ANACYNTHIA10%OFF", "JOSYBRAGA10%OFF"];
+            const coupons10 = ["REDLINE10%OFF", "ANACYNTHIA10%OFF", "JOSYBRAGA10%OFF", "PHODIVULGA10%OFF"];
             const coupons20 = ["QUERIDAS20%OFF"];
+            const coupons100 = ["AMORDEPESSOA100%OFF"];
             let percent = 0;
             if (coupons10.includes(appliedCoupon)) percent = 0.10;
             else if (coupons20.includes(appliedCoupon)) percent = 0.20;
+            else if (coupons100.includes(appliedCoupon)) percent = 1.0;
             
             couponDiscount = subtotal * percent;
             subtotalEl.style.color = "var(--primary-orange)";
@@ -3381,8 +3387,9 @@ window.applyCoupon = function() {
     const input = document.getElementById('coupon-input').value.trim().toUpperCase();
     const msg = document.getElementById('coupon-msg');
     
-    const coupons10 = ["REDLINE10%OFF", "ANACYNTHIA10%OFF", "JOSYBRAGA10%OFF"];
+    const coupons10 = ["REDLINE10%OFF", "ANACYNTHIA10%OFF", "JOSYBRAGA10%OFF", "PHODIVULGA10%OFF"];
     const coupons20 = ["QUERIDAS20%OFF"];
+    const coupons100 = ["AMORDEPESSOA100%OFF"];
 
     if (coupons10.includes(input)) {
         appliedCoupon = input;
@@ -3392,6 +3399,11 @@ window.applyCoupon = function() {
     } else if (coupons20.includes(input)) {
         appliedCoupon = input;
         msg.innerText = "CUPOM DE 20% APLICADO!";
+        msg.style.color = "#28a745";
+        msg.style.display = "block";
+    } else if (coupons100.includes(input)) {
+        appliedCoupon = input;
+        msg.innerText = "CUPOM DE 100% + FRETE GRÁTIS!";
         msg.style.color = "#28a745";
         msg.style.display = "block";
     } else {
