@@ -1326,7 +1326,7 @@
         
         <div style="margin-top: 20px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
             <h4 style="margin-bottom: 12px; font-size: 14px;">Como deseja receber seu pedido?</h4>
-            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <div id="delivery-options-container" style="display: flex; gap: 10px; margin-bottom: 15px;">
                 <label style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border: 1px solid var(--primary-orange); border-radius: 8px; cursor: pointer; background: #fff5f0;">
                     <input type="radio" name="delivery-type" value="delivery" checked onchange="toggleDeliveryType(this.value)" style="display: none;">
                     <i class="fa-solid fa-truck-fast" style="color: var(--primary-orange);"></i>
@@ -3243,6 +3243,25 @@ window.addBagToCart = (key) => {
 
     window.renderCart = function() {
         const container = document.getElementById('cart-items-container');
+        
+        const deliveryRadio = document.querySelector('input[name="delivery-type"][value="delivery"]');
+        const pickupRadio = document.querySelector('input[name="delivery-type"][value="pickup"]');
+        const deliveryLabel = deliveryRadio.parentElement;
+        const pickupLabel = pickupRadio.parentElement;
+
+        if (storeSettings && storeSettings.onlyPickup) {
+            pickupRadio.checked = true;
+            deliveryRadio.disabled = true;
+            deliveryLabel.style.setProperty('display', 'none', 'important');
+            pickupLabel.style.setProperty('width', '100%', 'important');
+            pickupLabel.style.setProperty('flex', 'none', 'important');
+            toggleDeliveryType('pickup');
+        } else {
+            deliveryRadio.disabled = false;
+            deliveryLabel.style.display = 'flex';
+            pickupLabel.style.width = "auto";
+            pickupLabel.style.flex = "1";
+        }
         const countTitle = document.getElementById('cart-count-title');
         const additionContainer = document.getElementById('addition-order-container');
 
