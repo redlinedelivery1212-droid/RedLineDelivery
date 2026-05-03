@@ -403,6 +403,18 @@
             align-items: center;
             gap: 4px;
         }
+        .special-tag {
+            background: #ff4757;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 900;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 6px rgba(255, 71, 87, 0.3);
+        }
         .xp-bar-container {
             background: white;
             padding: 12px;
@@ -1653,7 +1665,10 @@
         { id: "p47", name: "Guaraná Jesus Lata", weight: "Refrigerante Guaraná Jesus Lata 260ml", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805961184_0000jesu.png" },
         { id: "p48", name: "Heineken Vidro", weight: "Heineken Vidro 250ML", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805987750_ssdds.png" },
         { id: "p49", name: "Coca-Cola 1L Tradicional", weight: "1 L Refrigerante Coca-Cola Litro", price: 13.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806012542_xc.png" },
-        { id: "p50", name: "Agua Mineral", weight: "Garrafa de agua de 500 ML Mineral", price: 3.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806034299_---001.png" }
+        { id: "p50", name: "Agua Mineral", weight: "Garrafa de agua de 500 ML Mineral", price: 3.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806034299_---001.png" },
+        { id: "p51", name: "Executivo Presidencial de Picanha Bovina", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho", price: 26.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(2).png" },
+        { id: "p52", name: "Churrasco Misto Exc de Carne, Toscana e Frango", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(3).png" },
+        { id: "p53", name: "Churrasco Exc de Carne e Toscana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(1).png" }
     ];
 
     const catalogCategories = [
@@ -2571,7 +2586,17 @@ function updateUserProfileUI() {
         window.logPerf('xp');
         return;
     }
-    document.querySelector('.greeting').innerText = `Olá, ${userProfile.nome.split(' ')[0]}!`;
+    const firstName = userProfile.nome.split(' ')[0];
+    const userKey = userProfile.contato.replace(/\D/g, '');
+    
+    get(ref(db, `users/${userKey}`)).then(snap => {
+        const u = snap.val();
+        const specialTag = u && u.isSpecial ? ' <span class="special-tag"><i class="fa-solid fa-heart"></i> CLIENTE ESPECIAL</span>' : '';
+        
+        document.querySelector('.greeting').innerHTML = `Olá, ${firstName}!${specialTag}`;
+        document.getElementById('profile-name-display').innerHTML = userProfile.nome + specialTag;
+    });
+
     document.getElementById('profile-name-display').innerText = userProfile.nome;
     document.getElementById('profile-phone-display').innerText = userProfile.contato;
     document.getElementById('user-photo').src = userProfile.foto || 'https://api.dicebear.com/7.x/big-smile/svg?seed=Aneka';
@@ -3998,7 +4023,7 @@ document.getElementById('btn-add-to-active').onclick = function() {
             observacao: document.getElementById('order-observation').value,
             sticker: selectedSticker,
             coupon: appliedCoupon,
-            total: finalTotal - couponDiscount,
+            total: finalTotal,
             deliveryFee: deliveryFee,
             deliveryType: document.querySelector('input[name="delivery-type"]:checked')?.value || 'delivery',
             paymentMethod: paymentMethod,
