@@ -1249,10 +1249,24 @@
             </div>
 
             <div class="extra-item">
-            <img src="https://phygital-files.mercafacil.com/princesa/uploads/produto/molho_billy_jack_200g_tasty_7f76ce26-2e26-424d-b412-aacadb52ea86.png">
+            <img src="https://cdn.temdetudoatacado.com.br/cache/catalog/HIMG13796-550x550.JPG">
             <span style="font-size: 14px; font-weight: 500;">Molho Tasty <small style="color: #f46b21; font-weight: bold;">( no lanche )</small></span>
             <span class="free-label">Grátis</span>
             <input type="checkbox" id="opt-tasty">
+        </div>
+
+        <div class="extra-item">
+            <img src="https://http2.mlstatic.com/D_NQ_NP_730154-MLB71258935582_082023-O.webp">
+            <span style="font-size: 14px; font-weight: 500;">Molho BBQ <small style="color: #f46b21; font-weight: bold;">( Na marmita )</small></span>
+            <span class="free-label">Grátis</span>
+            <input type="checkbox" id="opt-bbq">
+        </div>
+
+        <div class="extra-item">
+            <img src="https://mercantilnovaera.vtexassets.com/arquivos/ids/197881/Molho-de-Pimenta-Cumari-MANIOCA-com-Tucupi-Amarelo-Frasco-60ml.jpg?v=637865835541130000">
+            <span style="font-size: 14px; font-weight: 500;">Molho Tucupi <small style="color: #f46b21; font-weight: bold;">( Na marmita )</small></span>
+            <span class="free-label">Grátis</span>
+            <input type="checkbox" id="opt-tucupi">
         </div>
 
             <div id="brindes-container"></div>
@@ -1693,6 +1707,7 @@ let stickersList = [];
 let selectedSticker = null;
 let storeSettings = null;
 let marmitaBannerData = null;
+let marmitaPromoEnabled = false;
 let highDemandActive = false;
 let sublineSettings = null;
 let currentObStep = 1;
@@ -2245,6 +2260,11 @@ let userActiveOrderData = null;
     onValue(ref(db, 'settings/marmita_banner'), (snap) => {
         marmitaBannerData = snap.val();
         renderProducts();
+    });
+
+    onValue(ref(db, 'settings/marmita_promo_active'), (snap) => {
+        marmitaPromoEnabled = snap.val() || false;
+        checkMarmitaPromo();
     });
 
     let currentSlide = 0;
@@ -3219,6 +3239,51 @@ window.addBagToCart = (key) => {
     });
 };
 
+    window.checkMarmitaPromo = function() {
+        const promoIndex = cart.findIndex(i => i.id === 'p46_promo');
+
+        if (!marmitaPromoEnabled) {
+            if (promoIndex !== -1) {
+                cart.splice(promoIndex, 1);
+                saveCart();
+            }
+            renderCart();
+            updateFloatingCart();
+            return;
+        }
+
+        const marmitasQty = cart.reduce((acc, curr) => {
+            // Conta apenas itens da categoria Marmitas que NÃO sejam o brinde
+            if (curr.category && curr.category.trim() === 'Marmitas' && !curr.isPromo) {
+                return acc + curr.qty;
+            }
+            return acc;
+        }, 0);
+
+        if (marmitasQty >= 2) {
+            if (promoIndex === -1) {
+                const guaraná = allProducts.find(p => p.id === 'p46');
+                if (guaraná) {
+                    cart.push({
+                        ...guaraná,
+                        id: 'p46_promo',
+                        price: 0,
+                        qty: 1,
+                        isPromo: true,
+                        category: 'Bebidas' // Garante que não entre no loop de contagem de marmitas
+                    });
+                }
+            }
+        } else {
+            if (promoIndex !== -1) {
+                cart.splice(promoIndex, 1);
+            }
+        }
+        saveCart();
+        renderCart();
+        updateFloatingCart();
+    };
+
     window.addToCart = function(id) {
         const item = allProducts.find(p => p.id === id);
         if (item.isCombo) {
@@ -3264,6 +3329,7 @@ window.addBagToCart = (key) => {
             saveCart();
             updateFloatingCart();
         }
+        checkMarmitaPromo();
     }
 
     function saveCart() {
@@ -3368,20 +3434,22 @@ window.addBagToCart = (key) => {
             div.innerHTML = `
                 <img src="${item.img}">
                 <div class="cart-item-info">
-                    <p class="p-name">${item.isBag ? '<i class="fa-solid fa-fire" style="color:#6c5ce7; font-size:10px;"></i> ' : ''}${item.name}</p>
+                    <p class="p-name">${item.isBag ? '<i class="fa-solid fa-fire" style="color:#6c5ce7; font-size:10px;"></i> ' : ''}${item.name} ${item.isPromo ? '<span style="background:#27ae60; color:white; font-size:9px; padding:2px 5px; border-radius:4px; margin-left:5px;">PROMOÇÃO ATIVA</span>' : ''}</p>
                     <div class="p-weight">${item.weight}${item.drink ? ` <span style="color:var(--primary-orange); font-weight:bold;">[${item.drink}]</span>` : ''}</div>
                     <p class="p-price">R$ ${item.price.toFixed(2).replace('.',',')}</p>
                 </div>
-                <div class="qty-controls">
-                    <button class="qty-btn" data-op="minus">-</button>
+                <div class="qty-controls" style="${item.isPromo ? 'opacity:0.5; pointer-events:none;' : ''}">
+                    <button class="qty-btn" data-op="${item.isPromo ? '' : 'minus'}">-</button>
                     <span>${item.qty}</span>
-                    <button class="qty-btn" data-op="plus">+</button>
+                    <button class="qty-btn" data-op="${item.isPromo ? '' : 'plus'}">+</button>
                 </div>
-                <i class="fa-solid fa-trash remove-btn"></i>
+                <i class="fa-solid fa-trash remove-btn" style="${item.isPromo ? 'display:none;' : ''}"></i>
             `;
-            div.querySelector('[data-op="minus"]').onclick = () => updateQty(item.id, -1);
-            div.querySelector('[data-op="plus"]').onclick = () => updateQty(item.id, 1);
-            div.querySelector('.remove-btn').onclick = () => removeItem(item.id);
+            if (!item.isPromo) {
+                div.querySelector('[data-op="minus"]').onclick = () => updateQty(item.id, -1);
+                div.querySelector('[data-op="plus"]').onclick = () => updateQty(item.id, 1);
+                div.querySelector('.remove-btn').onclick = () => removeItem(item.id);
+            }
             container.appendChild(div);
         });
 
@@ -3514,6 +3582,7 @@ window.addBagToCart = (key) => {
     function updateQty(id, delta) {
     const item = cart.find(c => c.id === id);
     if(item) {
+        if (item.isPromo) return;
         item.qty += delta;
         if(item.qty <= 0) {
             removeItem(id);
@@ -3521,6 +3590,7 @@ window.addBagToCart = (key) => {
             saveCart();
             renderCart();
         }
+        checkMarmitaPromo();
     }
 }
 
@@ -3528,8 +3598,12 @@ function removeItem(id) {
     if(id === 'reward_big_cheddar') localStorage.removeItem('reward_redeemed');
     cart = cart.filter(c => c.id !== id);
     saveCart();
-    renderCart();
-    updateFloatingCart();
+    if (typeof checkMarmitaPromo === "function") {
+        checkMarmitaPromo();
+    } else {
+        renderCart();
+        updateFloatingCart();
+    }
 }
 
 window.applyCoupon = function() {
@@ -3671,6 +3745,8 @@ document.getElementById('btn-add-to-active').onclick = function() {
     if(document.getElementById('opt-maionese').checked) extras.push("Maionese Hellmann's");
     if(document.getElementById('opt-ketchup').checked) extras.push("Ketchup Hellmann's");
     if(document.getElementById('opt-tasty').checked) extras.push("Molho Tasty");
+    if(document.getElementById('opt-bbq').checked) extras.push("Molho BBQ");
+    if(document.getElementById('opt-tucupi').checked) extras.push("Molho Tucupi do Pará");
     
     document.querySelectorAll('.opt-brinde-dinamico:checked').forEach(cb => {
         extras.push(cb.getAttribute('data-nome'));
