@@ -1692,6 +1692,7 @@ let couponDiscount = 0;
 let stickersList = [];
 let selectedSticker = null;
 let storeSettings = null;
+let marmitaBannerData = null;
 let highDemandActive = false;
 let sublineSettings = null;
 let currentObStep = 1;
@@ -2239,6 +2240,11 @@ let userActiveOrderData = null;
 
     onValue(ref(db, 'settings/high_demand'), (snap) => {
         highDemandActive = snap.val() || false;
+    });
+
+    onValue(ref(db, 'settings/marmita_banner'), (snap) => {
+        marmitaBannerData = snap.val();
+        renderProducts();
     });
 
     let currentSlide = 0;
@@ -2915,6 +2921,13 @@ function renderFakeReviews() {
                 
                 const catProducts = sortedAllProducts.filter(p => p.category.trim() === cat.name.trim());
                 if (catProducts.length > 0) {
+                    if (cat.name.trim().toLowerCase() === 'marmitas' && marmitaBannerData && marmitaBannerData.active && marmitaBannerData.img) {
+                        const mBanner = document.createElement('div');
+                        mBanner.style = "grid-column: 1 / -1; margin-top: 20px; margin-bottom: 10px; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);";
+                        mBanner.innerHTML = `<img src="${marmitaBannerData.img}" style="width: 100%; display: block; border-radius: 15px;">`;
+                        listFragment.appendChild(mBanner);
+                    }
+
                     const sectionTitle = document.createElement('div');
                     sectionTitle.className = 'section-title';
                     sectionTitle.style.gridColumn = "1 / -1";
@@ -2942,6 +2955,14 @@ function renderFakeReviews() {
             });
         } else {
             const catName = activeCat.getAttribute('data-catname');
+
+            if (catName && catName.toLowerCase() === 'marmitas' && marmitaBannerData && marmitaBannerData.active && marmitaBannerData.img) {
+                const mBanner = document.createElement('div');
+                mBanner.style = "grid-column: 1 / -1; margin-bottom: 15px; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);";
+                mBanner.innerHTML = `<img src="${marmitaBannerData.img}" style="width: 100%; display: block; border-radius: 15px;">`;
+                list.appendChild(mBanner);
+            }
+
             if(catName && catName.toLowerCase() === 'subline' && sublineSettings && sublineSettings.active) {
                 const banner = document.createElement('div');
                 banner.className = 'promo-banner subline-banner';
