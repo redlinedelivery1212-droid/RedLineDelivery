@@ -13,7 +13,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         :root {
-            --primary-orange: #f46b21;
+            --primary-orange: #ea1d2c;
             --bg-light: #f8f9fa;
             --text-dark: #333;
             --text-gray: #888;
@@ -263,7 +263,7 @@
             justify-content: center; 
             font-size: 20px; 
             transition: transform 0.2s; 
-            box-shadow: 0 3px 6px rgba(244, 107, 33, 0.3); 
+            box-shadow: 0 3px 6px rgba(234, 29, 44, 0.3); 
             margin-top: -10px; 
         }
         .add-btn:active { transform: scale(0.9); }
@@ -367,7 +367,7 @@
     .fire-container i {
         font-size: 13px;
         color: #ffde00;
-        -webkit-text-stroke: 0.5px #f46b21;
+        -webkit-text-stroke: 0.5px #ea1d2c;
     }
     .fire-container .percent {
         position: absolute;
@@ -637,7 +637,7 @@
             align-items: center;
             justify-content: center;
             margin-top: -30px;
-            box-shadow: 0 5px 15px rgba(244, 107, 33, 0.4);
+            box-shadow: 0 5px 15px rgba(234, 29, 44, 0.4);
         }
 
         ::-webkit-scrollbar { display: none; }
@@ -718,6 +718,12 @@
         }
         .modal-content h3 { margin-bottom: 5px; }
         .modal-content input { padding: 12px; border: 1px solid #ddd; border-radius: 10px; outline: none; }
+
+        .donation-container { background: white; padding: 15px; border-radius: 15px; margin-top: 15px; border: 1px solid #eee; }
+        .donation-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .donation-chip { border: 1px solid #ddd; padding: 8px 12px; border-radius: 50px; font-size: 13px; cursor: pointer; transition: 0.2s; background: #f8f9fa; color: #555; font-weight: 500; }
+        .donation-chip.selected { background: #ea1d2c; color: white; border-color: #ea1d2c; box-shadow: 0 4px 10px rgba(234, 29, 44, 0.2); }
+        .donation-info-btn { font-size: 11px; color: #007bff; cursor: pointer; text-decoration: underline; margin-top: 10px; display: inline-block; }
 
         #modal-stickers, #modal-avatars {
         position: fixed;
@@ -1062,6 +1068,22 @@
     <span id="toast-message">Localização salva com sucesso!</span>
 </div>
 
+<div id="modal-donation-info" class="modal-overlay">
+    <div class="modal-content" style="text-align: center;">
+        <img id="donation-logo-info" src="" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 15px auto; border: 2px solid #eee; display: none;">
+        <h3>Adote ou Doe um Pet</h3>
+        <p style="font-size: 14px; color: #555; line-height: 1.5; margin: 15px 0;">
+            Sua doação garante ração, castração e remédios para animais de rua 🐾<br><br>
+            Preciso muito de ajuda para comprar ração e alimentar quem vive nas ruas 😢<br><br>
+            Ajude a salvar vidas com um gesto simples 💛
+        </p>
+        <a href="https://chat.whatsapp.com/H0WQykc6SDB9TR64wzoOyB" target="_blank" style="background: #25d366; color: white; text-decoration: none; padding: 12px; border-radius: 10px; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <i class="fa-brands fa-whatsapp"></i> GRUPO DE APOIO
+        </a>
+        <button class="btn-back" onclick="document.getElementById('modal-donation-info').style.display='none'">Fechar</button>
+    </div>
+</div>
+
 <div id="order-processing-loader">
     <div class="spinner-orange"></div>
     <p style="margin-top: 15px; font-weight: bold; color: #555; font-size: 14px;">Processando seu pedido...</p>
@@ -1334,6 +1356,23 @@
                 <button onclick="applyCoupon()" style="background: var(--primary-orange); color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer;">APLICAR</button>
             </div>
             <p id="coupon-msg" style="font-size: 11px; margin-top: 5px; font-weight: bold; display: none;"></p>
+        </div>
+
+        <div id="donation-section" class="donation-container" style="display: none;">
+            <img id="donation-banner-img" src="" style="width: 100%; border-radius: 10px; margin-bottom: 10px; display: none;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <img id="donation-logo-small" src="" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; display: none;">
+                <strong style="font-size: 14px;">Escolha o valor a ser doado</strong>
+            </div>
+            <div class="donation-grid">
+                <div class="donation-chip" onclick="selectDonation(2, this)">R$ 2</div>
+                <div class="donation-chip" onclick="selectDonation(5, this)">R$ 5</div>
+                <div class="donation-chip" onclick="selectDonation(15, this)">R$ 15</div>
+                <div class="donation-chip" onclick="selectDonation(30, this)">R$ 30</div>
+                <div class="donation-chip" onclick="selectDonation('outro', this)">Outro</div>
+                <div class="donation-chip selected" id="chip-no-donation" onclick="selectDonation(0, this)">Não, obrigado</div>
+            </div>
+            <span class="donation-info-btn" onclick="document.getElementById('modal-donation-info').style.display='flex'">Para onde o dinheiro vai?</span>
         </div>
 
         <div id="status-error-msg" style="color: red; font-size: 13px; font-weight: bold; margin-top: 10px; text-align: center; display: none;"></div>
@@ -1713,6 +1752,7 @@ let sublineSettings = null;
 let currentObStep = 1;
 let userProfile = JSON.parse(localStorage.getItem('userProfile')) || null;
 let userActiveOrderData = null;
+    let selectedDonation = 0;
     let editingProductKey = null;
     let cachedOrders = null;
     let isOrderBannerExpanded = false;
@@ -1742,7 +1782,7 @@ let userActiveOrderData = null;
             }).addTo(map);
 
             const customIcon = L.divIcon({
-                html: '<i class="fa-solid fa-location-dot" style="color: #f46b21; font-size: 35px; text-shadow: 2px 2px 5px rgba(0,0,0,0.3);"></i>',
+                html: '<i class="fa-solid fa-location-dot" style="color: #ea1d2c; font-size: 35px; text-shadow: 2px 2px 5px rgba(0,0,0,0.3);"></i>',
                 iconSize: [30, 42],
                 iconAnchor: [15, 42],
                 className: 'custom-div-icon'
@@ -1997,7 +2037,19 @@ let userActiveOrderData = null;
                     color = "#2ecc71";
                 }
 
-                let itemsHtml = activeOrder.items.map(item => `
+                if (activeOrder.donation > 0) {
+            itemsHtml += `
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; border: 1px dashed #2ecc71; padding: 5px; border-radius: 8px;">
+                    <i class="fa-solid fa-heart" style="color: #ea1d2c; font-size: 20px; width: 35px; text-align: center;"></i>
+                    <div style="flex: 1;">
+                        <p style="font-size: 12px; font-weight: bold; color: #333;">Doação para Animais</p>
+                        <p style="font-size: 10px; color: #888;">R$ ${activeOrder.donation.toFixed(2).replace('.',',')}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        itemsHtml += activeOrder.items.map(item => `
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                         <img src="${item.img}" style="width: 35px; height: 35px; border-radius: 6px; object-fit: cover;">
                         <div style="flex: 1;">
@@ -2227,6 +2279,48 @@ let userActiveOrderData = null;
             if(footerImg) footerImg.src = data.img || defaultBagImg;
         }
     });
+
+    onValue(ref(db, 'settings/donation_config'), (snapshot) => {
+        const data = snapshot.val();
+        const section = document.getElementById('donation-section');
+        const banner = document.getElementById('donation-banner-img');
+        const logoSmall = document.getElementById('donation-logo-small');
+        const logoInfo = document.getElementById('donation-logo-info');
+
+        if (data && data.active) {
+            section.style.display = 'block';
+            if (data.banner) { banner.src = data.banner; banner.style.display = 'block'; } else { banner.style.display = 'none'; }
+            if (data.logo) { 
+                logoSmall.src = data.logo; logoSmall.style.display = 'block'; 
+                logoInfo.src = data.logo; logoInfo.style.display = 'block';
+            } else { 
+                logoSmall.style.display = 'none'; 
+                logoInfo.style.display = 'none';
+            }
+        } else {
+            section.style.display = 'none';
+        }
+    });
+
+    window.selectDonation = (val, el) => {
+        document.querySelectorAll('.donation-chip').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        
+        if (val === 'outro') {
+            const promptVal = prompt("Digite o valor que deseja doar (apenas números):");
+            const cleanVal = parseFloat(promptVal);
+            if (!isNaN(cleanVal) && cleanVal > 0) {
+                selectedDonation = cleanVal;
+                el.innerText = `R$ ${cleanVal.toFixed(2)}`;
+            } else {
+                document.getElementById('chip-no-donation').click();
+            }
+        } else {
+            selectedDonation = val;
+            document.querySelector('[onclick="selectDonation(\'outro\', this)"]').innerText = "Outro";
+        }
+        renderCart();
+    };
 
     onValue(ref(db, 'settings/promo_banner'), (snapshot) => {
         const data = snapshot.val();
@@ -2670,6 +2764,7 @@ function updateLoyaltyUI() {
                 const progress = Math.min((currentXP / targetXP) * 100, 100);
                 document.getElementById('xp-fill-bar').style.width = progress + '%';
                 document.getElementById('xp-text').innerText = `${currentXP} / ${targetXP} XP`;
+                document.getElementById('xp-text').style.color = "#ea1d2c";
             }
         }
         window.logPerf('xp');
@@ -3567,8 +3662,8 @@ window.addBagToCart = (key) => {
 
         document.getElementById('subtotal-val').innerText = `R$ ${subtotal.toFixed(2).replace('.',',')}`;
         
-        const originalTotal = subtotal + deliveryFee;
-        const finalTotal = subtotal + deliveryFee - couponDiscount;
+        const originalTotal = subtotal + deliveryFee + selectedDonation;
+        const finalTotal = subtotal + deliveryFee + selectedDonation - couponDiscount;
         const totalValEl = document.getElementById('total-val');
 
         if (couponDiscount > 0) {
@@ -4126,6 +4221,7 @@ document.getElementById('btn-add-to-active').onclick = function() {
             paymentMethod: paymentMethod,
             change: paymentMethod === 'especie' ? changeVal : null,
             modoPresente: document.getElementById('opt-presente').checked,
+            donation: selectedDonation,
             timestamp: Date.now(),
             status: 'pendente'
         }).then(() => {
