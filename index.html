@@ -2114,8 +2114,8 @@ let userActiveOrderData = null;
 
     // Carregamento ultrarápido: Apenas o status da loja e produtos primeiro
 const catalogData = [
-{ id: "p_jesus_promo", name: "Guaraná Jesus Garrafinha", weight: "250ml", price: 0.05, category: "Dia das Mães", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/ereerer.png", isMotherDayPromo: true },
-{ id: "p_guarana_promo", name: "Sprite Garrafinha", weight: "250ml", price: 0.05, category: "Dia das Mães", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/rrerereerer.png", isMotherDayPromo: true },
+        { id: "p_jesus_promo", name: "Guaraná Jesus Garrafinha", weight: "250ml", price: 0.05, category: "Dia das Mães", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/ereerer.png", isMotherDayPromo: true },
+        { id: "p_guarana_promo", name: "Sprite Garrafinha", weight: "250ml", price: 0.05, category: "Dia das Mães", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/rrerereerer.png", isMotherDayPromo: true },
         { id: "p1", name: "Marmita Executiva Frango Parmegiana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805317455_Marmita_Executiva_Frango_Parmegiana.png", isOffer: true, popular: true },
         { id: "p2", name: "Subline de Carne", weight: "Disco de carne Friboi fatiado, Pepino, Cebola, Tomate, Pepino, Alface, Repolho, Queijo, Molho especial", price: 17.90, oldPrice: 21.12, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806259695_0000000000000000000000000000s.png", isOffer: true, popular: true },
         { id: "p3", name: "BIG Cheddar Cremoso", weight: "1 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa, queijo, molho especial", price: 16.90, oldPrice: 21.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805607723_0-00-0-ewew.png", isOffer: true, isMegaPromo: true, popular: true },
@@ -2165,7 +2165,10 @@ const catalogData = [
         { id: "p47", name: "Guaraná Jesus Lata", weight: "Refrigerante Guaraná Jesus Lata 260ml", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805961184_0000jesu.png" },
         { id: "p48", name: "Heineken Vidro", weight: "Heineken Vidro 250ML", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805987750_ssdds.png" },
         { id: "p49", name: "Coca-Cola 1L Tradicional", weight: "1 L Refrigerante Coca-Cola Litro", price: 13.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806012542_xc.png" },
-        { id: "p50", name: "Agua Mineral", weight: "Garrafa de agua de 500 ML Mineral", price: 3.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806034299_---001.png" }
+        { id: "p50", name: "Agua Mineral", weight: "Garrafa de agua de 500 ML Mineral", price: 3.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806034299_---001.png" },
+        { id: "p51", name: "Executivo Presidencial de Picanha Bovina", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho", price: 26.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(2).png" },
+        { id: "p52", name: "Churrasco Misto Exc de Carne, Toscana e Frango", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(3).png" },
+        { id: "p53", name: "Churrasco Exc de Carne e Toscana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(1).png" }
     ];
 
     const catalogCategories = [
@@ -2201,17 +2204,42 @@ const catalogData = [
 
     const loadEssentialData = () => {
         renderHomeCategories();
-        renderProducts();
-        // Catalog flag imediata pois os dados já estão hardcoded
-        window.logPerf('catalog');
+        
+        // Primeiro carregamento sincronizado com o Banco de Dados para detectar Esgotados
+        get(ref(db, 'products')).then((snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const soldOutMap = {};
+                Object.values(data).forEach(item => { 
+                    if(item.isSoldOut) soldOutMap[item.name] = true; 
+                });
+                allProducts.forEach(p => {
+                    p.isSoldOut = !!soldOutMap[p.name];
+                });
+            }
+            renderProducts();
+            window.logPerf('catalog');
+        });
 
-        // Escuta em segundo plano apenas para atualizar disponibilidade
+        // Mantém a escuta em tempo real para mudanças futuras
         onValue(ref(db, 'products'), (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 const soldOutMap = {};
-                Object.values(data).forEach(item => { if(item.isSoldOut) soldOutMap[item.name] = true; });
-                allProducts.forEach(p => { p.isSoldOut = !!soldOutMap[p.name]; });
+                Object.values(data).forEach(item => { 
+                    if(item.isSoldOut) soldOutMap[item.name] = true; 
+                });
+                allProducts.forEach(p => {
+                    p.isSoldOut = !!soldOutMap[p.name];
+                });
+                
+                const activeCat = document.querySelector('.cat-item.active-cat');
+                if (activeCat && activeCat.id !== 'cat-all') {
+                    const catName = activeCat.getAttribute('data-catname');
+                    products = allProducts.filter(p => p.category === catName);
+                } else {
+                    products = [...allProducts];
+                }
                 renderProducts();
             }
         });
@@ -2931,25 +2959,7 @@ const catalogData = [
         renderOrderHistory();
     }
 
-    onValue(ref(db, 'products'), (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            allProducts.forEach(p => {
-                const dbItem = Object.values(data).find(item => item.name === p.name);
-                if (dbItem) {
-                    p.isSoldOut = dbItem.isSoldOut || false;
-                }
-            });
-            const activeCat = document.querySelector('.cat-item.active-cat');
-            if (activeCat && activeCat.id !== 'cat-all') {
-                const catName = activeCat.getAttribute('data-catname');
-                products = allProducts.filter(p => p.category === catName);
-            } else {
-                products = [...allProducts];
-            }
-            renderProducts();
-        }
-    });
+    
 
 const brindeImages = [
     "https://bretas.vtexassets.com/arquivos/ids/202606/65730c75dddb07d995cdb46b.jpg?v=638376354488570000",
