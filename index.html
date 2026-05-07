@@ -2254,6 +2254,7 @@ const catalogData = [
                 } else {
                     products = [...allProducts];
                 }
+                renderHomeCategories();
                 renderProducts();
             }
         });
@@ -2953,7 +2954,17 @@ const catalogData = [
     const catRef = ref(db, 'categories');
     onValue(catRef, (snapshot) => {
         const data = snapshot.val();
-        categories = data ? Object.entries(data).map(([key, value]) => ({ key, ...value })) : [];
+        let dbCategories = data ? Object.entries(data).map(([key, value]) => ({ key, ...value })) : [];
+        
+        // Garante que a categoria Dia das Mães esteja na lista se houver produtos ativos nela
+        const hasMotherDayItems = allProducts.some(p => p.category === "Dia das Mães");
+        const motherDayInList = dbCategories.some(c => c.name === "Dia das Mães");
+
+        if (hasMotherDayItems && !motherDayInList) {
+            dbCategories.unshift({ key: "c_mother", name: "Dia das Mães", icon: "fa-solid fa-heart", order: -1 });
+        }
+        
+        categories = dbCategories;
         renderHomeCategories();
     });
 
