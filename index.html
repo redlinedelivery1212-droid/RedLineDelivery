@@ -1079,7 +1079,6 @@
 
 <!-- SPLASH SCREEN -->
 <div id="splash-screen">
-    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/logo.jpeg" class="splash-logo">
 </div>
 <div id="onboarding" class="onboarding-overlay" style="display: none;">
     <div id="step-1" class="onboarding-step active">
@@ -1846,7 +1845,7 @@
             setTimeout(() => {
                 splash.style.display = 'none';
             }, 800);
-        }, 1200);
+        }, 300);
     });
 
     const perfMetrics = {
@@ -2584,16 +2583,26 @@ let userActiveOrderData = null;
     });
 
     onValue(ref(db, 'settings/mother_day_banner'), (snap) => {
-        const data = snap.val();
-        const container = document.getElementById('mother-day-banner-container');
-        if(container) {
-            if(data && data.active && data.img) {
-                container.innerHTML = `<div class="mother-day-promo-banner"><img src="${data.img}"></div>`;
-            } else {
-                container.innerHTML = "";
+            const data = snap.val();
+            const container = document.getElementById('mother-day-banner-container');
+            if(container) {
+                if(data && data.active && data.img) {
+                    container.innerHTML = `<div class="mother-day-promo-banner"><img src="${data.img}"></div>`;
+                } else {
+                    container.innerHTML = "";
+                }
             }
-        }
-    });
+        });
+
+        onValue(ref(db, 'settings/coca_promo_active'), (snap) => {
+            const isActive = snap.val() || false;
+            if (!isActive) {
+                allProducts = catalogData.filter(p => p.id !== 'p_mae');
+            } else {
+                allProducts = [...catalogData];
+            }
+            renderProducts();
+        });
 
     let currentSlide = 0;
     let startX = 0;
