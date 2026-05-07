@@ -2203,36 +2203,50 @@ const catalogData = [
     }
 
     const loadEssentialData = () => {
-        renderHomeCategories();
-        
-        // Primeiro carregamento sincronizado com o Banco de Dados para detectar Esgotados
-        get(ref(db, 'products')).then((snapshot) => {
-            const data = snapshot.val();
-            if (data) {
+        // Escuta a promoção do Dia das Mães primeiro para saber o que exibir
+        onValue(ref(db, 'settings/coca_promo_active'), (promoSnap) => {
+            const isPromoActive = promoSnap.val() || false;
+
+            // Define a lista base baseada na promoção
+            const baseList = isPromoActive 
+                ? [...catalogData] 
+                : catalogData.filter(p => !p.isMotherDayPromo);
+
+            // Sincroniza o status de ESGOTADO com o Banco de Dados
+            get(ref(db, 'products')).then((prodSnap) => {
+                const dbData = prodSnap.val();
                 const soldOutMap = {};
-                Object.values(data).forEach(item => { 
-                    if(item.isSoldOut) soldOutMap[item.name] = true; 
-                });
-                allProducts.forEach(p => {
-                    p.isSoldOut = !!soldOutMap[p.name];
-                });
-            }
-            renderProducts();
-            window.logPerf('catalog');
+                if (dbData) {
+                    Object.values(dbData).forEach(item => { 
+                        if(item.isSoldOut) soldOutMap[item.name] = true; 
+                    });
+                }
+
+                // Atualiza a variável global allProducts
+                allProducts = baseList.map(p => ({
+                    ...p,
+                    isSoldOut: !!soldOutMap[p.name]
+                }));
+
+                renderHomeCategories();
+                renderProducts();
+                window.logPerf('catalog');
+            });
         });
 
-        // Mantém a escuta em tempo real para mudanças futuras
+        // Mantém a escuta em tempo real para mudanças de estoque (Esgotado)
         onValue(ref(db, 'products'), (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
+            const dbData = snapshot.val();
+            if (dbData) {
                 const soldOutMap = {};
-                Object.values(data).forEach(item => { 
+                Object.values(dbData).forEach(item => { 
                     if(item.isSoldOut) soldOutMap[item.name] = true; 
                 });
+                
                 allProducts.forEach(p => {
                     p.isSoldOut = !!soldOutMap[p.name];
                 });
-                
+
                 const activeCat = document.querySelector('.cat-item.active-cat');
                 if (activeCat && activeCat.id !== 'cat-all') {
                     const catName = activeCat.getAttribute('data-catname');
@@ -2624,15 +2638,7 @@ const catalogData = [
             }
         });
 
-        onValue(ref(db, 'settings/coca_promo_active'), (snap) => {
-            const isActive = snap.val() || false;
-            if (!isActive) {
-                allProducts = catalogData.filter(p => !p.isMotherDayPromo);
-            } else {
-                allProducts = [...catalogData];
-            }
-            renderProducts();
-        });
+        
 
     let currentSlide = 0;
     let startX = 0;
@@ -3193,7 +3199,14 @@ function renderFakeReviews() {
         container.appendChild(allBtn);
 
         const sortedCats = [...categories].sort((a, b) => (a.order || 0) - (b.order || 0));
+        
+        // Verifica se existem produtos da categoria "Dia das Mães" na lista atual para mostrar o botão
+        const hasMotherDayItems = allProducts.some(p => p.category === "Dia das Mães");
+
         sortedCats.forEach(cat => {
+            // Se for a categoria de Dia das Mães e não houver produtos ativos nela, ignora
+            if (cat.name === "Dia das Mães" && !hasMotherDayItems) return;
+
             const div = document.createElement('div');
             div.className = 'cat-item';
             div.setAttribute('data-catname', cat.name);
