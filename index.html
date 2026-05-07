@@ -22,6 +22,177 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #DB2125;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 30000;
+            overflow: hidden;
+            transition: transform 0.8s cubic-bezier(0.86, 0, 0.07, 1), opacity 0.5s;
+        }
+
+        .splash-logo {
+            width: 180px;
+            height: 180px;
+            object-fit: contain;
+            animation: fluidBounce 2s infinite ease-in-out;
+        }
+
+        .splash-content {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .svg-logo {
+            width: 120px;
+            height: 120px;
+            filter: drop-shadow(0 8px 15px rgba(0,0,0,0.15));
+        }
+
+        .logo-path {
+            fill: none;
+            stroke: white;
+            stroke-width: 14;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dashoffset: 0;
+        }
+
+        .utensil-part {
+            fill: white;
+            opacity: 1;
+        }
+
+        
+
+        .splash-bounce {
+            animation: fluidBounce 2s infinite ease-in-out;
+        }
+
+        @keyframes drawLine {
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+
+        @keyframes fadeInIcon {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fluidBounce {
+            0%, 100% { transform: scale(1) translateY(0); }
+            50% { transform: scale(1.05) translateY(-10px); }
+        }
+
+        .splash-exit {
+            transform: translateY(-100%) !important;
+            pointer-events: none;
+        }
+
+        /* Splash Screen Styles */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary-orange);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 30000;
+            overflow: hidden;
+            transition: transform 0.8s cubic-bezier(0.86, 0, 0.07, 1), opacity 0.5s;
+        }
+
+        .splash-content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .splash-text {
+            color: white;
+            font-size: 24px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0;
+            animation: fadeInIcon 0.8s ease-out forwards;
+            animation-delay: 1.8s;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .svg-logo {
+            width: 150px;
+            height: 150px;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
+        }
+
+        .logo-path {
+            fill: none;
+            stroke: white;
+            stroke-width: 12;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 2s ease-in-out forwards;
+        }
+
+        .fork-head, .knife-head {
+            fill: white;
+            opacity: 0;
+            animation: fadeInIcon 0.5s ease-out forwards;
+        }
+
+        .fork-head { animation-delay: 0.2s; }
+        .knife-head { animation-delay: 1.4s; }
+
+        .splash-bounce {
+            animation: fluidBounce 2s infinite ease-in-out;
+        }
+
+        @keyframes drawLine {
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+
+        @keyframes fadeInIcon {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fluidBounce {
+            0%, 100% { transform: scale(1) translateY(0); }
+            50% { transform: scale(1.05) translateY(-10px); }
+        }
+
+        .splash-exit {
+            transform: translateY(-100%) !important;
+            pointer-events: none;
+        }
+            --bg-light: #f8f9fa;
+            --text-dark: #333;
+            --text-gray: #888;
+            --white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
         body { background-color: #e0e0e0; display: flex; justify-content: center; }
 
         .app-container {
@@ -98,6 +269,19 @@
         }
         .promo-banner > * { position: relative; z-index: 2; }
         .promo-indicators { position: absolute; bottom: 10px; left: 20px; display: flex; gap: 5px; z-index: 20; }
+
+        .mother-day-promo-banner {
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.2);
+            animation: fadeIn 0.5s ease-out;
+        }
+        .mother-day-promo-banner img {
+            width: 100%;
+            display: block;
+        }
         .indicator-bar { width: 12px; height: 3px; background: rgba(255,255,255,0.3); border-radius: 10px; transition: 0.3s; }
         .indicator-bar.active { background: white; width: 22px; }
         .promo-banner img { 
@@ -356,6 +540,29 @@
         display: flex;
         align-items: center;
         gap: 4px;
+    }
+    .mother-day-tag {
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        background: #FF69B4;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 8px;
+        font-weight: 900;
+        z-index: 10;
+        text-transform: uppercase;
+        pointer-events: none;
+        width: fit-content;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        box-shadow: 0 2px 5px rgba(255, 105, 180, 0.3);
+    }
+    .mother-day-card {
+        border: 2px solid #FF69B4 !important;
+        box-shadow: 0 0 12px rgba(255, 105, 180, 0.25) !important;
     }
     .fire-container {
         position: relative;
@@ -870,11 +1077,10 @@
 </head>
 <body>
 
-
-
-
-
-<!-- ONBOARDING -->
+<!-- SPLASH SCREEN -->
+<div id="splash-screen">
+    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/logo.jpeg" class="splash-logo">
+</div>
 <div id="onboarding" class="onboarding-overlay" style="display: none;">
     <div id="step-1" class="onboarding-step active">
         <h2>Bem-vindo(a)!</h2>
@@ -1107,6 +1313,7 @@
 
     <section id="home-screen" class="screen active">
         <div id="active-order-banner"></div>
+        <div id="mother-day-banner-container"></div>
         <div class="header-home">
             <p class="greeting">Olá, Cliente!</p>
             <h2 style="margin: 5px 0; display: flex; align-items: center; flex-wrap: wrap; gap: 5px;">
@@ -1631,6 +1838,17 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    // Splash Screen Logic
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            splash.classList.add('splash-exit');
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 800);
+        }, 1200);
+    });
+
     const perfMetrics = {
         start: performance.now(),
         dataPoints: { catalog: false, profile: false, xp: false }
@@ -1669,8 +1887,9 @@
     }, { onlyOnce: true });
 
     const catalogData = [
+        { id: "p_mae", name: "Coca-Cola Lata", weight: "320ml", price: 0.05, category: "Dia das Mães", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805908258_Coca-Cola_Lata.png", isMotherDayPromo: true },
         { id: "p1", name: "Marmita Executiva Frango Parmegiana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805317455_Marmita_Executiva_Frango_Parmegiana.png", isOffer: true, popular: true },
-        { id: "p2", name: "Subline de Carne", weight: "Disco de carne Friboi fatiado, Pepino, Cebola, Tomate, Pepino, Alface, Repolho, Queijo, Molho especial", price: 16.90, oldPrice: 21.12, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806259695_0000000000000000000000000000s.png", isOffer: true, isMegaPromo: true, popular: true },
+        { id: "p2", name: "Subline de Carne", weight: "Disco de carne Friboi fatiado, Pepino, Cebola, Tomate, Pepino, Alface, Repolho, Queijo, Molho especial", price: 17.90, oldPrice: 21.12, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806259695_0000000000000000000000000000s.png", isOffer: true },
         { id: "p3", name: "BIG Cheddar Cremoso", weight: "1 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa, queijo, molho especial", price: 16.90, oldPrice: 21.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805607723_0-00-0-ewew.png", isOffer: true, isMegaPromo: true, popular: true },
         { id: "p4", name: "Camarão Internacional", weight: "Risoto cremoso recheado com camarão, milho, ervilha, calabresa, arroz, batata palha, cheiro verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805413051_ewweew.png", isOffer: true, popular: true },
         { id: "p5", name: "BIG Salada X", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805562776_BIG_Salada_X.png" },
@@ -1684,7 +1903,7 @@
         { id: "p13", name: "BIG Cheddar Duplo", weight: "2 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa", price: 23.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805783011_BIG_Cheddar_Duplo.png" },
         { id: "p14", name: "BIG Bacon Triplo", weight: "3 disco de carne Friboi tradicional, Bacon, alface, cebola, tomate, pepino, calabresa, molho especial", price: 24.90, oldPrice: 31.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805850515_download.png", isOffer: true },
         { id: "p15", name: "BIG Tudo", weight: "2 disco de carne Friboi tradicional, Bacon, alface, cebola, tomate, pepino, calabresa, salsicha, cheddar, ovo, batata palha", price: 28.90, oldPrice: 36.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805887048_BIG_Tudo.png", isOffer: true },
-        { id: "p16", name: "Subline de Frango", weight: "Steak de frango perdigão fatiado, Cebola, Tomate, Alface, Repolho, Queijo, Molho especial", price: 17.90, oldPrice: 22.37, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806282305_dsds.png", isOffer: true },
+        { id: "p16", name: "Subline de Frango", weight: "Steak de frango perdigão fatiado, Cebola, Tomate, Alface, Repolho, Queijo, Molho especial", price: 17.90, oldPrice: 22.37, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806282305_dsds.png", isOffer: true, popular: true },
         { id: "p17", name: "Subline de Bacon Carne e Cheddar", weight: "Disco de carne Friboi fatiado, Cebola, Tomate, Alface, Pepino, Repolho, Queijo, Molho especial", price: 18.90, oldPrice: 23.62, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806300866_0000000000000000000sub.png", isOffer: true },
         { id: "p18", name: "Marmita Executiva Frango", weight: "Frango grelhado acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805336813_Marmita_Executiva_Frango.png" },
         { id: "p19", name: "Marmita Executiva de Salmão empanado", weight: "Salmão empanado grelhado acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/------21.png", isOffer: true },
@@ -1712,7 +1931,7 @@
         { id: "p41", name: "Macarronada Carne moída", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão Penne", price: 19.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806183506_eewwe.png" },
         { id: "p42", name: "Macarronada Turbo", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão Penne, calabresa, bacon", price: 24.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806203876_weew.png" },
         { id: "p43", name: "Macarronada Cheddar Queijos", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão fetuchine, queijo Cheddar", price: 24.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806222968_ewe.png" },
-        { id: "p44", name: "Coca-Cola Lata", weight: "220ml Refrigerante Coca-Cola Lata", price: 5.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805908258_Coca-Cola_Lata.png" },
+        { id: "p44", name: "Coca-Cola Lata", weight: "320ml Refrigerante Coca-Cola Lata", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805908258_Coca-Cola_Lata.png" },
         { id: "p45", name: "Guaraná Lata", weight: "320ml Refrigerante Guaraná Lata", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805921732_0000latagua.png" },
         { id: "p46", name: "Guaraná 1L", weight: "1L Refrigerante Guaraná Litro", price: 12.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805945732_ew.png" },
         { id: "p47", name: "Guaraná Jesus Lata", weight: "Refrigerante Guaraná Jesus Lata 260ml", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805961184_0000jesu.png" },
@@ -1725,6 +1944,7 @@
     ];
 
     const catalogCategories = [
+        { key: "c0", name: "Dia das Mães", icon: "fa-solid fa-heart", order: 0 },
         { key: "c1", name: "Hambúrguer ", icon: "fa-solid fa-burger", order: 1 },
         { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
         { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 3 },
@@ -1894,8 +2114,9 @@ let userActiveOrderData = null;
 
     // Carregamento ultrarápido: Apenas o status da loja e produtos primeiro
     const catalogData = [
+        { id: "p_mae", name: "Coca-Cola Lata", weight: "320ml", price: 0.05, category: "Dia das Mães", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805908258_Coca-Cola_Lata.png", isMotherDayPromo: true },
         { id: "p1", name: "Marmita Executiva Frango Parmegiana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805317455_Marmita_Executiva_Frango_Parmegiana.png", isOffer: true, popular: true },
-        { id: "p2", name: "Subline de Carne", weight: "Disco de carne Friboi fatiado, Pepino, Cebola, Tomate, Pepino, Alface, Repolho, Queijo, Molho especial", price: 16.90, oldPrice: 21.12, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806259695_0000000000000000000000000000s.png", isOffer: true, isMegaPromo: true, popular: true },
+        { id: "p2", name: "Subline de Carne", weight: "Disco de carne Friboi fatiado, Pepino, Cebola, Tomate, Pepino, Alface, Repolho, Queijo, Molho especial", price: 17.90, oldPrice: 21.12, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806259695_0000000000000000000000000000s.png", isOffer: true, popular: true },
         { id: "p3", name: "BIG Cheddar Cremoso", weight: "1 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa, queijo, molho especial", price: 16.90, oldPrice: 21.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805607723_0-00-0-ewew.png", isOffer: true, isMegaPromo: true, popular: true },
         { id: "p4", name: "Camarão Internacional", weight: "Risoto cremoso recheado com camarão, milho, ervilha, calabresa, arroz, batata palha, cheiro verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805413051_ewweew.png", isOffer: true, popular: true },
         { id: "p5", name: "BIG Salada X", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805562776_BIG_Salada_X.png" },
@@ -1937,7 +2158,7 @@ let userActiveOrderData = null;
         { id: "p41", name: "Macarronada Carne moída", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão Penne", price: 19.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806183506_eewwe.png" },
         { id: "p42", name: "Macarronada Turbo", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão Penne, calabresa, bacon", price: 24.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806203876_weew.png" },
         { id: "p43", name: "Macarronada Cheddar Queijos", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão fetuchine, queijo Cheddar", price: 24.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806222968_ewe.png" },
-        { id: "p44", name: "Coca-Cola Lata", weight: "220ml Refrigerante Coca-Cola Lata", price: 5.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805908258_Coca-Cola_Lata.png" },
+        { id: "p44", name: "Coca-Cola Lata", weight: "320ml Refrigerante Coca-Cola Lata", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805908258_Coca-Cola_Lata.png" },
         { id: "p45", name: "Guaraná Lata", weight: "320ml Refrigerante Guaraná Lata", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805921732_0000latagua.png" },
         { id: "p46", name: "Guaraná 1L", weight: "1L Refrigerante Guaraná Litro", price: 12.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805945732_ew.png" },
         { id: "p47", name: "Guaraná Jesus Lata", weight: "Refrigerante Guaraná Jesus Lata 260ml", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805961184_0000jesu.png" },
@@ -1947,6 +2168,7 @@ let userActiveOrderData = null;
     ];
 
     const catalogCategories = [
+        { key: "c0", name: "Dia das Mães", icon: "fa-solid fa-heart", order: 0 },
         { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 1 },
         { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
         { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 3 },
@@ -2361,48 +2583,85 @@ let userActiveOrderData = null;
         checkMarmitaPromo();
     });
 
+    onValue(ref(db, 'settings/mother_day_banner'), (snap) => {
+        const data = snap.val();
+        const container = document.getElementById('mother-day-banner-container');
+        if(container) {
+            if(data && data.active && data.img) {
+                container.innerHTML = `<div class="mother-day-promo-banner"><img src="${data.img}"></div>`;
+            } else {
+                container.innerHTML = "";
+            }
+        }
+    });
+
     let currentSlide = 0;
-    let touchStartX = 0;
-    let touchEndX = 0;
+    let startX = 0;
+    let slideInterval;
 
     const updateSlider = () => {
         const wrapper = document.getElementById('promo-wrapper');
         if(wrapper) wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
-        const ind0 = document.getElementById('ind-0');
-        const ind1 = document.getElementById('ind-1');
-        const ind2 = document.getElementById('ind-2');
-        if(ind0 && ind1 && ind2) {
-            ind0.classList.toggle('active', currentSlide === 0);
-            ind1.classList.toggle('active', currentSlide === 1);
-            ind2.classList.toggle('active', currentSlide === 2);
-        }
+        
+        const indicators = [
+            document.getElementById('ind-0'),
+            document.getElementById('ind-1'),
+            document.getElementById('ind-2')
+        ];
+        
+        indicators.forEach((ind, idx) => {
+            if(ind) ind.classList.toggle('active', idx === currentSlide);
+        });
     };
 
-    let slideInterval = setInterval(() => {
-        currentSlide = (currentSlide + 1) % 3;
-        updateSlider();
-    }, 5000);
+    const startAutoSlide = () => {
+        stopAutoSlide();
+        slideInterval = setInterval(() => {
+            currentSlide = (currentSlide + 1) % 3;
+            updateSlider();
+        }, 5000);
+    };
+
+    const stopAutoSlide = () => clearInterval(slideInterval);
 
     const sliderContainer = document.querySelector('.promo-slider-container');
     if(sliderContainer) {
-        sliderContainer.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, {passive: true});
+        sliderContainer.style.cursor = "grab";
 
-        sliderContainer.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            if (touchStartX - touchEndX > 50) {
-                currentSlide = 1;
+        const handleStart = (clientX) => {
+            stopAutoSlide();
+            startX = clientX;
+            sliderContainer.style.cursor = "grabbing";
+        };
+
+        const handleEnd = (clientX) => {
+            const diff = startX - clientX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    currentSlide = (currentSlide + 1) % 3;
+                } else {
+                    currentSlide = (currentSlide - 1 + 3) % 3;
+                }
                 updateSlider();
-                clearInterval(slideInterval);
             }
-            if (touchEndX - touchStartX > 50) {
-                currentSlide = 0;
-                updateSlider();
-                clearInterval(slideInterval);
-            }
-        }, {passive: true});
+            sliderContainer.style.cursor = "grab";
+            startAutoSlide();
+        };
+
+        sliderContainer.addEventListener('mousedown', (e) => handleStart(e.clientX));
+        window.addEventListener('mouseup', (e) => {
+            if(sliderContainer.style.cursor === "grabbing") handleEnd(e.clientX);
+        });
+
+        sliderContainer.addEventListener('touchstart', (e) => handleStart(e.touches[0].clientX), {passive: true});
+        sliderContainer.addEventListener('touchend', (e) => handleEnd(e.changedTouches[0].clientX), {passive: true});
+
+        sliderContainer.addEventListener('mouseenter', stopAutoSlide);
+        sliderContainer.addEventListener('mouseleave', () => {
+            if(sliderContainer.style.cursor !== "grabbing") startAutoSlide();
+        });
     }
+    startAutoSlide();
 
     onValue(ref(db, 'settings/brindes_extras'), (snapshot) => {
         const container = document.getElementById('brindes-container');
@@ -3016,7 +3275,21 @@ function renderFakeReviews() {
             popularItems.forEach(p => listFragment.appendChild(createProductCard(p)));
 
             const sortedCats = [...categories].sort((a, b) => (a.order || 0) - (b.order || 0));
-            
+
+            const motherDayCat = sortedCats.find(c => c.name.trim().toLowerCase() === 'dia das mães');
+            if (motherDayCat) {
+                const motherDayProducts = sortedAllProducts.filter(p => p.category.trim() === 'Dia das Mães');
+                if (motherDayProducts.length > 0) {
+                    const sectionTitle = document.createElement('div');
+                    sectionTitle.className = 'section-title';
+                    sectionTitle.style.gridColumn = "1 / -1";
+                    sectionTitle.style.marginTop = "20px";
+                    sectionTitle.innerHTML = `<h3>${motherDayCat.name}</h3><span style="color: var(--text-gray); font-size: 12px;">Ver todos ></span>`;
+                    listFragment.appendChild(sectionTitle);
+                    motherDayProducts.forEach(p => listFragment.appendChild(createProductCard(p)));
+                }
+            }
+
             const burgerCat = sortedCats.find(c => c.name.trim().toLowerCase() === 'hambúrguer');
             if (burgerCat) {
                 const burgerProducts = sortedAllProducts.filter(p => p.category.trim() === 'Hambúrguer');
@@ -3032,7 +3305,7 @@ function renderFakeReviews() {
             }
 
             sortedCats.forEach(cat => {
-                if (cat.name.trim().toLowerCase() === 'hambúrguer') return;
+                if (cat.name.trim().toLowerCase() === 'hambúrguer' || cat.name.trim().toLowerCase() === 'dia das mães') return;
                 
                 const catProducts = sortedAllProducts.filter(p => p.category.trim() === cat.name.trim());
                 if (catProducts.length > 0) {
@@ -3154,6 +3427,7 @@ function renderFakeReviews() {
         const card = document.createElement('div');
         let cardClass = p.isSoldOut ? 'product-card esgotado' : 'product-card';
         if (p.isMegaPromo && !p.isSoldOut) cardClass += ' mega-promo-card';
+        if (p.isMotherDayPromo && !p.isSoldOut) cardClass += ' mother-day-card';
         card.className = cardClass;
         
         const originalPrice = (p.price / 0.8).toFixed(2).replace('.', ',');
@@ -3169,6 +3443,7 @@ function renderFakeReviews() {
         card.innerHTML = `
             ${p.isSoldOut ? '<div class="esgotado-label">ESGOTADO VOLTA AMANHÃ</div>' : ''}
             ${p.isMegaPromo && !p.isSoldOut ? `<div class="mega-promo-tag"><div class="fire-container"><i class="fa-solid fa-fire"></i><span class="percent">%</span></div>MEGA PROMO</div>` : ''}
+            ${p.isMotherDayPromo && !p.isSoldOut ? `<div class="mother-day-tag"><i class="fa-solid fa-heart"></i> DIA DAS MÃES</div>` : ''}
             <img src="${getThumb(p.img)}" alt="${p.name}" class="product-img-click" loading="lazy" onload="this.classList.add('img-loaded')" onerror="this.src='https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg'">
             <p class="p-name">${p.name}</p>
             <p class="p-weight">${p.weight}</p>
@@ -3380,6 +3655,13 @@ window.addBagToCart = (key) => {
     };
 
     window.addToCart = function(id) {
+        if (id === 'p_mae') {
+            const exists = cart.find(c => c.id === 'p_mae');
+            if (exists) {
+                alert("Limite de 1 unidade para este item promocional.");
+                return;
+            }
+        }
         const item = allProducts.find(p => p.id === id);
         if (item.isCombo) {
             onValue(ref(db, 'settings/combo_drinks'), (snap) => {
@@ -3678,6 +3960,10 @@ window.addBagToCart = (key) => {
     const item = cart.find(c => c.id === id);
     if(item) {
         if (item.isPromo) return;
+        if (id === 'p_mae' && delta > 0) {
+            alert("Limite de 1 unidade para este item promocional.");
+            return;
+        }
         item.qty += delta;
         if(item.qty <= 0) {
             removeItem(id);
