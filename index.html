@@ -1886,7 +1886,8 @@
     }, { onlyOnce: true });
 
     const catalogData = [
-        { id: "p_mae", name: "Coca-Cola Lata", weight: "320ml", price: 0.05, category: "Dia das Mães", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805908258_Coca-Cola_Lata.png", isMotherDayPromo: true },
+        { id: "p_jesus_promo", name: "Guaraná Jesus Lata", weight: "250ml", price: 0.05, category: "Dia das Mães", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/ereerer.png", isMotherDayPromo: true },
+        { id: "p_guarana_promo", name: "Guaraná Antarctica Lata", weight: "250ml", price: 0.05, category: "Dia das Mães", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/rrerereerer.png", isMotherDayPromo: true },
         { id: "p1", name: "Marmita Executiva Frango Parmegiana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805317455_Marmita_Executiva_Frango_Parmegiana.png", isOffer: true, popular: true },
         { id: "p2", name: "Subline de Carne", weight: "Disco de carne Friboi fatiado, Pepino, Cebola, Tomate, Pepino, Alface, Repolho, Queijo, Molho especial", price: 17.90, oldPrice: 21.12, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806259695_0000000000000000000000000000s.png", isOffer: true },
         { id: "p3", name: "BIG Cheddar Cremoso", weight: "1 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa, queijo, molho especial", price: 16.90, oldPrice: 21.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805607723_0-00-0-ewew.png", isOffer: true, isMegaPromo: true, popular: true },
@@ -2112,8 +2113,9 @@ let userActiveOrderData = null;
     let hasCheckedInitialOrder = false;
 
     // Carregamento ultrarápido: Apenas o status da loja e produtos primeiro
-    const catalogData = [
-        { id: "p_mae", name: "Coca-Cola Lata", weight: "320ml", price: 0.05, category: "Dia das Mães", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805908258_Coca-Cola_Lata.png", isMotherDayPromo: true },
+const catalogData = [
+{ id: "p_jesus_promo", name: "Guaraná Jesus Garrafinha", weight: "250ml", price: 0.05, category: "Dia das Mães", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/ereerer.png", isMotherDayPromo: true },
+{ id: "p_guarana_promo", name: "Sprite Garrafinha", weight: "250ml", price: 0.05, category: "Dia das Mães", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/rrerereerer.png", isMotherDayPromo: true },
         { id: "p1", name: "Marmita Executiva Frango Parmegiana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805317455_Marmita_Executiva_Frango_Parmegiana.png", isOffer: true, popular: true },
         { id: "p2", name: "Subline de Carne", weight: "Disco de carne Friboi fatiado, Pepino, Cebola, Tomate, Pepino, Alface, Repolho, Queijo, Molho especial", price: 17.90, oldPrice: 21.12, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806259695_0000000000000000000000000000s.png", isOffer: true, popular: true },
         { id: "p3", name: "BIG Cheddar Cremoso", weight: "1 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa, queijo, molho especial", price: 16.90, oldPrice: 21.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805607723_0-00-0-ewew.png", isOffer: true, isMegaPromo: true, popular: true },
@@ -2597,7 +2599,7 @@ let userActiveOrderData = null;
         onValue(ref(db, 'settings/coca_promo_active'), (snap) => {
             const isActive = snap.val() || false;
             if (!isActive) {
-                allProducts = catalogData.filter(p => p.id !== 'p_mae');
+                allProducts = catalogData.filter(p => !p.isMotherDayPromo);
             } else {
                 allProducts = [...catalogData];
             }
@@ -3441,13 +3443,14 @@ function renderFakeReviews() {
         
         const originalPrice = (p.price / 0.8).toFixed(2).replace('.', ',');
         const currentPrice = p.price.toFixed(2).replace('.', ',');
-        
-        const priceHTML = p.isOffer 
-            ? `<div style="display: flex; flex-direction: column; line-height: 1.1;">
-                <span style="color: #888; text-decoration: line-through; font-size: 10px;">R$ ${originalPrice}</span>
-                <span class="p-price" style="color: var(--primary-orange);">R$ ${currentPrice}</span>
-               </div>`
-            : `<span class="p-price">R$ ${currentPrice}</span>`;
+    const priceColor = p.price === 0.05 ? '#FF69B4' : 'var(--primary-orange)';
+    
+    const priceHTML = p.isOffer 
+    ? `<div style="display: flex; flex-direction: column; line-height: 1.1;">
+        <span style="color: #888; text-decoration: line-through; font-size: 10px;">R$ ${originalPrice}</span>
+        <span class="p-price" style="color: ${p.price === 0.05 ? '#FF69B4' : 'var(--primary-orange)'};">R$ ${currentPrice}</span>
+       </div>`
+    : `<span class="p-price" style="color: ${p.price === 0.05 ? '#FF69B4' : 'inherit'};">R$ ${currentPrice}</span>`;
 
         card.innerHTML = `
             ${p.isSoldOut ? '<div class="esgotado-label">ESGOTADO VOLTA AMANHÃ</div>' : ''}
@@ -3664,14 +3667,14 @@ window.addBagToCart = (key) => {
     };
 
     window.addToCart = function(id) {
-        if (id === 'p_mae') {
-            const exists = cart.find(c => c.id === 'p_mae');
-            if (exists) {
-                alert("Limite de 1 unidade para este item promocional.");
+        const item = allProducts.find(p => p.id === id);
+        if (item.isMotherDayPromo) {
+            const hasPromoInCart = cart.find(c => c.isMotherDayPromo);
+            if (hasPromoInCart) {
+                alert("Atenção! Você já possui um item da promoção no carrinho. Só é permitido 1 item promocional de 0,05 por pedido.");
                 return;
             }
         }
-        const item = allProducts.find(p => p.id === id);
         if (item.isCombo) {
             onValue(ref(db, 'settings/combo_drinks'), (snap) => {
                 const drinksStr = snap.val() || "";
@@ -3969,7 +3972,7 @@ window.addBagToCart = (key) => {
     const item = cart.find(c => c.id === id);
     if(item) {
         if (item.isPromo) return;
-        if (id === 'p_mae' && delta > 0) {
+        if (item.isMotherDayPromo && delta > 0) {
             alert("Limite de 1 unidade para este item promocional.");
             return;
         }
