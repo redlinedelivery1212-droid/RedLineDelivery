@@ -99,6 +99,38 @@
             pointer-events: none;
         }
 
+        /* Marcador de posição atual (Bolinha Azul) */
+        .user-pos-dot {
+            width: 12px;
+            height: 12px;
+            background: #2196F3;
+            border: 2px solid white;
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+        .user-pos-dot::after {
+            content: '';
+            width: 100%;
+            height: 100%;
+            background: #2196F3;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: pulse-blue 2s infinite;
+            z-index: -1;
+        }
+        @keyframes pulse-blue {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(3.5); opacity: 0; }
+        }
+
+        /* Animação suave para o movimento do entregador */
+        .leaflet-marker-icon.smooth-marker {
+            transition: transform 1.5s linear !important;
+        }
+
         /* Splash Screen Styles */
         #splash-screen {
             position: fixed;
@@ -1137,6 +1169,11 @@
         <h3 style="text-align: center; margin-bottom: 10px;">Marcar Local no Mapa</h3>
         <p style="font-size: 11px; color: var(--text-gray); text-align: center; margin-bottom: 10px;">Arraste o mapa para posicionar o alfinete na sua casa</p>
         <div id="map-display" style="flex: 1; width: 100%; border-radius: 15px; border: 2px solid #eee; margin-bottom: 15px; z-index: 1;"></div>
+        
+        <button id="btn-get-current-loc" onclick="getUserCurrentLocation()" style="width: 100%; margin-bottom: 15px; background: #3498db; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; box-shadow: 0 4px 10px rgba(52, 152, 219, 0.2);">
+            <i class="fa-solid fa-location-crosshairs"></i> USAR MINHA LOCALIZAÇÃO ATUAL
+        </button>
+
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <button class="btn-back" onclick="closeMapModal()" style="flex: 1;">Cancelar</button>
             <button class="btn-next" onclick="confirmMapLocation()" style="flex: 2;">Confirmar Local</button>
@@ -1272,12 +1309,39 @@
     <p style="margin-top: 15px; font-weight: bold; color: #555; font-size: 14px;">Processando seu pedido...</p>
 </div>
 
+<div id="modal-order-options" class="modal-overlay" style="z-index: 10000;">
+    <div class="modal-content" style="text-align: center; gap: 15px;">
+        <div style="background: var(--primary-orange); width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; margin: 0 auto; font-size: 24px;">
+            <i class="fa-solid fa-box-open"></i>
+        </div>
+        <h3>Seu Pedido Ativo</h3>
+        <p style="font-size: 14px; color: #666;">Como você deseja acompanhar o andamento do seu pedido agora?</p>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+            <button class="btn-next" onclick="toggleOrderBanner(); document.getElementById('modal-order-options').style.display='none';" style="background: #f8f9fa; color: #333; border: 1px solid #ddd; box-shadow: none;">
+                <i class="fa-solid fa-list-check"></i> Ver Detalhes (Itens e Valor)
+            </button>
+            <button class="btn-next" onclick="trackRealTime()" style="background: var(--primary-orange);">
+                <i class="fa-solid fa-location-crosshairs"></i> Acompanhar Entrega em Tempo Real
+            </button>
+            <button class="btn-back" onclick="document.getElementById('modal-order-options').style.display='none'">Fechar</button>
+        </div>
+    </div>
+</div>
+
 <div class="app-container">
     
-    <section id="tracking-screen" class="screen" style="background: #f8f9fa; padding-bottom: 20px;">
+    <section id="tracking-screen" class="screen" style="background: #f8f9fa; padding: 0; padding-bottom: 20px;">
         <div class="cart-header" style="padding: 20px; background: white; border-bottom: 1px solid #eee;">
             <i class="fa-solid fa-arrow-left" onclick="window.location.hash=''; changeTab('home')"></i>
             <h3 style="flex: 1; text-align: center; margin-right: 30px;">Acompanhar Pedido</h3>
+        </div>
+
+        <div id="live-map-container" style="width: 100%; height: 300px; position: relative; display: none; background: #eee;">
+            <div id="tracking-live-map" style="width: 100%; height: 100%;"></div>
+            <div id="eta-badge" style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); background: white; padding: 10px 20px; border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 1000; display: none; align-items: center; gap: 10px; border: 2px solid var(--primary-orange);">
+                <i class="fa-solid fa-motorcycle" style="color: var(--primary-orange);"></i>
+                <span id="eta-text" style="font-weight: 900; font-size: 13px; color: #333; white-space: nowrap;">Calculando tempo...</span>
+            </div>
         </div>
 
         <div id="tracking-content" style="padding: 20px;">
@@ -1316,6 +1380,10 @@
                 <a href="https://wa.me/559881422644" target="_blank" style="color: #25d366; font-size: 18px; text-decoration: none; margin-left: 5px; display: flex; align-items: center;"><i class="fa-brands fa-whatsapp"></i></a>
             </h2>
             <p class="location">------ <i class="fa-solid fa-chevron-down"></i></p>
+            <button id="btn-status-pedido" onclick="openOrderStatusOptions()" style="display: none; width: 100%; margin-top: 15px; background: white; border: 1px solid #ddd; padding: 10px; border-radius: 12px; font-weight: bold; color: var(--text-dark); align-items: center; justify-content: center; gap: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer;">
+                <i class="fa-solid fa-circle-dot" style="color: #2ecc71; font-size: 10px; animation: pulse 1.5s infinite;"></i>
+                STATUS DO PEDIDO
+            </button>
         </div>
 
 
@@ -1977,6 +2045,7 @@ let userActiveOrderData = null;
 
     let map = null;
     let mapMarker = null;
+    let userPosMarker = null;
 
     window.openMapModal = function(fromCheckout = false) {
         document.getElementById('modal-map').style.display = 'flex';
@@ -1992,7 +2061,7 @@ let userActiveOrderData = null;
         const defaultLng = -45.0811;
 
         if (!map) {
-            map = L.map('map-display').setView([defaultLat, defaultLng], 16);
+            map = L.map('map-display', { zoomControl: false }).setView([defaultLat, defaultLng], 16);
             L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
                 attribution: '© Google',
                 maxZoom: 19
@@ -2013,10 +2082,10 @@ let userActiveOrderData = null;
         } else {
             setTimeout(() => {
                 map.invalidateSize();
-                map.setView([defaultLat, defaultLng], 16);
-                mapMarker.setLatLng([defaultLat, defaultLng]);
             }, 200);
         }
+
+        getUserCurrentLocation(true); 
     };
 
     window.closeMapModal = function() {
@@ -2056,12 +2125,92 @@ let userActiveOrderData = null;
         userProfile.mapLink = `https://www.google.com/maps/search/?api=1&query=${center.lat},${center.lng}`;
         
         localStorage.setItem('userProfile', JSON.stringify(userProfile));
+
+        // Se estiver editando um pedido ativo (seja via banner ou tela de rastreio)
+        if (activeOrderKeyToEdit) {
+            update(ref(db, `orders/${activeOrderKeyToEdit}/cliente`), {
+                lat: center.lat,
+                lng: center.lng,
+                mapLink: userProfile.mapLink
+            });
+            activeOrderKeyToEdit = null; 
+        } else if (userActiveOrderData) {
+            // Caso não tenha a key direta mas tenha o objeto do pedido ativo carregado
+            const ordersRef = ref(db, 'orders');
+            get(ordersRef).then((snap) => {
+                const data = snap.val();
+                const key = Object.keys(data).find(k => data[k].cliente.contato === userProfile.contato && ['pendente', 'pago_confirmado', 'preparando', 'caminho', 'sua_rota'].includes(data[k].status));
+                if (key) {
+                    update(ref(db, `orders/${key}/cliente`), {
+                        lat: center.lat,
+                        lng: center.lng,
+                        mapLink: userProfile.mapLink
+                    });
+                }
+            });
+        }
         
         closeMapModal();
         
         setTimeout(() => {
-            showToast("Localização fixada com sucesso!");
+            showToast("Localização atualizada no pedido!");
         }, 300);
+    };
+
+    window.getUserCurrentLocation = function(isAuto = false) {
+        if (!navigator.geolocation) {
+            if(!isAuto) alert("Seu navegador não suporta geolocalização.");
+            return;
+        }
+
+        const btn = document.getElementById('btn-get-current-loc');
+        const originalHtml = btn ? btn.innerHTML : '';
+        
+        if(!isAuto && btn) {
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Localizando...';
+            btn.disabled = true;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+
+                if (map) {
+                    const blueDotIcon = L.divIcon({
+                        className: 'user-pos-dot',
+                        iconSize: [12, 12],
+                        iconAnchor: [6, 6]
+                    });
+
+                    if (userPosMarker) {
+                        userPosMarker.setLatLng([lat, lng]);
+                    } else {
+                        userPosMarker = L.marker([lat, lng], { icon: blueDotIcon, zIndexOffset: 500 }).addTo(map);
+                    }
+
+                    map.setView([lat, lng], 18);
+                    if(mapMarker) mapMarker.setLatLng([lat, lng]);
+                    
+                    if(!isAuto) showToast("Localização atual detectada!");
+                }
+                
+                if(!isAuto && btn) {
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                }
+            },
+            (error) => {
+                if(!isAuto) {
+                    if(btn) {
+                        btn.innerHTML = originalHtml;
+                        btn.disabled = false;
+                    }
+                    alert("Não foi possível obter sua localização. Verifique se o GPS está ligado.");
+                }
+            },
+            { enableHighAccuracy: true, timeout: 8000 }
+        );
     };
 
     window.handleMapAsk = function(choice) {
@@ -2272,6 +2421,8 @@ const catalogData = [
             
             if(activeOrder) {
                 userActiveOrderData = activeOrder;
+                const statusBtn = document.getElementById('btn-status-pedido');
+                if(statusBtn) statusBtn.style.display = 'flex';
                 if (activeOrder.status === 'pendente' && !hasCheckedInitialOrder && activeOrder.paymentMethod === 'pix') {
                     document.getElementById('pay-total-val').innerText = 'R$ ' + activeOrder.total.toFixed(2).replace('.', ',');
                     changeTab('payment');
@@ -2418,8 +2569,13 @@ const catalogData = [
                                 ` : `
                                     <p style="font-size: 12px; color: #333; margin: 5px 0;">
                                         <i class="fa-solid fa-location-dot" style="width: 15px;"></i> Endereço: <strong>${activeOrder.cliente.rua}, ${activeOrder.cliente.numero}</strong>
-                                        <span onclick="event.stopPropagation(); openAddressModalForOrder('${orderKey}')" style="color: var(--primary-orange); cursor: pointer; margin-left: 10px; font-size: 11px; font-weight: bold; border-bottom: 1px solid var(--primary-orange);">
-                                            <i class="fa-solid fa-pencil"></i> Alterar endereço
+                                        <span style="display: flex; gap: 12px; margin-top: 5px; margin-left: 15px;">
+                                            <span onclick="event.stopPropagation(); openAddressModalForOrder('${orderKey}')" style="color: var(--primary-orange); cursor: pointer; font-size: 11px; font-weight: bold; border-bottom: 1px solid var(--primary-orange);">
+                                                <i class="fa-solid fa-pencil"></i> Editar Texto
+                                            </span>
+                                            <span onclick="event.stopPropagation(); openMapModal(false)" style="color: #3498db; cursor: pointer; font-size: 11px; font-weight: bold; border-bottom: 1px solid #3498db;">
+                                                <i class="fa-solid fa-map-pin"></i> Ajustar no Mapa
+                                            </span>
                                         </span>
                                     </p>
                                 `}
@@ -2459,9 +2615,24 @@ const catalogData = [
             } else {
                 banner.innerHTML = "";
                 userActiveOrderData = null;
+                const statusBtn = document.getElementById('btn-status-pedido');
+                if(statusBtn) statusBtn.style.display = 'none';
             }
             hasCheckedInitialOrder = true;
         });
+    };
+
+    window.openOrderStatusOptions = function() {
+        document.getElementById('modal-order-options').style.display = 'flex';
+    };
+
+    window.trackRealTime = function() {
+        if(!userProfile) return;
+        const cleanPhone = userProfile.contato.replace(/\D/g, '');
+        document.getElementById('modal-order-options').style.display = 'none';
+        window.location.hash = cleanPhone;
+        changeTab('tracking');
+        loadTrackingData(cleanPhone);
     };
 
     window.toggleOrderBanner = function() {
@@ -4118,6 +4289,18 @@ document.getElementById('confirm-sticker').onclick = () => {
     document.getElementById('nav-reviews').onclick = () => changeTab('reviews');
     document.getElementById('nav-profile').onclick = () => changeTab('profile');
 
+    window.contactDriver = function(driverId, clientName) {
+        get(ref(db, `settings/drivers_config/${driverId}`)).then((snap) => {
+            const driverData = snap.val();
+            if (driverData && driverData.phone) {
+                const msg = `Olá, sou ${clientName}! Quero atualizações do meu pedido ou preciso de ajuda com a entrega.`;
+                window.open(`https://wa.me/${driverData.phone}?text=${encodeURIComponent(msg)}`, '_blank');
+            } else {
+                alert("O número do entregador não está disponível no momento.");
+            }
+        });
+    };
+
     window.checkTrackingHash = function() {
         const hash = window.location.hash.substring(1);
         if (hash && hash.length >= 10 && !isNaN(hash.replace(/\D/g, ''))) {
@@ -4127,21 +4310,47 @@ document.getElementById('confirm-sticker').onclick = () => {
         }
     };
 
+    let trackingMap = null;
+    let customerMarker = null;
+    let driverMarker = null;
+    let routeLine = null;
+    let driverPosUnsubscribe = null;
+
     window.loadTrackingData = function(phone) {
         const loader = document.getElementById('tracking-loader');
         const dataContainer = document.getElementById('tracking-data');
+        const mapContainer = document.getElementById('live-map-container');
+        
         loader.style.display = 'block';
         dataContainer.style.display = 'none';
+        mapContainer.style.display = 'none';
 
         const ordersRef = ref(db, 'orders');
         onValue(ordersRef, (snapshot) => {
-            const data = snapshot.val();
-            if (!data) { renderTrackingError(); return; }
+            const trackingSnapshotData = snapshot.val();
+            if (!trackingSnapshotData) { renderTrackingError(); return; }
 
-            const activeOrderEntry = Object.entries(data).find(([k, o]) => o.cliente && o.cliente.contato.replace(/\D/g, '') === phone && (['pendente', 'pago_confirmado', 'preparando', 'caminho', 'sua_rota'].includes(o.status)));
-            const [orderKey, activeOrder] = activeOrderEntry || [null, null];
+            const activeOrderEntryResult = Object.entries(trackingSnapshotData).find(([k, o]) => o.cliente && o.cliente.contato.replace(/\D/g, '') === phone && (['pendente', 'pago_confirmado', 'preparando', 'caminho', 'sua_rota'].includes(o.status)));
+            const [orderKey, activeOrder] = activeOrderEntryResult || [null, null];
 
-            if (!activeOrder) { renderTrackingError(); return; }
+            if (!activeOrder) { 
+                if(driverPosUnsubscribe) driverPosUnsubscribe();
+                renderTrackingError(); 
+                return; 
+            }
+
+            loader.style.display = 'none';
+            dataContainer.style.display = 'block';
+
+            // Lógica do Mapa em Tempo Real
+            if (activeOrder.cliente.lat && activeOrder.cliente.lng && (activeOrder.status === 'caminho' || activeOrder.status === 'sua_rota')) {
+                mapContainer.style.display = 'block';
+                initTrackingMap(activeOrder);
+                startDriverTracking(activeOrder.driverId, activeOrder.cliente, activeOrder.status);
+            } else {
+                mapContainer.style.display = 'none';
+                if(driverPosUnsubscribe) driverPosUnsubscribe();
+            }
 
             loader.style.display = 'none';
             dataContainer.style.display = 'block';
@@ -4250,15 +4459,31 @@ document.getElementById('confirm-sticker').onclick = () => {
 
                 <div style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #eee; margin-bottom: 20px;">
                     <p style="font-size: 11px; color: var(--text-gray); font-weight: bold; text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px dashed #eee; padding-bottom: 8px;">Informações do Pedido</p>
-                    <p style="font-size: 14px; color: #333; margin-bottom: 10px;"><i class="fa-solid fa-credit-card" style="width: 20px; color: var(--primary-orange);"></i> Pagamento: <strong>${payMethodText}</strong></p>
+                    
+                    <p style="font-size: 13px; color: #333; margin-bottom: 8px;"><i class="fa-solid fa-user" style="width: 20px; color: var(--primary-orange);"></i> Cliente: <strong>${activeOrder.cliente.nome}</strong></p>
+                    <p style="font-size: 13px; color: #333; margin-bottom: 8px;"><i class="fa-solid fa-phone" style="width: 20px; color: var(--primary-orange);"></i> Contato: <strong>${activeOrder.cliente.contato}</strong></p>
+                    <p style="font-size: 13px; color: #333; margin-bottom: 12px;"><i class="fa-solid fa-credit-card" style="width: 20px; color: var(--primary-orange);"></i> Pagamento: <strong>${payMethodText}</strong></p>
                     
                     ${activeOrder.deliveryType === 'pickup' ? `
-                        <p style="font-size: 14px; color: #333;"><i class="fa-solid fa-store" style="width: 20px; color: var(--primary-orange);"></i> Local: <strong>Loja Vila Nova</strong></p>
-                        <a href="https://maps.app.goo.gl/TfYr7RXVTg3hz3AF8" target="_blank" style="display: block; width: 100%; background: #3498db; color: white; text-align: center; padding: 12px; border-radius: 10px; text-decoration: none; font-size: 13px; font-weight: bold; margin-top: 15px;"><i class="fa-solid fa-map-location-dot"></i> VER ROTA PARA A LOJA</a>
+                        <div style="border-top: 1px dashed #eee; padding-top: 12px; margin-top: 5px;">
+                            <p style="font-size: 13px; color: #333;"><i class="fa-solid fa-store" style="width: 20px; color: var(--primary-orange);"></i> Retirada: <strong>Loja Vila Nova</strong></p>
+                            <a href="https://maps.app.goo.gl/TfYr7RXVTg3hz3AF8" target="_blank" style="display: block; width: 100%; background: #3498db; color: white; text-align: center; padding: 12px; border-radius: 10px; text-decoration: none; font-size: 13px; font-weight: bold; margin-top: 15px;"><i class="fa-solid fa-map-location-dot"></i> VER ROTA PARA A LOJA</a>
+                        </div>
                     ` : `
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <p style="font-size: 14px; color: #333; flex: 1;"><i class="fa-solid fa-location-dot" style="width: 20px; color: var(--primary-orange);"></i> Entrega em:<br><strong style="margin-left: 20px;">${activeOrder.cliente.rua}, ${activeOrder.cliente.numero}</strong></p>
-                            <span onclick="openAddressModalForOrder('${orderKey}')" style="color: var(--primary-orange); font-size: 12px; font-weight: bold; border-bottom: 1px solid var(--primary-orange); cursor: pointer;"><i class="fa-solid fa-pencil"></i> Editar</span>
+                        <div style="border-top: 1px dashed #eee; padding-top: 12px; margin-top: 5px;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <p style="font-size: 13px; color: #333; flex: 1;"><i class="fa-solid fa-location-dot" style="width: 20px; color: var(--primary-orange);"></i> Entrega em:<br><strong style="margin-left: 20px;">${activeOrder.cliente.rua}, ${activeOrder.cliente.numero}</strong></p>
+                                <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
+                                    <span onclick="openAddressModalForOrder('${orderKey}')" style="color: var(--primary-orange); font-size: 11px; font-weight: bold; border-bottom: 1px solid var(--primary-orange); cursor: pointer;"><i class="fa-solid fa-pencil"></i> Editar</span>
+                                    <span onclick="activeOrderKeyToEdit='${orderKey}'; openMapModal(false)" style="color: #3498db; font-size: 11px; font-weight: bold; border-bottom: 1px solid #3498db; cursor: pointer;"><i class="fa-solid fa-map-pin"></i> Mapa</span>
+                                </div>
+                            </div>
+                            
+                            ${(activeOrder.driverId && activeOrder.driverId !== 'balcao') ? `
+                                <button onclick="contactDriver('${activeOrder.driverId}', '${activeOrder.cliente.nome}')" style="width: 100%; background: #25d366; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2);">
+                                    <i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i> FALAR COM O ENTREGADOR
+                                </button>
+                            ` : ''}
                         </div>
                     `}
                 </div>
@@ -4281,6 +4506,102 @@ document.getElementById('confirm-sticker').onclick = () => {
             `;
         });
     };
+
+    function initTrackingMap(order) {
+        const center = [order.cliente.lat, order.cliente.lng];
+        if (!trackingMap) {
+            trackingMap = L.map('tracking-live-map', { zoomControl: false }).setView(center, 15);
+            L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { attribution: '© Google' }).addTo(trackingMap);
+        } else {
+            trackingMap.setView(center, 15);
+        }
+
+        if (customerMarker) customerMarker.remove();
+        const customerIcon = L.divIcon({
+            html: `<i class="fa-solid fa-house-user" style="color: #333; font-size: 24px; text-shadow: 0 0 10px white;"></i>`,
+            iconSize: [30, 30], iconAnchor: [15, 15], className: ''
+        });
+        customerMarker = L.marker(center, { icon: customerIcon }).addTo(trackingMap);
+    }
+
+    function startDriverTracking(driverId, clientePos, orderStatus) {
+        if (!driverId || driverId === 'balcao') return;
+        if (driverPosUnsubscribe) driverPosUnsubscribe();
+
+        const driverRef = ref(db, `drivers/${driverId}/location`);
+        driverPosUnsubscribe = onValue(driverRef, (snap) => {
+            const loc = snap.val();
+            const etaBadge = document.getElementById('eta-badge');
+            
+            if (loc && loc.lat && loc.lng && !loc.hidden) {
+                const driverPos = [loc.lat, loc.lng];
+                const custPos = [clientePos.lat, clientePos.lng];
+
+                if (!driverMarker) {
+                    const motorIcon = L.divIcon({
+                        html: `<i class="fa-solid fa-motorcycle" style="color: var(--primary-orange); font-size: 28px; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));"></i>`,
+                        iconSize: [30, 30], iconAnchor: [15, 15], 
+                        className: 'smooth-marker' 
+                    });
+                    driverMarker = L.marker(driverPos, { icon: motorIcon }).addTo(trackingMap);
+                } else {
+                    driverMarker.setLatLng(driverPos);
+                }
+
+                fetch(`https://router.project-osrm.org/route/v1/driving/${loc.lng},${loc.lat};${clientePos.lng},${clientePos.lat}?overview=full&geometries=geojson`)
+                    .then(response => response.json())
+                    .then(routeData => {
+                        if (routeData.routes && routeData.routes[0]) {
+                            const coords = routeData.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+                            
+                            if (routeLine) routeLine.remove();
+                            routeLine = L.polyline(coords, { 
+                                color: '#ea1d2c', 
+                                weight: 5, 
+                                opacity: 0.8,
+                                lineJoin: 'round'
+                            }).addTo(trackingMap);
+
+                            const distanceMeters = routeData.routes[0].distance;
+                            const durationSeconds = routeData.routes[0].duration;
+                            const baseTime = Math.round(durationSeconds / 60);
+
+                            let minTime, maxTime, prefix = "";
+
+                            if (orderStatus === 'sua_rota') {
+                                // Rota direta para o cliente
+                                minTime = baseTime + 2;
+                                maxTime = baseTime + 6;
+                                prefix = "CHEGADA EM: ";
+                            } else {
+                                // Status 'caminho' indica que há entregas na frente
+                                minTime = baseTime + 12;
+                                maxTime = baseTime + 20;
+                                prefix = "OUTRAS ENTREGAS: ";
+                            }
+
+                            etaBadge.style.display = 'flex';
+                            if (distanceMeters < 150) {
+                                document.getElementById('eta-text').innerText = "ENTREGADOR CHEGOU!";
+                            } else {
+                                document.getElementById('eta-text').innerText = `${prefix}${minTime} - ${maxTime} MIN`;
+                            }
+
+                            const bounds = L.latLngBounds([driverPos, custPos]);
+                            trackingMap.fitBounds(bounds, { padding: [50, 50] });
+                        }
+                    })
+                    .catch(err => {
+                        if (routeLine) routeLine.remove();
+                        routeLine = L.polyline([driverPos, custPos], { color: '#ea1d2c', weight: 3, dashArray: '5, 10', opacity: 0.5 }).addTo(trackingMap);
+                    });
+            } else {
+                if(driverMarker) driverMarker.remove();
+                if(routeLine) routeLine.remove();
+                if(etaBadge) etaBadge.style.display = 'none';
+            }
+        });
+    }
 
     function renderTrackingError() {
         document.getElementById('tracking-loader').style.display = 'none';
