@@ -1142,9 +1142,7 @@
 </head>
 <body>
 
-<!-- SPLASH SCREEN -->
-<div id="splash-screen">
-</div>
+
 <div id="onboarding" class="onboarding-overlay" style="display: none;">
     <div id="step-1" class="onboarding-step active">
         <h2>Bem-vindo(a)!</h2>
@@ -1990,16 +1988,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Splash Screen Logic
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            const splash = document.getElementById('splash-screen');
-            splash.classList.add('splash-exit');
-            setTimeout(() => {
-                splash.style.display = 'none';
-            }, 800);
-        }, 300);
-    });
+    
 
     const perfMetrics = {
         start: performance.now(),
