@@ -1071,6 +1071,61 @@
         align-items: center;
         justify-content: center;
     }
+
+    /* Estilos do Modal de Avaliação */
+    #modal-review {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 25000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    .review-content {
+        background: white;
+        width: 100%;
+        max-width: 350px;
+        border-radius: 25px;
+        padding: 25px;
+        text-align: center;
+        animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .review-stars {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin: 15px 0;
+    }
+    .review-stars i {
+        font-size: 28px;
+        color: #ddd;
+        cursor: pointer;
+    }
+    .review-stars i.active {
+        color: #ffc107;
+    }
+    .delivery-feedback-btns {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+    }
+    .delivery-btn {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: bold;
+        cursor: pointer;
+        background: #f8f9fa;
+    }
+    .delivery-btn.selected {
+        background: var(--primary-orange);
+        color: white;
+        border-color: var(--primary-orange);
+    }
     .spinner-orange {
         width: 40px;
         height: 40px;
@@ -1309,6 +1364,40 @@
     <p style="margin-top: 15px; font-weight: bold; color: #555; font-size: 14px;">Processando seu pedido...</p>
 </div>
 
+<!-- MODAL AVALIAÇÃO -->
+<div id="modal-review">
+    <div class="review-content">
+        <img id="rev-user-img" src="" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--primary-orange); margin-bottom: 10px;">
+        <h3 id="rev-title" style="font-size: 18px; margin-bottom: 5px;">Avaliar Pedido</h3>
+        <p id="rev-items" style="font-size: 12px; color: #777; margin-bottom: 15px;"></p>
+        
+        <div class="review-stars" id="star-container">
+            <i class="fa-solid fa-star" data-value="1"></i>
+            <i class="fa-solid fa-star" data-value="2"></i>
+            <i class="fa-solid fa-star" data-value="3"></i>
+            <i class="fa-solid fa-star" data-value="4"></i>
+            <i class="fa-solid fa-star" data-value="5"></i>
+        </div>
+
+        <textarea id="rev-text" placeholder="Conte o que achou do sabor..." style="width: 100%; height: 80px; padding: 10px; border-radius: 12px; border: 1px solid #ddd; outline: none; font-size: 13px; resize: none; margin-bottom: 15px;"></textarea>
+
+        <div id="delivery-info-rev" style="text-align: left; background: #fdf2f2; padding: 10px; border-radius: 12px; margin-bottom: 20px; display: none;">
+            <p style="font-size: 11px; font-weight: bold; color: #d63031;">O seu entregador foi <span id="rev-driver-name">...</span></p>
+            <p style="font-size: 10px; color: #666; margin-bottom: 8px;">Como foi a entrega dele?</p>
+            <div class="delivery-feedback-btns">
+                <button class="delivery-btn" onclick="selectDeliveryFeedback(this, 'Rápida')">🚀 Rápida</button>
+                <button class="delivery-btn" onclick="selectDeliveryFeedback(this, 'Normal')">✅ Normal</button>
+                <button class="delivery-btn" onclick="selectDeliveryFeedback(this, 'Atrasou')">🕒 Atrasou</button>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button class="btn-next" onclick="submitReview()" style="width: 100%;">Confirmar Avaliação</button>
+            <button onclick="closeReviewModal()" style="border: none; background: none; color: #999; font-size: 12px; font-weight: bold; cursor: pointer;">Não, obrigado</button>
+        </div>
+    </div>
+</div>
+
 <div id="modal-order-options" class="modal-overlay" style="z-index: 10000;">
     <div class="modal-content" style="text-align: center; gap: 15px;">
         <div style="background: var(--primary-orange); width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; margin: 0 auto; font-size: 24px;">
@@ -1376,14 +1465,13 @@
             <h2 style="margin: 5px 0; display: flex; align-items: center; flex-wrap: wrap; gap: 5px;">
                 RedLine Delivery 
                 <span id="gold-tag-home" class="gold-tag" style="display: none;"><i class="fa-solid fa-crown"></i> CLIENTE GOLD</span>
-                <span id="store-status-badge" class="store-status" style="display: none;"></span>
                 <a href="https://wa.me/559881422644" target="_blank" style="color: #25d366; font-size: 18px; text-decoration: none; margin-left: 5px; display: flex; align-items: center;"><i class="fa-brands fa-whatsapp"></i></a>
             </h2>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; margin-top: 5px;">
+                <span id="store-status-badge" class="store-status" style="display: none; margin-left: 0;"></span>
+                <span id="opening-timer" style="font-size: 12px; font-weight: bold; color: #666; display: none;"></span>
+            </div>
             <p class="location">------ <i class="fa-solid fa-chevron-down"></i></p>
-            <button id="btn-status-pedido" onclick="openOrderStatusOptions()" style="display: none; width: 100%; margin-top: 15px; background: white; border: 1px solid #ddd; padding: 10px; border-radius: 12px; font-weight: bold; color: var(--text-dark); align-items: center; justify-content: center; gap: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer;">
-                <i class="fa-solid fa-circle-dot" style="color: #2ecc71; font-size: 10px; animation: pulse 1.5s infinite;"></i>
-                STATUS DO PEDIDO
-            </button>
         </div>
 
 
@@ -1752,7 +1840,7 @@
     </div>
     <div style="display: flex; align-items: center; gap: 15px; background: white; padding: 15px; border-radius: 15px; margin-bottom: 20px;">
         <h1 style="font-size: 40px; color: var(--primary-orange);">4.9</h1>
-        <div>
+        <div style="flex: 1;">
             <div class="stars">
                 <i class="fa-solid fa-star"></i>
                 <i class="fa-solid fa-star"></i>
@@ -1762,6 +1850,9 @@
             </div>
             <p style="font-size: 12px; color: var(--text-gray);">Média baseada em 232 avaliações</p>
         </div>
+        <button onclick="toggleMyReviews()" id="btn-toggle-my-rev" style="background: #f8f9fa; border: 1px solid #ddd; padding: 8px 12px; border-radius: 10px; font-size: 11px; font-weight: bold; cursor: pointer; color: var(--text-dark);">
+            <i class="fa-solid fa-user-tag"></i> Minhas
+        </button>
     </div>
     <div id="reviews-list">
         <!-- Reviews fakes JS -->
@@ -1949,8 +2040,6 @@
 
     const catalogData = [
         { id: "p0_uva", name: "Suco Uva del Vale", weight: "suco de uva 450 ml del valle", price: 4.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/---weewuba.png" },
-        { id: "p_jesus_promo", name: "Guaraná Jesus Lata", weight: "250ml", price: 0.05, category: "Dia das Mães", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/ereerer.png", isMotherDayPromo: true },
-        { id: "p_guarana_promo", name: "Guaraná Antarctica Lata", weight: "250ml", price: 0.05, category: "Dia das Mães", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/rrerereerer.png", isMotherDayPromo: true },
         { id: "p1", name: "Marmita Executiva Frango Parmegiana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805317455_Marmita_Executiva_Frango_Parmegiana.png", isOffer: true, popular: true },
         { id: "p2", name: "Subline de Carne", weight: "Disco de carne Friboi fatiado, Pepino, Cebola, Tomate, Pepino, Alface, Repolho, Queijo, Molho especial", price: 17.90, oldPrice: 21.12, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806259695_0000000000000000000000000000s.png", isOffer: true },
         { id: "p3", name: "BIG Cheddar Cremoso", weight: "1 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa, queijo, molho especial", price: 16.90, oldPrice: 21.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805607723_0-00-0-ewew.png", isOffer: true, isMegaPromo: true, popular: true },
@@ -2009,12 +2098,11 @@
     ];
 
     const catalogCategories = [
-        { key: "c0", name: "Dia das Mães", icon: "fa-solid fa-heart", order: 0 },
-        { key: "c1", name: "Hambúrguer ", icon: "fa-solid fa-burger", order: 1 },
+        { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 1 },
         { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
         { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 3 },
         { key: "c4", name: "Lanches", icon: "fa-solid fa-shrimp", order: 4 },
-        { key: "c5", name: "Cachorro Quente ", icon: "fa-solid fa-hotdog", order: 5 },
+        { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 5 },
         { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 6 },
         { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 7 },
         { key: "c8", name: "Bolos", icon: "fa-solid fa-cake-candles", order: 8 },
@@ -2258,79 +2346,6 @@ let userActiveOrderData = null;
     let lastKnownStatus = null;
     let hasCheckedInitialOrder = false;
 
-    // Carregamento ultrarápido: Apenas o status da loja e produtos primeiro
-const catalogData = [
-        { id: "p0_uva", name: "Suco Uva del Vale", weight: "suco de uva 450 ml del valle", price: 4.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/---weewuba.png" },
-        { id: "p1", name: "Marmita Executiva Frango Parmegiana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805317455_Marmita_Executiva_Frango_Parmegiana.png", isOffer: true, popular: true },
-        { id: "p2", name: "Subline de Carne", weight: "Disco de carne Friboi fatiado, Pepino, Cebola, Tomate, Pepino, Alface, Repolho, Queijo, Molho especial", price: 17.90, oldPrice: 21.12, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806259695_0000000000000000000000000000s.png", isOffer: true, popular: true },
-        { id: "p3", name: "BIG Cheddar Cremoso", weight: "1 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa, queijo, molho especial", price: 16.90, oldPrice: 21.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805607723_0-00-0-ewew.png", isOffer: true, isMegaPromo: true, popular: true },
-        { id: "p4", name: "Camarão Internacional", weight: "Risoto cremoso recheado com camarão, milho, ervilha, calabresa, arroz, batata palha, cheiro verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805413051_ewweew.png", isOffer: true, popular: true },
-        { id: "p5", name: "BIG Salada X", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805562776_BIG_Salada_X.png" },
-        { id: "p6", name: "BIG Egg", weight: "1 disco de carne Friboi tradicional, ovo, alface, cebola, tomate, pepino, calabresa", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805580478_BIG_Egg.png" },
-        { id: "p7", name: "BIG Barbecue Cremoso", weight: "1 disco de carne Friboi tradicional, calabresa, alface, cebola, tomate, pepino, molho Barbecue", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805640792_===========na.png" },
-        { id: "p8", name: "BIG Hot Spice", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho especial apimentado", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805658962_--------ma.png" },
-        { id: "p9", name: "BIG Caramelizado", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, cebola caramelizada na manteiga", price: 17.90, oldPrice: 22.37, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805680805_-----zenis_(1).png", isOffer: true },
-        { id: "p10", name: "BIG Chicken", weight: "1 Frango Krispy, alface, cebola, tomate, pepino, Steak Perdigão", price: 18.90, oldPrice: 23.62, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805700730_BIG_Chicken.png", isOffer: true },
-        { id: "p11", name: "BIG Holandês", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho de carne moída e Requeijão", price: 19.90, oldPrice: 24.87, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805730980_-----zenis_(2).png", isOffer: true },
-        { id: "p12", name: "BIG Bacon Mussarela", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho tasty, Bacon, Queijo Mussarela", price: 19.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805744847_-----zenis_(3).png" },
-        { id: "p13", name: "BIG Cheddar Duplo", weight: "2 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa", price: 23.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805783011_BIG_Cheddar_Duplo.png" },
-        { id: "p14", name: "BIG Bacon Triplo", weight: "3 disco de carne Friboi tradicional, Bacon, alface, cebola, tomate, pepino, calabresa, molho especial", price: 24.90, oldPrice: 31.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805850515_download.png", isOffer: true },
-        { id: "p15", name: "BIG Tudo", weight: "2 disco de carne Friboi tradicional, Bacon, alface, cebola, tomate, pepino, calabresa, salsicha, cheddar, ovo, batata palha", price: 28.90, oldPrice: 36.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805887048_BIG_Tudo.png", isOffer: true },
-        { id: "p16", name: "Subline de Frango", weight: "Steak de frango perdigão fatiado, Cebola, Tomate, Alface, Repolho, Queijo, Molho especial", price: 17.90, oldPrice: 22.37, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806282305_dsds.png", isOffer: true },
-        { id: "p17", name: "Subline de Bacon Carne e Cheddar", weight: "Disco de carne Friboi fatiado, Cebola, Tomate, Alface, Pepino, Repolho, Queijo, Molho especial", price: 18.90, oldPrice: 23.62, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806300866_0000000000000000000sub.png", isOffer: true },
-        { id: "p18", name: "Marmita Executiva Frango", weight: "Frango grelhado acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805336813_Marmita_Executiva_Frango.png" },
-        { id: "p19", name: "Marmita Executiva de Salmão empanado", weight: "Salmão empanado grelhado acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/------21.png", isOffer: true },
-        { id: "p20", name: "Marmita Executiva Carne", weight: "Carne grelhada acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805371216_Marmita_Executiva_Carne.png" },
-        { id: "p21", name: "Marmita Executiva Toscana", weight: "Toscana grelhada acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805467841_Marmita_Executiva_Toscana.png" },
-        { id: "p22", name: "Jantar Executivo Presidencial de Carne Acebolada", weight: "Carne grelhada, cebola caramelizada, Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho", price: 23.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805488131_------w_(2).png" },
-        { id: "p23", name: "Jantar Executivo Presidencial de Strogonoff", weight: "Strogonoff de frango, milho e ervilha, Batata palha, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho", price: 24.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805509789_------w_(1).png" },
-        { id: "p24", name: "COMBO SUBLINE", weight: "2 SubLine um de carne e outro de frango com batata frita e molhos especiais", price: 63.90, oldPrice: 79.88, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776804918411_-------w1.png", isOffer: true },
-        { id: "p25", name: "COMBO NETFLIX", weight: "2 Hamburguês de cheddar, Batata Frita, 2 Pizza Broto calabresa, Aneis Cebola Empanada, Queijo Cheddar, Bacon", price: 125.90, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776804937097_000000000000000000000000000000000000g.png" },
-        { id: "p26", name: "COMBO BIG LINE TRIPLO", weight: "3 Hamburguês de Cheddar, Batata Frita, Nuggets, Aneis Cebola Empanada, Queijo Cheddar, Bacon", price: 128.90, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776804959351_COMBO_BIG_LINE_TRIPLO.png" },
-        { id: "p27", name: "COMBO BIG DOG", weight: "2 Dog Cheddar, Batata Frita, Nuggets, Aneis Cebola Empanada, Queijo Cheddar, Bacon", price: 110.85, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805014022_COMBO_BIG_DOG.png" },
-        { id: "p28", name: "Batata Frita P", weight: "Porção de fritas Pequena para uma pessoa", price: 16.90, oldPrice: 21.12, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805032005_Batata_Frita_G.png", isOffer: true },
-        { id: "p29", name: "Batata Frita M", weight: "Porção de fritas media para duas pessoas", price: 18.90, oldPrice: 23.62, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805032005_Batata_Frita_G.png", isOffer: true },
-        { id: "p30", name: "Batata Frita G", weight: "Porção de fritas Grande para 3 pessoas", price: 23.90, oldPrice: 29.87, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805032005_Batata_Frita_G.png", isOffer: true },
-        { id: "p31", name: "Batata de Marechal", weight: "Adiciona batata frita, calabresa, frango", price: 24.90, oldPrice: 31.12, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/Gemini_Generated_Image_6lsz5b6lsz5b6lsz.png", isOffer: true },
-        { id: "p32", name: "Nugget Crocante Unidade", weight: "Unidade de Nuggets adicione quantas quiser", price: 2.99, oldPrice: 3.74, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805081823_Nugget_Crocante_Unidade.png", isOffer: true },
-        { id: "p33", name: "Dog Padrão", weight: "Uma salsicha, Milho e ervilha, molho especial, carne moída, batata palha", price: 16.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805443692_eewdss.png" },
-        { id: "p34", name: "Dog Duplo", weight: "Duas salsichas, Milho e ervilha, molho especial, carne moída, batata palha", price: 17.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805263280_Dog_Duplo.png" },
-        { id: "p35", name: "Dog Bacon", weight: "Uma salsichas, bacon, Milho e ervilha, molho especial, carne moída, batata palha", price: 19.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805230483_Dog_Bacon.png" },
-        { id: "p36", name: "Dog Cheddar", weight: "Uma salsichas, Milho e ervilha, molho especial, carne moída, batata palha, queijo cheddar", price: 19.90, oldPrice: 24.87, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805280900_Dog_Cheddar.png", isOffer: true },
-        { id: "p37", name: "Pizza Broto Portuguesa", weight: "Queijo, presunto, pimentão, azeitona, cebola, milho e ervilha, tomate, ovo cozido, oregano", price: 13.90, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805101947_Pizza_Broto_Portuguesa.png" },
-        { id: "p38", name: "Pizza Broto Calabresa", weight: "Queijo Moçarella, orégano, calabresa", price: 8.90, oldPrice: 11.13, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805121624_Pizza_Broto_Calabresa.png", isOffer: true, isMegaPromo: true },
-        { id: "p39", name: "Pizza Broto Mussarela", weight: "Queijo, orégano", price: 8.90, oldPrice: 11.13, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805182109_Pizza_Broto_Mussarela.png", isOffer: true, isMegaPromo: true },
-        { id: "p40", name: "Pizza Broto Tres Queijos", weight: "Queijo, orégano, queijo Cheddar", price: 12.90, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805182109_Pizza_Broto_Mussarela.png" },
-        { id: "p41", name: "Macarronada Carne moída", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão Penne", price: 19.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806183506_eewwe.png" },
-        { id: "p42", name: "Macarronada Turbo", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão Penne, calabresa, bacon", price: 24.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806203876_weew.png" },
-        { id: "p43", name: "Macarronada Cheddar Queijos", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão fetuchine, queijo Cheddar", price: 24.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806222968_ewe.png" },
-        { id: "p44", name: "Coca-Cola Lata", weight: "320ml Refrigerante Coca-Cola Lata", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805908258_Coca-Cola_Lata.png" },
-        { id: "p45", name: "Guaraná Lata", weight: "320ml Refrigerante Guaraná Lata", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805921732_0000latagua.png" },
-        { id: "p46", name: "Guaraná 1L", weight: "1L Refrigerante Guaraná Litro", price: 12.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805945732_ew.png" },
-        { id: "p47", name: "Guaraná Jesus Lata", weight: "Refrigerante Guaraná Jesus Lata 260ml", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805961184_0000jesu.png" },
-        { id: "p48", name: "Heineken Vidro", weight: "Heineken Vidro 250ML", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805987750_ssdds.png" },
-        { id: "p49", name: "Coca-Cola 1L Tradicional", weight: "1 L Refrigerante Coca-Cola Litro", price: 13.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806012542_xc.png" },
-        { id: "p50", name: "Agua Mineral", weight: "Garrafa de agua de 500 ML Mineral", price: 3.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806034299_---001.png" },
-        { id: "p51", name: "Executivo Presidencial de Picanha Bovina", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho", price: 26.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(2).png" },
-        { id: "p52", name: "Churrasco Misto Exc de Carne, Toscana e Frango", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(3).png" },
-        { id: "p53", name: "Churrasco Exc de Carne e Toscana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(1).png" },
-        { id: "p54", name: "Feijoadinha 500 ml", weight: "feijoada de 500 ml acompanha calabresa sadia, bacon fatiado e feijao preto saboroso", price: 6.90, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/--------feiojo.png" },
-        { id: "p55", name: "Farofa de Bacon & Calabresa", weight: "Na farofa de bacon acompanha farofa, manteiga corante, bacon fatiado picado, calabresa fatiada picada, crocante", price: 6.90, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/---------------farofa.png" }
-    ];
-
-    const catalogCategories = [
-        { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 1 },
-        { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
-        { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 3 },
-        { key: "c_add", name: "Adicionais", icon: "fa-solid fa-plus", order: 4 },
-        { key: "c4", name: "Lanches", icon: "fa-solid fa-shrimp", order: 5 },
-        { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 6 },
-        { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 7 },
-        { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 8 },
-        { key: "c8", name: "Bolos", icon: "fa-solid fa-cake-candles", order: 9 },
-        { key: "c9", name: "Bebidas", icon: "fa-solid fa-beer-mug-empty", order: 10 }
-    ];
-
     const perfMetrics = {
         start: performance.now(),
         dataPoints: { catalog: false, profile: false, xp: false }
@@ -2421,8 +2436,6 @@ const catalogData = [
             
             if(activeOrder) {
                 userActiveOrderData = activeOrder;
-                const statusBtn = document.getElementById('btn-status-pedido');
-                if(statusBtn) statusBtn.style.display = 'flex';
                 if (activeOrder.status === 'pendente' && !hasCheckedInitialOrder && activeOrder.paymentMethod === 'pix') {
                     document.getElementById('pay-total-val').innerText = 'R$ ' + activeOrder.total.toFixed(2).replace('.', ',');
                     changeTab('payment');
@@ -2431,7 +2444,6 @@ const catalogData = [
                 let statusMsg = "Aguardando confirmação";
                 let icon = "fa-clock";
                 let color = "var(--primary-orange)";
-                let itemsHtml = "";
 
                 if(activeOrder.status === 'pago_confirmado') { statusMsg = "Seu pedido está sendo preparado"; icon = "fa-check-double"; }
                 if(activeOrder.status === 'preparando') { statusMsg = "Entregador a caminho da loja"; icon = "fa-fire-burner"; }
@@ -2441,95 +2453,8 @@ const catalogData = [
                     color = "#2ecc71";
                 }
 
-                if (activeOrder.donation > 0) {
-                    itemsHtml += `
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; border: 1px dashed #2ecc71; padding: 5px; border-radius: 8px;">
-                            <i class="fa-solid fa-heart" style="color: #ea1d2c; font-size: 20px; width: 35px; text-align: center;"></i>
-                            <div style="flex: 1;">
-                                <p style="font-size: 12px; font-weight: bold; color: #333;">Doação para Animais</p>
-                                <p style="font-size: 10px; color: #888;">R$ ${activeOrder.donation.toFixed(2).replace('.',',')}</p>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                itemsHtml += activeOrder.items.map(item => `
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                        <img src="${item.img}" style="width: 35px; height: 35px; border-radius: 6px; object-fit: cover;">
-                        <div style="flex: 1;">
-                            <p style="font-size: 12px; font-weight: bold; color: #333;">${item.qty}x ${item.name}</p>
-                            <p style="font-size: 10px; color: #888;">R$ ${(item.price * item.qty).toFixed(2).replace('.',',')}</p>
-                        </div>
-                    </div>
-                `).join('');
-
-                let totalOriginal = activeOrder.items.reduce((acc, it) => {
-                    let original = it.isOffer ? (it.price / 0.8) : it.price;
-                    return acc + (original * it.qty);
-                }, 0);
-                
-                let economia = totalOriginal - activeOrder.total + (activeOrder.deliveryFee === 0 ? 4.99 : 0);
-                
-                let payMethodText = "";
-                if(activeOrder.paymentMethod === 'pix') payMethodText = "PIX (Pague Agora)";
-                else if(activeOrder.paymentMethod === 'especie') payMethodText = "Dinheiro (Na entrega)";
-                else if(activeOrder.paymentMethod === 'credito') payMethodText = "Cartão (Maquininha)";
-
-                let s1 = activeOrder.status === 'pendente' ? 'active' : 'completed';
-                let s2 = activeOrder.status === 'pago_confirmado' ? 'active' : (['preparando', 'caminho'].includes(activeOrder.status) ? 'completed' : '');
-                let s3 = activeOrder.status === 'preparando' ? 'active' : (activeOrder.status === 'caminho' ? 'completed' : '');
-                let s4 = activeOrder.status === 'caminho' ? 'active' : '';
-
-                let step4Label = activeOrder.deliveryType === 'pickup' ? "RETIRADA" : "SAIU";
-
-                let progressTrackerHtml = `
-                    <div class="order-progress-stepper">
-                        <div class="progress-step ${s1}"></div>
-                        <div class="progress-step ${s2}"></div>
-                        <div class="progress-step ${s3}"></div>
-                        <div class="progress-step ${s4}"></div>
-                    </div>
-                    <div class="progress-step-labels">
-                        <span class="progress-label ${s1}">CONFIRMANDO</span>
-                        <span class="progress-label ${s2}">PREPARANDO</span>
-                        <span class="progress-label ${s3}">PRONTO</span>
-                        <span class="progress-label ${s4}">${step4Label}</span>
-                    </div>
-                `;
-
-                let statusBanner = "";
-                if (activeOrder.status === 'pendente') {
-                    let msg = activeOrder.paymentMethod === 'pix' ? "Aguardando pagamento PIX para iniciar o preparo do seu pedido." : "Aguardando sua confirmação para iniciar o seu pedido.";
-                    statusBanner = `
-                        <div style="background: #fff9db; border-left: 4px solid #f1c40f; padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(241, 196, 15, 0.1);">
-                            <i class="fa-solid fa-clock-rotate-left" style="color: #f1c40f; font-size: 20px;"></i>
-                            <p style="font-size: 11px; color: #856404; font-weight: 800; line-height: 1.4;">${msg}</p>
-                        </div>`;
-                } else if (activeOrder.status === 'pago_confirmado') {
-                    statusBanner = `
-                        <div style="background: #e8f5e9; border-left: 4px solid #2ecc71; padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(46, 204, 113, 0.1);">
-                            <i class="fa-solid fa-circle-check" style="color: #2ecc71; font-size: 20px;"></i>
-                            <p style="font-size: 11px; color: #1b5e20; font-weight: 800; line-height: 1.4;">Pedido confirmado! Nossa equipe já começou a preparar tudo com muito capricho!</p>
-                        </div>`;
-                } else if (activeOrder.status === 'preparando') {
-                    let msg = activeOrder.deliveryType === 'pickup' ? "Quase lá! Seu lanche está sendo finalizado e em breve estará pronto para retirada." : "O restaurante está finalizando seu pedido e o entregador já está a caminho para coletar.";
-                    statusBanner = `
-                        <div style="background: #f3f0ff; border-left: 4px solid #6c5ce7; padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(108, 92, 231, 0.1);">
-                            <i class="fa-solid fa-fire-burner" style="color: #6c5ce7; font-size: 20px;"></i>
-                            <p style="font-size: 11px; color: #4834d4; font-weight: 800; line-height: 1.4;">${msg}</p>
-                        </div>`;
-                } else if (activeOrder.status === 'caminho') {
-                    let msg = activeOrder.deliveryType === 'pickup' ? "Prontinho! Seu pedido já está no balcão te aguardando. Pode vir buscar!" : "Opa! Seu pedido saiu da loja. Fique atento, o entregador chegará em instantes!";
-                    let icon = activeOrder.deliveryType === 'pickup' ? 'fa-bag-shopping' : 'fa-motorcycle';
-                    statusBanner = `
-                        <div style="background: #e1f5fe; border-left: 4px solid #03a9f4; padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(3, 169, 244, 0.1);">
-                            <i class="fa-solid ${icon}" style="color: #03a9f4; font-size: 20px;"></i>
-                            <p style="font-size: 11px; color: #01579b; font-weight: 800; line-height: 1.4;">${msg}</p>
-                        </div>`;
-                }
-
                 banner.innerHTML = `
-                    <div class="order-tracker-banner ${isOrderBannerExpanded ? 'expanded' : ''}" onclick="toggleOrderBanner()">
+                    <div class="order-tracker-banner" onclick="trackRealTime()">
                         <div class="order-collapsed-view" style="display: flex; align-items: center; gap: 15px; width: 100%;">
                             <i class="fa-solid ${icon}" style="color: ${color}; font-size: 24px;"></i>
                             <div style="flex:1">
@@ -2539,114 +2464,26 @@ const catalogData = [
                                 <p style="font-size: 13px; font-weight: bold; color: var(--text-dark);">${statusMsg}</p>
                             </div>
                             <div style="background: var(--primary-orange); color: white; padding: 5px 10px; border-radius: 8px; font-size: 10px; font-weight: 900; text-transform: uppercase; white-space: nowrap;">
-                                Clique aqui
+                                Rastrear
                             </div>
-                            <i class="fa-solid ${isOrderBannerExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}" style="color: #ccc; font-size: 12px;"></i>
-                        </div>
-                        
-                        <div class="order-expanded-details">
-                            ${highDemandActive ? `
-                                <div style="background: #fff0f0; border: 1px solid #ffcccc; color: #e74c3c; padding: 8px; border-radius: 10px; font-size: 10px; font-weight: 900; text-align: center; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                    <i class="fa-solid fa-clock"></i> DEMANDA ALTA: PRAZO DE 40 A 60 MINUTOS
-                                </div>
-                            ` : ''}
-                            ${progressTrackerHtml}
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: #f8f9fa; padding: 8px 12px; border-radius: 8px; border: 1px solid #eee;">
-                                <span style="font-size: 11px; font-weight: 900; color: #555; text-transform: uppercase;">Modalidade:</span>
-                                <span style="background: var(--primary-orange); color: white; padding: 3px 10px; border-radius: 5px; font-size: 10px; font-weight: 900; text-transform: uppercase;">
-                                    ${activeOrder.deliveryType === 'pickup' ? '<i class="fa-solid fa-store"></i> Retirada' : '<i class="fa-solid fa-truck"></i> Entrega'}
-                                </span>
-                            </div>
-                            ${statusBanner}
-                            <div style="margin-bottom: 15px; border-bottom: 1px dashed #eee; padding-bottom: 10px;">
-                                <p style="font-size: 10px; color: var(--text-gray); font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Informações do Pedido</p>
-                                <p style="font-size: 12px; color: #333;"><i class="fa-solid fa-credit-card" style="width: 15px;"></i> Pagamento: <strong>${payMethodText}</strong></p>
-                                ${activeOrder.deliveryType === 'pickup' ? `
-                                    <p style="font-size: 12px; color: #333; margin: 5px 0;"><i class="fa-solid fa-store" style="width: 15px;"></i> Local: <strong>Loja Vila Nova</strong></p>
-                                    <a href="https://maps.app.goo.gl/TfYr7RXVTg3hz3AF8" target="_blank" onclick="event.stopPropagation()" style="display: block; width: 100%; background: #3498db; color: white; text-align: center; padding: 8px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold; margin-top: 10px;">
-                                        <i class="fa-solid fa-map-location-dot"></i> VER LOCALIZAÇÃO DA LOJA
-                                    </a>
-                                ` : `
-                                    <p style="font-size: 12px; color: #333; margin: 5px 0;">
-                                        <i class="fa-solid fa-location-dot" style="width: 15px;"></i> Endereço: <strong>${activeOrder.cliente.rua}, ${activeOrder.cliente.numero}</strong>
-                                        <span style="display: flex; gap: 12px; margin-top: 5px; margin-left: 15px;">
-                                            <span onclick="event.stopPropagation(); openAddressModalForOrder('${orderKey}')" style="color: var(--primary-orange); cursor: pointer; font-size: 11px; font-weight: bold; border-bottom: 1px solid var(--primary-orange);">
-                                                <i class="fa-solid fa-pencil"></i> Editar Texto
-                                            </span>
-                                            <span onclick="event.stopPropagation(); openMapModal(false)" style="color: #3498db; cursor: pointer; font-size: 11px; font-weight: bold; border-bottom: 1px solid #3498db;">
-                                                <i class="fa-solid fa-map-pin"></i> Ajustar no Mapa
-                                            </span>
-                                        </span>
-                                    </p>
-                                `}
-                            </div>
-
-                            <div style="max-height: 150px; overflow-y: auto; margin-bottom: 10px;">
-                                ${itemsHtml}
-                            </div>
-                            
-                            <div style="background: #f9f9f9; padding: 10px; border-radius: 10px;">
-                                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
-                                    <span>Subtotal</span>
-                                    <span>R$ ${(activeOrder.total - activeOrder.deliveryFee).toFixed(2).replace('.',',')}</span>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
-                                    <span>Frete</span>
-                                    <span style="color: ${activeOrder.deliveryFee === 0 ? '#2ecc71' : '#333'}; font-weight: ${activeOrder.deliveryFee === 0 ? 'bold' : 'normal'}">
-                                        ${activeOrder.deliveryFee === 0 ? 'GRÁTIS' : 'R$ ' + activeOrder.deliveryFee.toFixed(2).replace('.',',')}
-                                    </span>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; margin-top: 5px; color: var(--primary-orange);">
-                                    <span>Total</span>
-                                    <span>R$ ${activeOrder.total.toFixed(2).replace('.',',')}</span>
-                                </div>
-                                
-                                ${economia > 1 ? `
-                                    <div style="margin-top: 8px; background: #e8f5e9; color: #2e7d32; padding: 5px; border-radius: 6px; font-size: 10px; font-weight: bold; text-align: center;">
-                                        <i class="fa-solid fa-piggy-bank"></i> VOCÊ ECONOMIZOU R$ ${economia.toFixed(2).replace('.',',')} NESSA COMPRA!
-                                    </div>
-                                ` : ''}
-                            </div>
-                            
-                            <p style="font-size: 9px; color: #aaa; text-align: center; margin-top: 10px; font-weight: bold;">CLIQUE PARA RECOLHER</p>
+                            <i class="fa-solid fa-chevron-right" style="color: #ccc; font-size: 12px;"></i>
                         </div>
                     </div>
                 `;
             } else {
                 banner.innerHTML = "";
                 userActiveOrderData = null;
-                const statusBtn = document.getElementById('btn-status-pedido');
-                if(statusBtn) statusBtn.style.display = 'none';
             }
             hasCheckedInitialOrder = true;
         });
     };
 
-    window.openOrderStatusOptions = function() {
-        document.getElementById('modal-order-options').style.display = 'flex';
-    };
-
     window.trackRealTime = function() {
         if(!userProfile) return;
         const cleanPhone = userProfile.contato.replace(/\D/g, '');
-        document.getElementById('modal-order-options').style.display = 'none';
         window.location.hash = cleanPhone;
         changeTab('tracking');
         loadTrackingData(cleanPhone);
-    };
-
-    window.toggleOrderBanner = function() {
-        isOrderBannerExpanded = !isOrderBannerExpanded;
-        const bannerCard = document.querySelector('.order-tracker-banner');
-        const icon = bannerCard.querySelector('.fa-chevron-down, .fa-chevron-up');
-        
-        if (isOrderBannerExpanded) {
-            bannerCard.classList.add('expanded');
-            if(icon) { icon.classList.remove('fa-chevron-down'); icon.classList.add('fa-chevron-up'); }
-        } else {
-            bannerCard.classList.remove('expanded');
-            if(icon) { icon.classList.remove('fa-chevron-up'); icon.classList.add('fa-chevron-down'); }
-        }
     };
 
     window.openAddressModalForOrder = function(key) {
@@ -2678,6 +2515,10 @@ const catalogData = [
             updateStoreStatusUI();
         }
     });
+
+    setInterval(() => {
+        if(storeSettings) updateStoreStatusUI();
+    }, 2000);
 
 
     onValue(ref(db, 'settings/bag_promo_slide'), (snap) => {
@@ -3023,6 +2864,13 @@ const catalogData = [
         renderStickersGallery();
     });
 
+    onValue(query(ref(db, 'reviews'), limitToLast(30)), (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            cachedReviews = Object.values(data).sort((a,b) => b.timestamp - a.timestamp);
+        }
+    });
+
     document.getElementById('user-photo-upload').onchange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -3104,12 +2952,6 @@ const catalogData = [
         const data = snapshot.val();
         let dbCategories = data ? Object.entries(data).map(([key, value]) => ({ key, ...value })) : [];
         
-        const hasMotherDayItems = allProducts.some(p => p.category === "Dia das Mães");
-        const motherDayInList = dbCategories.some(c => c.name === "Dia das Mães");
-        if (hasMotherDayItems && !motherDayInList) {
-            dbCategories.unshift({ key: "c_mother", name: "Dia das Mães", icon: "fa-solid fa-heart", order: -1 });
-        }
-
         const hasAdicionais = dbCategories.some(c => c.name === "Adicionais");
         if (!hasAdicionais) {
             const marmitaCat = dbCategories.find(c => c.name === "Marmitas");
@@ -3292,8 +3134,55 @@ document.getElementById('close-avatars').onclick = () => {
     document.getElementById('modal-avatars').style.display = 'none';
 };
 
+let cachedReviews = null;
+let showingOnlyMine = false;
+
+window.toggleMyReviews = () => {
+    showingOnlyMine = !showingOnlyMine;
+    const btn = document.getElementById('btn-toggle-my-rev');
+    if (showingOnlyMine) {
+        btn.style.background = "var(--primary-orange)";
+        btn.style.color = "white";
+        btn.innerHTML = '<i class="fa-solid fa-globe"></i> Ver Todas';
+    } else {
+        btn.style.background = "#f8f9fa";
+        btn.style.color = "var(--text-dark)";
+        btn.innerHTML = '<i class="fa-solid fa-user-tag"></i> Minhas';
+    }
+    renderFakeReviews();
+};
+
 function renderFakeReviews() {
     const list = document.getElementById('reviews-list');
+    list.innerHTML = "";
+
+    if (cachedReviews) {
+        let displayList = [...cachedReviews];
+        if (showingOnlyMine && userProfile) {
+            displayList = displayList.filter(r => r.userName === userProfile.nome);
+        }
+
+        displayList.forEach(r => {
+            const div = document.createElement('div');
+            div.className = 'review-card';
+            div.innerHTML = `
+                <div class="review-header">
+                    <img class="review-user-img" src="${r.userImg || 'https://api.dicebear.com/7.x/big-smile/svg?seed=Felix'}">
+                    <div style="flex:1;">
+                        <p style="font-weight:bold; font-size:14px;">${r.userName}</p>
+                        <div class="stars">${'<i class="fa-solid fa-star"></i>'.repeat(r.stars)}${'<i class="fa-regular fa-star"></i>'.repeat(5 - r.stars)}</div>
+                    </div>
+                    <span style="font-size:10px; color:#aaa;">${new Date(r.timestamp).toLocaleDateString()}</span>
+                </div>
+                <p class="review-text">${r.text}</p>
+                ${r.deliveryFeedback ? `<div style="margin-top:8px; font-size:10px; color:var(--primary-orange); font-weight:bold; background:#fff5f0; padding:4px 8px; border-radius:4px; display:inline-block;">Entrega ${r.deliveryFeedback}</div>` : ''}
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    if (showingOnlyMine) return; // Não mostra fakes se estiver filtrando por "Minhas"
+
     const fakes = [
         { name: "Lukinha", text: "Melhor lanche de Pinheiro! A entrega foi muita rapida e chegou quentinho.", stars: 5, img: "Felix" },
         { name: "Bianca", text: "Muito bom, as batatas estavam crocantes e o brinde de ouro branco amei kkkkskks com certeza pedirei mais vezes", stars: 5, img: "Aneka" },
@@ -3327,8 +3216,10 @@ function renderFakeReviews() {
         { name: "Eliane Costa", text: "Atrasou 15 minutos, mas mandaram um brinde extra pra compensar. Atitude nota 10.", stars: 4, img: "Luna" }
     ];
 
-    list.innerHTML = "";
-    fakes.forEach(f => {
+    // Aleatoriza as avaliações fakes
+    const shuffledFakes = fakes.sort(() => Math.random() - 0.5);
+
+    shuffledFakes.forEach(f => {
         const div = document.createElement('div');
         div.className = 'review-card';
         div.innerHTML = `
@@ -3365,18 +3256,15 @@ function renderFakeReviews() {
 
         const sortedCats = [...categories].sort((a, b) => (a.order || 0) - (b.order || 0));
         
-        // Verifica se existem produtos da categoria "Dia das Mães" na lista atual para mostrar o botão
-        const hasMotherDayItems = allProducts.some(p => p.category === "Dia das Mães");
-
         sortedCats.forEach(cat => {
-            // Se for a categoria de Dia das Mães e não houver produtos ativos nela, ignora
-            if (cat.name === "Dia das Mães" && !hasMotherDayItems) return;
+            const hasProducts = allProducts.some(p => p.category.trim() === cat.name.trim());
+            if (!hasProducts) return;
 
             const div = document.createElement('div');
             div.className = 'cat-item';
-            div.setAttribute('data-catname', cat.name);
-            div.onclick = () => filterCategory(cat.name);
-            div.innerHTML = `<div class="cat-img"><i class="${cat.icon}"></i></div>${cat.name}`;
+            div.setAttribute('data-catname', cat.name.trim());
+            div.onclick = () => filterCategory(cat.name.trim());
+            div.innerHTML = `<div class="cat-img"><i class="${cat.icon}"></i></div>${cat.name.trim()}`;
             container.appendChild(div);
         });
     }
@@ -3958,15 +3846,15 @@ window.addBagToCart = (key) => {
             if(drinks.length > 0) {
                 bevSection.style.display = 'block';
                 bevList.innerHTML = drinks.map(d => `
-                    <div style="min-width: 140px; flex-shrink: 0; background: #fff; padding: 10px; border-radius: 20px; text-align: center; border: 1px solid #eee; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center;">
-                        <div style="width: 100%; height: 110px; background: #f9f9f9; border: 1px solid #eee; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; overflow: hidden;">
-                            <img src="${getThumb(d.img)}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div style="min-width: 130px; width: 130px; flex-shrink: 0; background: #fff; padding: 10px; border-radius: 20px; text-align: center; border: 1px solid #eee; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center;">
+                        <div style="width: 100px; height: 100px; background: #f9f9f9; border: 1px solid #eee; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; overflow: hidden; flex-shrink: 0;">
+                            <img src="${getThumb(d.img)}" style="width: 100px; height: 100px; object-fit: cover; display: block;">
                         </div>
-                        <div style="width: 100%; padding: 0 5px;">
-                            <p style="font-size: 11px; font-weight: 700; color: #333; margin-bottom: 8px; height: 26px; overflow: hidden; line-height: 1.2;">${d.name}</p>
+                        <div style="width: 100%; padding: 0 2px;">
+                            <p style="font-size: 10px; font-weight: 700; color: #333; margin-bottom: 8px; height: 24px; overflow: hidden; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${d.name}</p>
                             <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                                <span style="font-size: 14px; font-weight: 900; color: var(--primary-orange);">R$ ${d.price.toFixed(2).replace('.',',')}</span>
-                                <button onclick="addToCart('${d.id}'); renderCart();" style="width: 32px; height: 32px; background: var(--primary-orange); color: white; border: none; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(244, 107, 33, 0.3);">
+                                <span style="font-size: 13px; font-weight: 900; color: var(--primary-orange);">R$ ${d.price.toFixed(2).replace('.',',')}</span>
+                                <button onclick="addToCart('${d.id}'); renderCart();" style="width: 28px; height: 28px; background: var(--primary-orange); color: white; border: none; border-radius: 50%; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(244, 107, 33, 0.3); flex-shrink: 0;">
                                     <i class="fa-solid fa-plus"></i>
                                 </button>
                             </div>
@@ -4092,7 +3980,7 @@ window.addBagToCart = (key) => {
         
         couponDiscount = 0;
         if (appliedCoupon) {
-            const coupons10 = ["REDLINE10%OFF", "ANACYNTHIA10%OFF", "JOSYBRAGA10%OFF", "PHODIVULGA10%OFF"];
+            const coupons10 = ["REDLINE10%OFF", "ANACYNTHIA10%OFF", "JOSYBRAGA10%OFF", "PHODIVULGA10%OFF", "GEYSAXUXU10%OFF", "HUNTER10%OFF"];
             const coupons20 = ["QUERIDAS20%OFF"];
             const coupons100 = ["AMORDEPESSOA100%OFF"];
             let percent = 0;
@@ -4524,15 +4412,17 @@ document.getElementById('confirm-sticker').onclick = () => {
         customerMarker = L.marker(center, { icon: customerIcon }).addTo(trackingMap);
     }
 
+    let trackingInterval = null;
+
     function startDriverTracking(driverId, clientePos, orderStatus) {
         if (!driverId || driverId === 'balcao') return;
         if (driverPosUnsubscribe) driverPosUnsubscribe();
+        if (trackingInterval) clearInterval(trackingInterval);
 
         const driverRef = ref(db, `drivers/${driverId}/location`);
-        driverPosUnsubscribe = onValue(driverRef, (snap) => {
-            const loc = snap.val();
+        
+        const updateLogic = (loc) => {
             const etaBadge = document.getElementById('eta-badge');
-            
             if (loc && loc.lat && loc.lng && !loc.hidden) {
                 const driverPos = [loc.lat, loc.lng];
                 const custPos = [clientePos.lat, clientePos.lng];
@@ -4569,19 +4459,17 @@ document.getElementById('confirm-sticker').onclick = () => {
                             let minTime, maxTime, prefix = "";
 
                             if (orderStatus === 'sua_rota') {
-                                // Rota direta para o cliente
-                                minTime = baseTime + 2;
-                                maxTime = baseTime + 6;
+                                minTime = baseTime + 1;
+                                maxTime = baseTime + 4;
                                 prefix = "CHEGADA EM: ";
                             } else {
-                                // Status 'caminho' indica que há entregas na frente
-                                minTime = baseTime + 12;
-                                maxTime = baseTime + 20;
+                                minTime = baseTime + 8;
+                                maxTime = baseTime + 15;
                                 prefix = "OUTRAS ENTREGAS: ";
                             }
 
                             etaBadge.style.display = 'flex';
-                            if (distanceMeters < 150) {
+                            if (distanceMeters < 120) {
                                 document.getElementById('eta-text').innerText = "ENTREGADOR CHEGOU!";
                             } else {
                                 document.getElementById('eta-text').innerText = `${prefix}${minTime} - ${maxTime} MIN`;
@@ -4600,8 +4488,20 @@ document.getElementById('confirm-sticker').onclick = () => {
                 if(routeLine) routeLine.remove();
                 if(etaBadge) etaBadge.style.display = 'none';
             }
+        };
+
+        // Escuta em tempo real do Firebase
+        driverPosUnsubscribe = onValue(driverRef, (snap) => {
+            updateLogic(snap.val());
         });
-    }
+
+        // Força atualização visual e de cálculo a cada 2 segundos
+            trackingInterval = setInterval(() => {
+                get(driverRef).then((snap) => {
+                    updateLogic(snap.val());
+                });
+            }, 2000);
+        }
 
     function renderTrackingError() {
         document.getElementById('tracking-loader').style.display = 'none';
@@ -4825,6 +4725,7 @@ document.getElementById('btn-add-to-active').onclick = function() {
 
     function updateStoreStatusUI() {
         const badge = document.getElementById('store-status-badge');
+        const timerEl = document.getElementById('opening-timer');
         const finishBtn = document.getElementById('finish-order');
         if (!storeSettings) return "fechado";
 
@@ -4851,12 +4752,34 @@ document.getElementById('btn-add-to-active').onclick = function() {
             status = "fechado";
         }
 
-        badge.removeAttribute('style');
+        badge.style.display = 'inline-block';
         badge.className = "store-status";
+        
+        if(timerEl) {
+            timerEl.style.display = 'none';
+            timerEl.style.color = '#666';
+        }
+
         if(status === "aberto") {
             badge.innerText = "Aberto";
             badge.classList.add('status-open');
             finishBtn.classList.remove('btn-disabled');
+
+            if (storeSettings.showOpeningTimer && !storeSettings.forcedOpen) {
+                // Verifica se faltam 60 minutos ou menos para as 22:30
+                let currentTotalMinutes = (hour * 60) + minute;
+                let closingTotalMinutes = (22 * 60) + 30;
+                let diff = closingTotalMinutes - currentTotalMinutes;
+
+                if (diff <= 60 && diff > 0) {
+                    if (timerEl) {
+                        timerEl.style.display = 'inline-block';
+                        timerEl.style.color = '#ea1d2c';
+                        timerEl.innerText = `• fechará em ${diff} min`;
+                    }
+                }
+            }
+
         } else if(status === "inauguracao") {
             badge.innerText = "Em breve";
             badge.classList.add('status-inauguration');
@@ -4865,6 +4788,36 @@ document.getElementById('btn-add-to-active').onclick = function() {
             badge.innerText = "Fechado";
             badge.classList.add('status-closed');
             finishBtn.classList.add('btn-disabled');
+
+            if (storeSettings.showOpeningTimer && !storeSettings.closedToday && !storeSettings.inauguration) {
+                if (isMonday) {
+                    let totalHours = (23 - hour) + 18;
+                    let diffMinutes = 60 - minute;
+                    if (diffMinutes === 60) {
+                        diffMinutes = 0;
+                        totalHours++;
+                    }
+                    if (timerEl) {
+                        timerEl.style.display = 'inline-block';
+                        timerEl.innerText = `• abre em ${totalHours}h e ${diffMinutes} min`;
+                    }
+                } else if (hour < 18) {
+                    let diffHours = 17 - hour;
+                    let diffMinutes = 60 - minute;
+                    if (diffMinutes === 60) {
+                        diffMinutes = 0;
+                        diffHours++;
+                    }
+                    if (timerEl) {
+                        timerEl.style.display = 'inline-block';
+                        if (diffHours > 0) {
+                            timerEl.innerText = `• abre em ${diffHours}h e ${diffMinutes} min`;
+                        } else {
+                            timerEl.innerText = `• abre em ${diffMinutes} min`;
+                        }
+                    }
+                }
+            }
         }
         return status;
     }
@@ -5283,7 +5236,107 @@ window.changeTab = function(tab) {
 
 window.addEventListener('load', () => {
     checkTrackingHash();
+    checkPendingReview();
 });
+
+let currentReviewData = null;
+let selectedStars = 0;
+let selectedDeliveryFeedback = "";
+
+function checkPendingReview() {
+    if (!userProfile || !userProfile.contato) return;
+    
+    const ordersRef = ref(db, 'orders');
+    const reviewedOrders = JSON.parse(localStorage.getItem('reviewedOrders') || '[]');
+
+    get(ordersRef).then(snap => {
+        const orders = snap.val();
+        if (!orders) return;
+
+        const myOrders = Object.entries(orders)
+            .filter(([k, o]) => o.cliente && o.cliente.contato === userProfile.contato && o.status === 'pago')
+            .sort((a, b) => b[1].timestamp - a[1].timestamp);
+
+        if (myOrders.length > 0) {
+            const [orderKey, orderData] = myOrders[0];
+
+            if (!reviewedOrders.includes(orderKey)) {
+                openReviewModal(orderKey, orderData);
+            }
+        }
+    });
+}
+
+function openReviewModal(key, data) {
+    currentReviewData = { key, ...data };
+    selectedStars = 5;
+    selectedDeliveryFeedback = "";
+    
+    document.getElementById('rev-user-img').src = userProfile.foto || 'https://api.dicebear.com/7.x/big-smile/svg?seed=Aneka';
+    document.getElementById('rev-title').innerText = `Avaliar seu Pedido`;
+    document.getElementById('rev-items').innerText = data.items.map(i => i.name).join(', ');
+    
+    if (data.driverName && data.deliveryType !== 'pickup') {
+        document.getElementById('delivery-info-rev').style.display = 'block';
+        document.getElementById('rev-driver-name').innerText = data.driverName;
+    } else {
+        document.getElementById('delivery-info-rev').style.display = 'none';
+    }
+
+    updateStars(5);
+    document.getElementById('modal-review').style.display = 'flex';
+}
+
+function updateStars(val) {
+    selectedStars = val;
+    document.querySelectorAll('#star-container i').forEach(star => {
+        const starVal = parseInt(star.dataset.value);
+        star.classList.toggle('active', starVal <= val);
+        star.className = starVal <= val ? 'fa-solid fa-star active' : 'fa-regular fa-star';
+    });
+}
+
+document.querySelectorAll('#star-container i').forEach(star => {
+    star.onclick = () => updateStars(parseInt(star.dataset.value));
+});
+
+window.selectDeliveryFeedback = (btn, val) => {
+    document.querySelectorAll('.delivery-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedDeliveryFeedback = val;
+};
+
+window.closeReviewModal = () => {
+    if (currentReviewData) {
+        const reviewedOrders = JSON.parse(localStorage.getItem('reviewedOrders') || '[]');
+        if (!reviewedOrders.includes(currentReviewData.key)) {
+            reviewedOrders.push(currentReviewData.key);
+            localStorage.setItem('reviewedOrders', JSON.stringify(reviewedOrders));
+        }
+    }
+    document.getElementById('modal-review').style.display = 'none';
+};
+
+window.submitReview = () => {
+    const text = document.getElementById('rev-text').value;
+    if (!text && selectedStars < 4) return alert("Por favor, conte-nos o que podemos melhorar!");
+
+    const review = {
+        orderId: currentReviewData.key,
+        userName: userProfile.nome,
+        userImg: userProfile.foto,
+        stars: selectedStars,
+        text: text || "Amei o pedido!",
+        deliveryFeedback: selectedDeliveryFeedback,
+        driverId: currentReviewData.driverId || null,
+        timestamp: Date.now()
+    };
+
+    push(ref(db, 'reviews'), review).then(() => {
+        showToast("Obrigado pela sua avaliação! ❤️");
+        closeReviewModal();
+    });
+};
 window.addEventListener('hashchange', checkTrackingHash);
 init();
 </script>
