@@ -814,6 +814,83 @@
             transition: 1s ease;
         }
 
+        @keyframes pulse-card {
+            0% { transform: scale(1); box-shadow: 0 4px 15px rgba(234, 29, 44, 0.2); }
+            50% { transform: scale(1.02); box-shadow: 0 8px 25px rgba(234, 29, 44, 0.4); }
+            100% { transform: scale(1); box-shadow: 0 4px 15px rgba(234, 29, 44, 0.2); }
+        }
+
+        .daily-reward-trigger {
+            background: linear-gradient(135deg, #ff4757, #ea1d2c);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            animation: pulse-card 2s infinite ease-in-out;
+            border: 2px solid rgba(255,255,255,0.2);
+            text-align: left;
+        }
+
+        .reward-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .reward-day-box {
+            background: #f8f9fa;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            padding: 10px 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .reward-day-box.active {
+            border-color: #ea1d2c;
+            background: #fff5f5;
+        }
+
+        .reward-day-box.claimed {
+            background: #f0fff4;
+            border-color: #2ecc71;
+        }
+
+        .reward-day-box.claimed i {
+            color: #2ecc71 !important;
+        }
+
+        .reward-day-box i {
+            font-size: 18px;
+            color: #ccc;
+        }
+
+        .reward-day-box span {
+            font-size: 9px;
+            font-weight: 900;
+            color: #777;
+            text-transform: uppercase;
+        }
+
+        .reward-day-box.big {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #fff7ad, #fff);
+            border-color: #ffd700;
+        }
+
+        .reward-day-box.big i {
+            color: #f1c40f;
+        }
+
         /* Estilos Detalhes do Produto */
         .details-img { width: 100%; height: 300px; object-fit: cover; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; }
         .details-info { padding: 25px; }
@@ -1684,25 +1761,7 @@
             <input type="checkbox" id="opt-presente">
         </div>
 
-            <h4 style="margin-top: 20px;">Detalhes do pagamento</h4>
-            <div class="row" style="margin-top: 15px;">
-                <span>Subtotal</span>
-                <span id="subtotal-val">R$ 0,00</span>
-            </div>
-            <div class="row" id="delivery-row" style="display: none;">
-                <span>Taxa de entrega</span>
-                <span id="delivery-val">R$ 4,99</span>
-            </div>
-            <div class="row" id="discount-row" style="display: none; color: #28a745; font-weight: bold;">
-                <span>Desconto Recompensa</span>
-                <span id="discount-val">- R$ 17,90</span>
-            </div>
-            <div class="total-row row">
-            <span>Total</span>
-            <span id="total-val">R$ 0,00</span>
-        </div>
-
-        <div id="image-action-btn" onclick="document.getElementById('modal-image-choice').style.display = 'flex'" style="background: #fff; border: 1px dashed #6c5ce7; padding: 12px; border-radius: 12px; margin-top: 15px; display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <div id="image-action-btn" onclick="document.getElementById('modal-image-choice').style.display = 'flex'" style="background: #fff; border: 1px dashed #6c5ce7; padding: 12px; border-radius: 12px; margin-top: 15px; display: flex; align-items: center; gap: 10px; cursor: pointer;">
             <div id="image-btn-preview" style="width: 40px; height: 40px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
                 <i class="fa-solid fa-image" style="color: #6c5ce7;"></i>
             </div>
@@ -1770,8 +1829,28 @@
             </button>
             <p style="text-align: center; font-size: 11px; color: #666; margin-top: 8px; font-weight: 500;">Você tem um pedido em preparo. Aproveite para adicionar mais itens sem pagar novo frete!</p>
         </div>
+
+        <div style="padding: 15px; margin-top: 15px;">
+            <h4 style="margin-top: 20px;">Detalhes do pagamento</h4>
+            <div class="row" style="margin-top: 15px;">
+                <span>Subtotal</span>
+                <span id="subtotal-val">R$ 0,00</span>
+            </div>
+            <div class="row" id="delivery-row" style="display: none;">
+                <span>Taxa de entrega</span>
+                <span id="delivery-val">R$ 4,99</span>
+            </div>
+            <div class="row" id="discount-row" style="display: none; color: #28a745; font-weight: bold;">
+                <span>Desconto Recompensa</span>
+                <span id="discount-val">- R$ 17,90</span>
+            </div>
+            <div class="total-row row">
+                <span>Total</span>
+                <span id="total-val">R$ 0,00</span>
+            </div>
+        </div>
         
-        <div style="margin-top: 20px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <div style="margin-top: 10px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
             <h4 style="margin-bottom: 12px; font-size: 14px;">Como deseja receber seu pedido?</h4>
             <div id="delivery-options-container" style="display: flex; gap: 10px; margin-bottom: 15px;">
                 <label style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border: 1px solid var(--primary-orange); border-radius: 8px; cursor: pointer; background: #fff5f0;">
@@ -1810,6 +1889,30 @@
                     <input type="radio" name="pay-method" value="vale" onchange="document.getElementById('change-field-container').style.display = 'none'" style="accent-color: var(--primary-orange);">
                     <i class="fa-solid fa-utensils" style="color: #27ae60;"></i>
                     <span style="font-size: 14px; font-weight: 500;">Vale Alimentação</span>
+                </label>
+
+                <!-- DESCONTO PARCIAL DA CARTEIRA -->
+                <div id="partial-wallet-container" style="display: none; background: #fff5f5; border: 1px dashed #ea1d2c; padding: 12px; border-radius: 10px; margin-top: 5px; align-items: center; justify-content: space-between; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-hand-holding-dollar" style="color: #ea1d2c; font-size: 18px;"></i>
+                        <div>
+                            <p style="font-size: 12px; font-weight: 800; color: #333;">Usar saldo da Carteira?</p>
+                            <p style="font-size: 10px; color: #666;">Descontar <span id="partial-wallet-val" style="font-weight: 900; color: #ea1d2c;">R$ 0,00</span> do total</p>
+                        </div>
+                    </div>
+                    <label class="switch" style="transform: scale(0.8);">
+                        <input type="checkbox" id="use-wallet-partial" onchange="renderCart()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <label id="pay-method-wallet-container" style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #eee; border-radius: 8px; cursor: pointer;">
+                    <input type="radio" name="pay-method" value="carteira" onchange="document.getElementById('change-field-container').style.display = 'none'" style="accent-color: var(--primary-orange);">
+                    <i class="fa-solid fa-wallet" style="color: #ea1d2c;"></i>
+                    <div style="flex: 1; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 14px; font-weight: 500;">Carteira RedLine</span>
+                        <span id="checkout-wallet-badge" style="background: #f1c40f; color: #000; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 900;">R$ 0,00</span>
+                    </div>
                 </label>
             </div>
         </div>
@@ -1904,6 +2007,92 @@
         <p id="profile-phone-display" style="color: var(--text-gray); font-size: 14px;"></p>
         
         <div class="loyalty-card" id="loyalty-section" style="display: none;"></div>
+
+        <!-- CARTEIRA REDLINE -->
+        <div class="loyalty-card" style="background: #ea1d2c; color: white; text-align: left; position: relative; overflow: hidden; border: 2px solid rgba(255,255,255,0.2);">
+            <div style="position: relative; z-index: 2;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9;">Carteira RedLine</span>
+                    <i class="fa-solid fa-wallet" style="font-size: 20px; opacity: 0.8;"></i>
+                </div>
+                <p style="font-size: 10px; margin-bottom: 2px; opacity: 0.9;">Saldo disponível</p>
+                <h2 id="wallet-balance-display" style="font-size: 28px; font-weight: 900; margin-bottom: 15px;">R$ 0,00</h2>
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <button onclick="document.getElementById('modal-wallet-add').style.display='flex'" style="flex: 1; background: white; color: #ea1d2c; border: none; padding: 10px; border-radius: 10px; font-weight: 900; font-size: 11px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        <i class="fa-solid fa-plus-circle"></i> ADICIONAR SALDO
+                    </button>
+                    <button onclick="document.getElementById('modal-giftcard-redeem').style.display='flex'" style="flex: 1; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); padding: 10px; border-radius: 10px; font-weight: 900; font-size: 11px; cursor: pointer;">
+                        <i class="fa-solid fa-ticket"></i> ATIVAR CÓDIGO
+                    </button>
+                </div>
+            </div>
+            <i class="fa-solid fa-coins" style="position: absolute; right: -20px; bottom: -20px; font-size: 100px; color: rgba(255,255,255,0.1); transform: rotate(-15deg);"></i>
+        </div>
+
+        <div class="daily-reward-trigger" onclick="openDailyReward()">
+            <div style="background: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div style="flex: 1;">
+                <h4 style="font-size: 14px; font-weight: 900; margin-bottom: 2px;">RECOMPENSA DIÁRIA</h4>
+                <p style="font-size: 11px; opacity: 0.9; font-weight: 600;">Clique aqui e ganhe saldo grátis para sua carteira!</p>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="font-size: 12px; opacity: 0.7;"></i>
+        </div>
+
+    </div>
+
+    <!-- MODAL RECOMPENSA DIÁRIA -->
+    <div id="modal-daily-reward" class="modal-overlay" style="z-index: 9999;">
+        <div class="modal-content" style="text-align: center; max-width: 380px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="color: var(--text-dark);"><i class="fa-solid fa-gift" style="color: #ea1d2c;"></i> Presente Diário</h3>
+                <i class="fa-solid fa-xmark" onclick="document.getElementById('modal-daily-reward').style.display='none'" style="cursor: pointer; color: #999;"></i>
+            </div>
+            <p style="font-size: 13px; color: #666; margin-bottom: 5px;">Resgate prêmios todos os dias a partir das 18h!</p>
+            <div id="reward-time-info" style="font-size: 11px; font-weight: bold; color: #ea1d2c; margin-bottom: 15px; background: #fff5f5; padding: 5px; border-radius: 8px; display: none;">SISTEMA ABRE ÀS 18:00 (HORÁRIO DE BRASÍLIA)</div>
+
+            <div class="reward-grid" id="reward-days-container">
+                <!-- Dias gerados via JS -->
+            </div>
+
+            <button id="btn-claim-reward" class="btn-next" style="width: 100%; padding: 15px; background: #ccc;" disabled>RESGATAR RECOMPENSA</button>
+            <button class="btn-back" style="width: 100%; margin-top: 10px;" onclick="document.getElementById('modal-daily-reward').style.display='none'">Fechar</button>
+        </div>
+    </div>
+
+    <!-- MODAL ADICIONAR SALDO -->
+    <div id="modal-wallet-add" class="modal-overlay">
+        <div class="modal-content" style="text-align: center;">
+            <i class="fa-solid fa-hand-holding-dollar" style="font-size: 40px; color: #2ecc71; margin-bottom: 10px;"></i>
+            <h3>Adicionar Saldo</h3>
+            <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Escolha um valor para carregar sua carteira RedLine e usar em pedidos futuros.</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                <div class="donation-chip" style="margin:0; width: 100%;" onclick="addWalletToCart(20)">R$ 20</div>
+                <div class="donation-chip" style="margin:0; width: 100%;" onclick="addWalletToCart(30)">R$ 30</div>
+                <div class="donation-chip" style="margin:0; width: 100%;" onclick="addWalletToCart(50)">R$ 50</div>
+                <div class="donation-chip" style="margin:0; width: 100%;" onclick="addWalletToCart(60)">R$ 60</div>
+                <div class="donation-chip" style="margin:0; width: 100%;" onclick="addWalletToCart(100)">R$ 100</div>
+                <div class="donation-chip" style="margin:0; width: 100%;" onclick="addWalletToCart('outro')">Outro</div>
+            </div>
+
+            <button class="btn-back" style="width: 100%;" onclick="document.getElementById('modal-wallet-add').style.display='none'">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- MODAL RESGATAR GIFT CARD -->
+    <div id="modal-giftcard-redeem" class="modal-overlay">
+        <div class="modal-content" style="text-align: center; gap: 15px;">
+            <div style="background: #ea1d2c; width: 60px; height: 60px; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; margin: 0 auto; font-size: 30px; box-shadow: 0 8px 20px rgba(234, 29, 44, 0.2);">
+                <i class="fa-solid fa-gift"></i>
+            </div>
+            <h3>Resgatar Cartão Presente</h3>
+            <p style="font-size: 13px; color: #666;">Insira o código único para adicionar o saldo instantaneamente à sua carteira.</p>
+            <input type="text" id="giftcard-input" placeholder="Ex: RED-XXXX-XXXX" style="text-align: center; font-family: monospace; font-size: 18px; letter-spacing: 2px; text-transform: uppercase; border: 2px solid #eee; padding: 15px; border-radius: 12px; outline: none; width: 100%;">
+            <button id="btn-redeem-code" class="btn-next" style="width: 100%; padding: 15px;">RESGATAR AGORA</button>
+            <button class="btn-back" style="width: 100%;" onclick="document.getElementById('modal-giftcard-redeem').style.display='none'">Fechar</button>
+        </div>
     </div>
 
     <div style="margin-top: 20px;">
@@ -2001,7 +2190,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, onValue, set, push, remove, get, query, limitToLast } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    import { getDatabase, ref, onValue, set, push, remove, get, query, limitToLast, update } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBEQaIIAYGSDRteg_jERuHtfjQRMpaQYmU",
@@ -2056,77 +2245,79 @@
     }, { onlyOnce: true });
 
     const catalogData = [
-        { id: "p0_uva", name: "Suco Uva del Vale", weight: "suco de uva 450 ml del valle", price: 4.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/---weewuba.png" },
-        { id: "fam_1", name: "File com Fritas", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 138.50, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1filecomfritas.png", serveCount: 4 },
-        { id: "fam_2", name: "Frango & Carne", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 128.40, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1frangoecarne.png", serveCount: 4 },
-        { id: "fam_3", name: "File acebolado", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 112.80, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1carneacebolada.png", serveCount: 4 },
-        { id: "p1", name: "Marmita Executiva Frango Parmegiana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805317455_Marmita_Executiva_Frango_Parmegiana.png", isOffer: true, popular: true },
-        { id: "p2", name: "Subline de Carne", weight: "Disco de carne Friboi fatiado, Pepino, Cebola, Tomate, Pepino, Alface, Repolho, Queijo, Molho especial", price: 17.90, oldPrice: 21.12, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806259695_0000000000000000000000000000s.png", isOffer: true },
-        { id: "p3", name: "BIG Cheddar Cremoso", weight: "1 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa, queijo, molho especial", price: 16.90, oldPrice: 21.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805607723_0-00-0-ewew.png", isOffer: true, isMegaPromo: true, popular: true },
-        { id: "p4", name: "Camarão Internacional", weight: "Risoto cremoso recheado com camarão, milho, ervilha, calabresa, arroz, batata palha, cheiro verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805413051_ewweew.png", isOffer: true, popular: true },
-        { id: "p5", name: "BIG Salada X", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805562776_BIG_Salada_X.png" },
-        { id: "p6", name: "BIG Egg", weight: "1 disco de carne Friboi tradicional, ovo, alface, cebola, tomate, pepino, calabresa", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805580478_BIG_Egg.png" },
-        { id: "p7", name: "BIG Barbecue Cremoso", weight: "1 disco de carne Friboi tradicional, calabresa, alface, cebola, tomate, pepino, molho Barbecue", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805640792_===========na.png" },
-        { id: "p8", name: "BIG Hot Spice", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho especial apimentado", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805658962_--------ma.png" },
-        { id: "p9", name: "BIG Caramelizado", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, cebola caramelizada na manteiga", price: 17.90, oldPrice: 22.37, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805680805_-----zenis_(1).png", isOffer: true },
-        { id: "p10", name: "BIG Chicken", weight: "1 Frango Krispy, alface, cebola, tomate, pepino, Steak Perdigão", price: 18.90, oldPrice: 23.62, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805700730_BIG_Chicken.png", isOffer: true },
-        { id: "p11", name: "BIG Holandês", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho de carne moída e Requeijão", price: 19.90, oldPrice: 24.87, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805730980_-----zenis_(2).png", isOffer: true },
-        { id: "p12", name: "BIG Bacon Mussarela", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho tasty, Bacon, Queijo Mussarela", price: 19.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805744847_-----zenis_(3).png" },
-        { id: "p13", name: "BIG Cheddar Duplo", weight: "2 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa", price: 23.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805783011_BIG_Cheddar_Duplo.png" },
-        { id: "p14", name: "BIG Bacon Triplo", weight: "3 disco de carne Friboi tradicional, Bacon, alface, cebola, tomate, pepino, calabresa, molho especial", price: 24.90, oldPrice: 31.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805850515_download.png", isOffer: true },
-        { id: "p15", name: "BIG Tudo", weight: "2 disco de carne Friboi tradicional, Bacon, alface, cebola, tomate, pepino, calabresa, salsicha, cheddar, ovo, batata palha", price: 28.90, oldPrice: 36.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805887048_BIG_Tudo.png", isOffer: true },
-        { id: "p16", name: "Subline de Frango", weight: "Steak de frango perdigão fatiado, Cebola, Tomate, Alface, Repolho, Queijo, Molho especial", price: 17.90, oldPrice: 22.37, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806282305_dsds.png", isOffer: true, popular: true },
-        { id: "p17", name: "Subline de Bacon Carne e Cheddar", weight: "Disco de carne Friboi fatiado, Cebola, Tomate, Alface, Pepino, Repolho, Queijo, Molho especial", price: 18.90, oldPrice: 23.62, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806300866_0000000000000000000sub.png", isOffer: true },
-        { id: "p18", name: "Marmita Executiva Frango", weight: "Frango grelhado acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805336813_Marmita_Executiva_Frango.png" },
-        { id: "p19", name: "Marmita Executiva de Salmão empanado", weight: "Salmão empanado grelhado acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/------21.png", isOffer: true },
-        { id: "p20", name: "Marmita Executiva Carne", weight: "Carne grelhada acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805371216_Marmita_Executiva_Carne.png" },
-        { id: "p21", name: "Marmita Executiva Toscana", weight: "Toscana grelhada acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805467841_Marmita_Executiva_Toscana.png" },
-        { id: "p22", name: "Jantar Executivo Presidencial de Carne Acebolada", weight: "Carne grelhada, cebola caramelizada, Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho", price: 23.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805488131_------w_(2).png" },
-        { id: "p23", name: "Jantar Executivo Presidencial de Strogonoff", weight: "Strogonoff de frango, milho e ervilha, Batata palha, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho", price: 24.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805509789_------w_(1).png" },
-        { id: "p24", name: "COMBO SUBLINE", weight: "2 SubLine um de carne e outro de frango com batata frita e molhos especiais", price: 63.90, oldPrice: 79.88, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776804918411_-------w1.png", isOffer: true },
-        { id: "p25", name: "COMBO NETFLIX", weight: "2 Hamburguês de cheddar, Batata Frita, 2 Pizza Broto calabresa, Aneis Cebola Empanada, Queijo Cheddar, Bacon", price: 125.90, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776804937097_000000000000000000000000000000000000g.png" },
-        { id: "p26", name: "COMBO BIG LINE TRIPLO", weight: "3 Hamburguês de Cheddar, Batata Frita, Nuggets, Aneis Cebola Empanada, Queijo Cheddar, Bacon", price: 128.90, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776804959351_COMBO_BIG_LINE_TRIPLO.png" },
-        { id: "p27", name: "COMBO BIG DOG", weight: "2 Dog Cheddar, Batata Frita, Nuggets, Aneis Cebola Empanada, Queijo Cheddar, Bacon", price: 110.85, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805014022_COMBO_BIG_DOG.png" },
-        { id: "p28", name: "Batata Frita P", weight: "Porção de fritas Pequena para uma pessoa", price: 16.90, oldPrice: 21.12, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805032005_Batata_Frita_G.png", isOffer: true },
-        { id: "p29", name: "Batata Frita M", weight: "Porção de fritas media para duas pessoas", price: 18.90, oldPrice: 23.62, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805032005_Batata_Frita_G.png", isOffer: true },
-        { id: "p30", name: "Batata Frita G", weight: "Porção de fritas Grande para 3 pessoas", price: 23.90, oldPrice: 29.87, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805032005_Batata_Frita_G.png", isOffer: true },
-        { id: "p31", name: "Batata de Marechal", weight: "Adiciona batata frita, calabresa, frango", price: 24.90, oldPrice: 31.12, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/Gemini_Generated_Image_6lsz5b6lsz5b6lsz.png", isOffer: true },
-        { id: "p32", name: "Nugget Crocante Unidade", weight: "Unidade de Nuggets adicione quantas quiser", price: 2.99, oldPrice: 3.74, category: "Lanches", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805081823_Nugget_Crocante_Unidade.png", isOffer: true },
-        { id: "p33", name: "Dog Padrão", weight: "Uma salsicha, Milho e ervilha, molho especial, carne moída, batata palha", price: 16.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805443692_eewdss.png" },
-        { id: "p34", name: "Dog Duplo", weight: "Duas salsichas, Milho e ervilha, molho especial, carne moída, batata palha", price: 17.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805263280_Dog_Duplo.png" },
-        { id: "p35", name: "Dog Bacon", weight: "Uma salsichas, bacon, Milho e ervilha, molho especial, carne moída, batata palha", price: 19.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805230483_Dog_Bacon.png" },
-        { id: "p36", name: "Dog Cheddar", weight: "Uma salsichas, Milho e ervilha, molho especial, carne moída, batata palha, queijo cheddar", price: 19.90, oldPrice: 24.87, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805280900_Dog_Cheddar.png", isOffer: true },
-        { id: "p37", name: "Pizza Broto Portuguesa", weight: "Queijo, presunto, pimentão, azeitona, cebola, milho e ervilha, tomate, ovo cozido, oregano", price: 13.90, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805101947_Pizza_Broto_Portuguesa.png" },
-        { id: "p38", name: "Pizza Broto Calabresa", weight: "Queijo Moçarella, orégano, calabresa", price: 8.90, oldPrice: 11.13, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805121624_Pizza_Broto_Calabresa.png", isOffer: true, isMegaPromo: true },
-        { id: "p39", name: "Pizza Broto Mussarela", weight: "Queijo, orégano", price: 8.90, oldPrice: 11.13, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805182109_Pizza_Broto_Mussarela.png", isOffer: true, isMegaPromo: true },
-        { id: "p40", name: "Pizza Broto Tres Queijos", weight: "Queijo, orégano, queijo Cheddar", price: 12.90, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805182109_Pizza_Broto_Mussarela.png" },
-        { id: "p41", name: "Macarronada Carne moída", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão Penne", price: 19.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806183506_eewwe.png" },
-        { id: "p42", name: "Macarronada Turbo", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão Penne, calabresa, bacon", price: 24.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806203876_weew.png" },
-        { id: "p43", name: "Macarronada Cheddar Queijos", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão fetuchine, queijo Cheddar", price: 24.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806222968_ewe.png" },
-        { id: "p44", name: "Coca-Cola Lata", weight: "320ml Refrigerante Coca-Cola Lata", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805908258_Coca-Cola_Lata.png" },
-        { id: "p45", name: "Guaraná Lata", weight: "320ml Refrigerante Guaraná Lata", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805921732_0000latagua.png" },
-        { id: "p46", name: "Guaraná 1L", weight: "1L Refrigerante Guaraná Litro", price: 12.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805945732_ew.png" },
-        { id: "p47", name: "Guaraná Jesus Lata", weight: "Refrigerante Guaraná Jesus Lata 260ml", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805961184_0000jesu.png" },
-        { id: "p48", name: "Heineken Vidro", weight: "Heineken Vidro 250ML", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805987750_ssdds.png" },
-        { id: "p49", name: "Coca-Cola 1L Tradicional", weight: "1 L Refrigerante Coca-Cola Litro", price: 13.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806012542_xc.png" },
-        { id: "p50", name: "Agua Mineral", weight: "Garrafa de agua de 500 ML Mineral", price: 3.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806034299_---001.png" },
-        { id: "p51", name: "Executivo Presidencial de Picanha Bovina", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho", price: 26.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(2).png" },
-        { id: "p52", name: "Churrasco Misto Exc de Carne, Toscana e Frango", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(3).png" },
-        { id: "p53", name: "Churrasco Exc de Carne e Toscana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(1).png" },
-        { id: "p54", name: "Feijoadinha 500 ml", weight: "feijoada de 500 ml acompanha calabresa sadia, bacon fatiado e feijao preto saboroso", price: 6.90, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/--------feiojo.png" },
-        { id: "p55", name: "Farofa de Bacon & Calabresa", weight: "Na farofa de bacon acompanha farofa, manteiga corante, bacon fatiado picado, calabresa fatiada picada, crocante", price: 6.90, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/---------------farofa.png" }
-    ];
+    { id: "p0_uva", name: "Suco Uva del Vale", weight: "suco de uva 450 ml del valle", price: 4.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/---weewuba.png" },
+    { id: "fam_1", name: "File com Fritas", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 138.50, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1filecomfritas.png", serveCount: 4 },
+    { id: "fam_2", name: "Frango & Carne", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 128.40, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1frangoecarne.png", serveCount: 4 },
+    { id: "fam_3", name: "File acebolado", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 112.80, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1carneacebolada.png", serveCount: 4 },
+    { id: "p1", name: "Marmita Executiva Frango Parmegiana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805317455_Marmita_Executiva_Frango_Parmegiana.png", isOffer: true, popular: true },
+    { id: "p2", name: "Subline de Carne", weight: "Disco de carne Friboi fatiado, Pepino, Cebola, Tomate, Pepino, Alface, Repolho, Queijo, Molho especial", price: 17.90, oldPrice: 21.12, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806259695_0000000000000000000000000000s.png", isOffer: true },
+    { id: "p3", name: "BIG Cheddar Cremoso", weight: "1 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa, queijo, molho especial", price: 16.90, oldPrice: 21.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805607723_0-00-0-ewew.png", isOffer: true, isMegaPromo: true, popular: true },
+    { id: "p4", name: "Camarão Internacional", weight: "Risoto cremoso recheado com camarão, milho, ervilha, calabresa, arroz, batata palha, cheiro verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805413051_ewweew.png", isOffer: true, popular: true },
+    { id: "p5", name: "BIG Salada X", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805562776_BIG_Salada_X.png" },
+    { id: "p6", name: "BIG Egg", weight: "1 disco de carne Friboi tradicional, ovo, alface, cebola, tomate, pepino, calabresa", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805580478_BIG_Egg.png" },
+    { id: "p7", name: "BIG Barbecue Cremoso", weight: "1 disco de carne Friboi tradicional, calabresa, alface, cebola, tomate, pepino, molho Barbecue", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805640792_===========na.png" },
+    { id: "p8", name: "BIG Hot Spice", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho especial apimentado", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805658962_--------ma.png" },
+    { id: "p9", name: "BIG Caramelizado", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, cebola caramelizada na manteiga", price: 17.90, oldPrice: 22.37, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805680805_-----zenis_(1).png", isOffer: true },
+    { id: "p10", name: "BIG Chicken", weight: "1 Frango Krispy, alface, cebola, tomate, pepino, Steak Perdigão", price: 18.90, oldPrice: 23.62, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805700730_BIG_Chicken.png", isOffer: true },
+    { id: "p11", name: "BIG Holandês", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho de carne moída e Requeijão", price: 19.90, oldPrice: 24.87, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805730980_-----zenis_(2).png", isOffer: true },
+    { id: "p12", name: "BIG Bacon Mussarela", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho tasty, Bacon, Queijo Mussarela", price: 19.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805744847_-----zenis_(3).png" },
+    { id: "p13", name: "BIG Cheddar Duplo", weight: "2 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa", price: 23.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805783011_BIG_Cheddar_Duplo.png" },
+    { id: "p14", name: "BIG Bacon Triplo", weight: "3 disco de carne Friboi tradicional, Bacon, alface, cebola, tomate, pepino, calabresa, molho especial", price: 24.90, oldPrice: 31.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805850515_download.png", isOffer: true },
+    { id: "p15", name: "BIG Tudo", weight: "2 disco de carne Friboi tradicional, Bacon, alface, cebola, tomate, pepino, calabresa, salsicha, cheddar, ovo, batata palha", price: 28.90, oldPrice: 36.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805887048_BIG_Tudo.png", isOffer: true },
+    { id: "p16", name: "Subline de Frango", weight: "Steak de frango perdigão fatiado, Cebola, Tomate, Alface, Repolho, Queijo, Molho especial", price: 17.90, oldPrice: 22.37, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806282305_dsds.png", isOffer: true, popular: true },
+    { id: "p17", name: "Subline de Bacon Carne e Cheddar", weight: "Disco de carne Friboi fatiado, Cebola, Tomate, Alface, Pepino, Repolho, Queijo, Molho especial", price: 18.90, oldPrice: 23.62, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806300866_0000000000000000000sub.png", isOffer: true },
+    { id: "p_monte", name: "Monte o seu !", weight: "Escolha cada ingrediente", price: 9.79, oldPrice: 22.37, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806259695_0000000000000000000000000000s.png", isCustomSub: true, isOffer: true },
+    { id: "p18", name: "Marmita Executiva Frango", weight: "Frango grelhado acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho, salada verde", price: 22.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805336813_Marmita_Executiva_Frango.png" },
+    { id: "p19", name: "Marmita Executiva de Salmão empanado", weight: "Salmão empanado grelhado acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/------21.png", isOffer: true },
+    { id: "p20", name: "Marmita Executiva Carne", weight: "Carne grelhada acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho, salada verde", price: 22.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805371216_Marmita_Executiva_Carne.png" },
+    { id: "p21", name: "Marmita Executiva Toscana", weight: "Toscana grelhada acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho, salada verde", price: 22.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805467841_Marmita_Executiva_Toscana.png" },
+    { id: "p22", name: "Jantar Executivo Presidencial de Carne Acebolada", weight: "Carne grelhada, cebola caramelizada, Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 23.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805488131_------w_(2).png" },
+    { id: "p23", name: "Jantar Executivo Presidencial de Strogonoff", weight: "Strogonoff de frango, milho e ervilha, Batata palha, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 24.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805509789_------w_(1).png" },
+    { id: "p24", name: "COMBO SUBLINE", weight: "2 SubLine um de carne e outro de frango com batata frita e molhos especiais", price: 63.90, oldPrice: 79.88, category: "Combos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776804918411_-------w1.png", isOffer: true },
+    { id: "p25", name: "COMBO NETFLIX", weight: "2 Hamburguês de cheddar, Batata Frita, 2 Pizza Broto calabresa, Aneis Cebola Empanada, Queijo Cheddar, Bacon", price: 125.90, category: "Combos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776804937097_000000000000000000000000000000000000g.png" },
+    { id: "p26", name: "COMBO BIG LINE TRIPLO", weight: "3 Hamburguês de Cheddar, Batata Frita, Nuggets, Aneis Cebola Empanada, Queijo Cheddar, Bacon", price: 128.90, category: "Combos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776804959351_COMBO_BIG_LINE_TRIPLO.png" },
+    { id: "p27", name: "COMBO BIG DOG", weight: "2 Dog Cheddar, Batata Frita, Nuggets, Aneis Cebola Empanada, Queijo Cheddar, Bacon", price: 110.85, category: "Combos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805014022_COMBO_BIG_DOG.png" },
+    { id: "p28", name: "Batata Frita P", weight: "Porção de fritas Pequena para uma pessoa", price: 16.90, oldPrice: 21.12, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805032005_Batata_Frita_G.png", isOffer: true },
+    { id: "p29", name: "Batata Frita M", weight: "Porção de fritas media para duas pessoas", price: 18.90, oldPrice: 23.62, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805032005_Batata_Frita_G.png", isOffer: true },
+    { id: "p30", name: "Batata Frita G", weight: "Porção de fritas Grande para 3 pessoas", price: 23.90, oldPrice: 29.87, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805032005_Batata_Frita_G.png", isOffer: true },
+    { id: "p31", name: "Batata de Marechal", weight: "Adiciona batata frita, calabresa, frango", price: 24.90, oldPrice: 31.12, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/Gemini_Generated_Image_6lsz5b6lsz5b6lsz.png", isOffer: true },
+    { id: "p32", name: "Nugget Crocante Unidade", weight: "Unidade de Nuggets adicione quantas quiser", price: 2.99, oldPrice: 3.74, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805081823_Nugget_Crocante_Unidade.png", isOffer: true },
+    { id: "p33", name: "Dog Padrão", weight: "Uma salsicha, Milho e ervilha, molho especial, carne moída, batata palha", price: 16.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805443692_eewdss.png" },
+    { id: "p34", name: "Dog Duplo", weight: "Duas salsichas, Milho e ervilha, molho especial, carne moída, batata palha", price: 17.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805263280_Dog_Duplo.png" },
+    { id: "p35", name: "Dog Bacon", weight: "Uma salsichas, bacon, Milho e ervilha, molho especial, carne moída, batata palha", price: 19.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805230483_Dog_Bacon.png" },
+    { id: "p36", name: "Dog Cheddar", weight: "Uma salsichas, Milho e ervilha, molho especial, carne moída, batata palha, queijo cheddar", price: 19.90, oldPrice: 24.87, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805280900_Dog_Cheddar.png", isOffer: true },
+    { id: "p37", name: "Pizza Broto Portuguesa", weight: "Queijo, presunto, pimentão, azeitona, cebola, milho e ervilha, tomate, ovo cozido, oregano", price: 13.90, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805101947_Pizza_Broto_Portuguesa.png" },
+    { id: "p38", name: "Pizza Broto Calabresa", weight: "Queijo Moçarella, orégano, calabresa", price: 8.90, oldPrice: 11.13, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805121624_Pizza_Broto_Calabresa.png", isOffer: true, isMegaPromo: true },
+    { id: "p39", name: "Pizza Broto Mussarela", weight: "Queijo, orégano", price: 8.90, oldPrice: 11.13, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805182109_Pizza_Broto_Mussarela.png", isOffer: true, isMegaPromo: true },
+    { id: "p40", name: "Pizza Broto Tres Queijos", weight: "Queijo, orégano, queijo Cheddar", price: 12.90, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805182109_Pizza_Broto_Mussarela.png" },
+    { id: "p41", name: "Macarronada Carne moída", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão Penne", price: 19.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806183506_eewwe.png" },
+    { id: "p42", name: "Macarronada Turbo", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão Penne, calabresa, bacon", price: 24.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806203876_weew.png" },
+    { id: "p43", name: "Macarronada Cheddar Queijos", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão fetuchine, queijo Cheddar", price: 24.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806222968_ewe.png" },
+    { id: "p44", name: "Coca-Cola Lata", weight: "320ml Refrigerante Coca-Cola Lata", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805908258_Coca-Cola_Lata.png" },
+    { id: "p45", name: "Guaraná Lata", weight: "320ml Refrigerante Guaraná Lata", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805921732_0000latagua.png" },
+    { id: "p46", name: "Guaraná 1L", weight: "1L Refrigerante Guaraná Litro", price: 12.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805945732_ew.png" },
+    { id: "p47", name: "Guaraná Jesus Lata", weight: "Refrigerante Guaraná Jesus Lata 260ml", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805961184_0000jesu.png" },
+    { id: "p48", name: "Heineken Vidro", weight: "Heineken Vidro 250ML", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805987750_ssdds.png" },
+    { id: "p49", name: "Coca-Cola 1L Tradicional", weight: "1 L Refrigerante Coca-Cola Litro", price: 13.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806012542_xc.png" },
+    { id: "p50", name: "Agua Mineral", weight: "Garrafa de agua de 500 ML Mineral", price: 3.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806034299_---001.png" },
+    { id: "p51", name: "Executivo Presidencial de Picanha Bovina", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 26.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(2).png" },
+    { id: "p52", name: "Churrasco Misto Exc de Carne, Toscana e Frango", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(3).png" },
+    { id: "p53", name: "Churrasco Exc de Carne e Toscana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(1).png" },
+    { id: "p54", name: "Feijoadinha 500 ml", weight: "feijoada de 500 ml acompanha calabresa sadia, bacon fatiado e feijao preto saboroso", price: 6.90, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/--------feiojo.png" },
+    { id: "p55", name: "Farofa de Bacon & Calabresa", weight: "Na farofa de bacon acompanha farofa, manteiga corante, bacon fatiado picado, calabresa fatiada picada, crocante", price: 6.90, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/---------------farofa.png" }
+];
 
     const catalogCategories = [
         { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 1 },
         { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
         { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 3 },
-        { key: "c4", name: "Lanches", icon: "fa-solid fa-shrimp", order: 4 },
-        { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 5 },
-        { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 6 },
-        { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 7 },
-        { key: "c8", name: "Bolos", icon: "fa-solid fa-cake-candles", order: 8 },
-        { key: "c9", name: "Bebidas", icon: "fa-solid fa-beer-mug-empty", order: 9 }
+        { key: "c10", name: "Combos", icon: "fa-solid fa-boxes-stacked", order: 4 },
+        { key: "c4", name: "Petiscos", icon: "fa-solid fa-shrimp", order: 5 },
+        { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 6 },
+        { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 7 },
+        { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 8 },
+        { key: "c8", name: "Bolos", icon: "fa-solid fa-cake-candles", order: 9 },
+        { key: "c9", name: "Bebidas", icon: "fa-solid fa-beer-mug-empty", order: 10 }
     ];
 
     let products = [...catalogData];
@@ -2332,7 +2523,344 @@ let userActiveOrderData = null;
         }
     };
 
-    function init() {
+    window.addWalletToCart = function(amount) {
+    let finalAmount = amount;
+    if(amount === 'outro') {
+        const promptVal = prompt("Digite o valor que deseja adicionar:");
+        finalAmount = parseFloat(promptVal);
+        if(isNaN(finalAmount) || finalAmount <= 0) return alert("Valor inválido");
+    }
+
+    const walletItem = {
+        id: 'wallet_recharge_' + Date.now(),
+        name: 'Saldo para Carteira',
+        price: finalAmount,
+        img: 'https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg',
+        weight: 'Recarga de Saldo RedLine',
+        qty: 1,
+        isWalletTopup: true
+    };
+
+    cart = [walletItem]; // Limpa o carrinho e deixa só a recarga para evitar conflitos
+    saveCart();
+    document.getElementById('modal-wallet-add').style.display = 'none';
+    changeTab('cart');
+    
+    setTimeout(() => {
+        const pixRadio = document.querySelector('input[name="pay-method"][value="pix"]');
+        if(pixRadio) pixRadio.click();
+        renderCart();
+    }, 500);
+};
+
+window.redeemGiftCard = async function() {
+    const code = document.getElementById('giftcard-input').value.trim().toUpperCase();
+    if(!code) return alert("Digite um código!");
+    if(!userProfile) return;
+
+    const btn = document.getElementById('btn-redeem-code');
+    btn.disabled = true;
+    btn.innerText = "Validando...";
+
+    const giftRef = ref(db, `settings/gift_cards/${code}`);
+    const snap = await get(giftRef);
+
+    if(snap.exists()) {
+        const gift = snap.val();
+        if(gift.used) {
+            alert("Este código já foi utilizado!");
+        } else {
+            const amount = parseFloat(gift.amount);
+            const uKey = userProfile.contato.replace(/\D/g, '');
+            const userBalRef = ref(db, `users/${uKey}/walletBalance`);
+            
+            const currentBalSnap = await get(userBalRef);
+            const currentBal = currentBalSnap.val() || 0;
+
+            // Adiciona saldo e marca código como usado
+            await set(userBalRef, currentBal + amount);
+            await update(giftRef, { 
+                used: true, 
+                usedBy: userProfile.nome, 
+                usedAt: Date.now() 
+            });
+
+            showToast(`Sucesso! R$ ${amount.toFixed(2).replace('.',',')} adicionados à sua carteira.`);
+            document.getElementById('modal-giftcard-redeem').style.display = 'none';
+            document.getElementById('giftcard-input').value = "";
+        }
+    } else {
+        alert("Código inválido ou inexistente.");
+    }
+    btn.disabled = false;
+    btn.innerText = "RESGATAR AGORA";
+};
+
+function init() {
+    document.getElementById('btn-redeem-code').onclick = redeemGiftCard;
+
+    window.openDailyReward = function() {
+        if(!userProfile) return;
+        document.getElementById('modal-daily-reward').style.display = 'flex';
+        renderDailyRewardUI();
+    };
+
+    window.renderDailyRewardUI = function() {
+        const data = window.cachedDailyReward || { streak: 0, lastDate: "" };
+        const container = document.getElementById('reward-days-container');
+        const btn = document.getElementById('btn-claim-reward');
+        const timeInfo = document.getElementById('reward-time-info');
+        
+        container.innerHTML = "";
+
+        // Pega hora de Brasília
+        const now = new Date();
+        const bsbTime = parseInt(new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: 'numeric', hour12: false }).format(now));
+        const todayStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(now);
+        
+        // Verifica se o cliente faltou algum dia para resetar o progresso
+        if (data.lastDate && data.lastDate !== todayStr) {
+            const yesterday = new Date(now);
+            yesterday.setDate(now.getDate() - 1);
+            const yesterdayStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(yesterday);
+
+            if (data.lastDate !== yesterdayStr) {
+                data.streak = 0; // Reset local
+                const uKey = userProfile.contato.replace(/\D/g, '');
+                update(ref(db, `users/${uKey}/dailyReward`), { streak: 0 }); // Reset no Banco
+            }
+        }
+
+        const isTimeOk = bsbTime >= 18 || bsbTime < 1; // Entre 18:00 e 00:59
+        const alreadyClaimed = data.lastDate === todayStr;
+
+        if(!isTimeOk) {
+            timeInfo.style.display = 'block';
+            timeInfo.style.color = '#ea1d2c';
+            timeInfo.style.background = '#fff5f5';
+            timeInfo.innerText = "SISTEMA ABRE ÀS 18:00 (HORÁRIO DE BRASÍLIA)";
+        } else if(alreadyClaimed) {
+            timeInfo.style.display = 'block';
+            timeInfo.style.color = '#2ecc71';
+            timeInfo.style.background = '#f0fff4';
+            timeInfo.innerText = "VOCÊ JÁ RESGATOU SEU PRÊMIO DE HOJE!";
+        } else {
+            timeInfo.style.display = 'none';
+        }
+
+        const rewards = [
+            { day: 1, type: 'star', val: 0 },
+            { day: 2, type: 'star', val: 0 },
+            { day: 3, type: 'money', val: 5 },
+            { day: 4, type: 'star', val: 0 },
+            { day: 5, type: 'star', val: 0 },
+            { day: 6, type: 'star', val: 0 },
+            { day: 7, type: 'money', val: 10 }
+        ];
+
+        const fragment = document.createDocumentFragment();
+        rewards.forEach(r => {
+            const isClaimed = r.day <= data.streak;
+            const isNext = r.day === data.streak + 1;
+            
+            const div = document.createElement('div');
+            div.className = `reward-day-box ${r.type === 'money' ? 'big' : ''} ${isClaimed ? 'claimed' : ''} ${isNext && isTimeOk && !alreadyClaimed ? 'active' : ''}`;
+            
+            let icon = r.type === 'star' ? 'fa-star' : 'fa-sack-dollar';
+            let label = r.type === 'money' 
+                ? `${r.val.toFixed(2).replace('.', ',').padStart(5, '0')}` 
+                : `Dia ${r.day}`;
+
+            if (r.type === 'money') {
+                div.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%; height: 110px; padding: 5px; overflow: hidden;">
+                        <i class="fa-solid ${isClaimed ? 'fa-circle-check' : 'fa-sack-dollar'}" style="font-size: 65px; color: #f1c40f; filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.05));"></i>
+                        <div style="text-align: left; display: flex; flex-direction: column; justify-content: center;">
+                            <span style="font-size: 11px; font-weight: 900; color: #b8860b; line-height: 1; letter-spacing: 1px;">RECEBA</span>
+                            <span style="font-size: 85px; font-weight: 900; color: #ea1d2c; line-height: 0.7; margin: 0; letter-spacing: -5px; filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.05));">${label}</span>
+                            <span style="font-size: 11px; font-weight: 900; color: #ea1d2c; line-height: 1; letter-spacing: 0px;">SALDO NA CARTEIRA</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                div.innerHTML = `
+                    <i class="fa-solid ${isClaimed ? 'fa-circle-check' : icon}" style="font-size: 22px; margin-bottom: 3px;"></i>
+                    <span style="font-size: 11px; font-weight: 900;">${label}</span>
+                `;
+            }
+            fragment.appendChild(div);
+        });
+        container.appendChild(fragment);
+
+        if(isTimeOk && !alreadyClaimed) {
+            btn.disabled = false;
+            btn.style.background = 'var(--primary-orange)';
+            btn.innerText = "RESGATAR RECOMPENSA";
+            btn.onclick = () => claimDailyReward(data.streak + 1, todayStr);
+        } else {
+            btn.disabled = true;
+            btn.style.background = '#ccc';
+            btn.innerText = alreadyClaimed ? "RESGATADO" : "INDISPONÍVEL";
+        }
+    };
+
+    window.claimDailyReward = async function(newStreak, dateStr) {
+        const uKey = userProfile.contato.replace(/\D/g, '');
+        const btn = document.getElementById('btn-claim-reward');
+        btn.disabled = true;
+        btn.innerText = "PROCESSANDO...";
+
+        let moneyReward = 0;
+        if(newStreak === 3) moneyReward = 5;
+        if(newStreak === 7) moneyReward = 10;
+
+        const updates = {};
+        // Se resgatou o dia 7, o próximo será o dia 1 (reset da semana)
+        updates[`users/${uKey}/dailyReward/streak`] = newStreak >= 7 ? 0 : newStreak;
+        updates[`users/${uKey}/dailyReward/lastDate`] = dateStr;
+
+        if(moneyReward > 0) {
+            const balSnap = await get(ref(db, `users/${uKey}/walletBalance`));
+            const currentBal = balSnap.val() || 0;
+            updates[`users/${uKey}/walletBalance`] = currentBal + moneyReward;
+        }
+
+        update(ref(db), updates).then(() => {
+            showToast(moneyReward > 0 ? `PARABÉNS! R$ ${moneyReward.toFixed(2)} adicionados à sua carteira!` : "Estrela de hoje resgatada! Volte amanhã.");
+            if(moneyReward > 0) {
+                const sound = document.getElementById('coin-sound');
+                if(sound) sound.play();
+            }
+        });
+    };
+
+
+    window.openDailyReward = function() {
+        if(!userProfile) return;
+        const modal = document.getElementById('modal-daily-reward');
+        modal.style.display = 'flex';
+        renderDailyRewardUI();
+    };
+
+    window.openDailyReward = function() {
+        if(!userProfile) return;
+        document.getElementById('modal-daily-reward').style.display = 'flex';
+        renderDailyRewardUI();
+    };
+
+    window.renderDailyRewardUI = function() {
+        const data = window.cachedDailyReward || { streak: 0, lastDate: "" };
+        const container = document.getElementById('reward-days-container');
+        const btn = document.getElementById('btn-claim-reward');
+        const timeInfo = document.getElementById('reward-time-info');
+        
+        container.innerHTML = "";
+
+        const now = new Date();
+        const bsbTime = parseInt(new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: 'numeric', hour12: false }).format(now));
+        const todayStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(now);
+        
+        const isTimeOk = bsbTime >= 18 || bsbTime < 1; 
+        const alreadyClaimed = data.lastDate === todayStr;
+
+        if(!isTimeOk) {
+            timeInfo.style.display = 'block';
+            timeInfo.style.color = '#ea1d2c';
+            timeInfo.style.background = '#fff5f5';
+            timeInfo.innerText = "SISTEMA ABRE ÀS 18:00 (HORÁRIO DE BRASÍLIA)";
+        } else if(alreadyClaimed) {
+            timeInfo.style.display = 'block';
+            timeInfo.style.color = '#2ecc71';
+            timeInfo.style.background = '#f0fff4';
+            timeInfo.innerText = "VOCÊ JÁ RESGATOU SEU PRÊMIO DE HOJE!";
+        } else {
+            timeInfo.style.display = 'none';
+        }
+
+        const rewards = [
+            { day: 1, type: 'star', val: 0 },
+            { day: 2, type: 'star', val: 0 },
+            { day: 3, type: 'money', val: 5 },
+            { day: 4, type: 'star', val: 0 },
+            { day: 5, type: 'star', val: 0 },
+            { day: 6, type: 'star', val: 0 },
+            { day: 7, type: 'money', val: 10 }
+        ];
+
+        const fragment = document.createDocumentFragment();
+        rewards.forEach(r => {
+            const isClaimed = r.day <= data.streak;
+            const isNext = r.day === data.streak + 1;
+            
+            const div = document.createElement('div');
+            div.className = `reward-day-box ${r.type === 'money' ? 'big' : ''} ${isClaimed ? 'claimed' : ''} ${isNext && isTimeOk && !alreadyClaimed ? 'active' : ''}`;
+            
+            let icon = r.type === 'star' ? 'fa-star' : 'fa-sack-dollar';
+            let label = r.type === 'money' 
+                ? `${r.val.toFixed(2).replace('.', ',').padStart(5, '0')}` 
+                : `Dia ${r.day}`;
+
+            if (r.type === 'money') {
+                div.style.background = "#ea1d2c";
+                div.style.borderColor = "#ffde00";
+                div.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;">
+                        <i class="fa-solid ${isClaimed ? 'fa-circle-check' : 'fa-sack-dollar'}" style="font-size: 24px; color: #fff;"></i>
+                        <div style="text-align: left; display: flex; flex-direction: column; justify-content: center;">
+                            <span style="font-size: 8px; font-weight: 900; color: rgba(255,255,255,0.8); line-height: 1;">RECEBA</span>
+                            <span style="font-size: 22px; font-weight: 900; color: #fff; line-height: 1; margin: 0;">R$ ${label}</span>
+                            <span style="font-size: 8px; font-weight: 900; color: rgba(255,255,255,0.8); line-height: 1;">SALDO CARTEIRA</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                div.innerHTML = `
+                    <i class="fa-solid ${isClaimed ? 'fa-circle-check' : icon}" style="font-size: 18px;"></i>
+                    <span style="font-size: 9px; font-weight: 900;">${label}</span>
+                `;
+            }
+            fragment.appendChild(div);
+        });
+        container.appendChild(fragment);
+
+        if(isTimeOk && !alreadyClaimed) {
+            btn.disabled = false;
+            btn.style.background = 'var(--primary-orange)';
+            btn.innerText = "RESGATAR RECOMPENSA";
+            btn.onclick = () => claimDailyReward(data.streak + 1, todayStr);
+        } else {
+            btn.disabled = true;
+            btn.style.background = '#ccc';
+            btn.innerText = alreadyClaimed ? "RESGATADO" : "INDISPONÍVEL";
+        }
+    };
+
+    window.claimDailyReward = async function(newStreak, dateStr) {
+        const uKey = userProfile.contato.replace(/\D/g, '');
+        const btn = document.getElementById('btn-claim-reward');
+        btn.disabled = true;
+        btn.innerText = "PROCESSANDO...";
+
+        let moneyReward = 0;
+        if(newStreak === 3) moneyReward = 5;
+        if(newStreak === 7) moneyReward = 10;
+
+        const updates = {};
+        updates[`users/${uKey}/dailyReward/streak`] = newStreak >= 7 ? 0 : newStreak;
+        updates[`users/${uKey}/dailyReward/lastDate`] = dateStr;
+
+        if(moneyReward > 0) {
+            const balSnap = await get(ref(db, `users/${uKey}/walletBalance`));
+            const currentBal = balSnap.val() || 0;
+            updates[`users/${uKey}/walletBalance`] = currentBal + moneyReward;
+        }
+
+        update(ref(db), updates).then(() => {
+            showToast(moneyReward > 0 ? `PARABÉNS! R$ ${moneyReward.toFixed(2)} adicionados à sua carteira!` : "Estrela de hoje resgatada! Volte amanhã.");
+            renderDailyRewardUI();
+            updateUserProfileUI();
+        });
+    };
 
     const formatPhone = (id) => {
         const input = document.getElementById(id);
@@ -2973,12 +3501,13 @@ let userActiveOrderData = null;
         { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 3 },
         { key: "c_add", name: "Adicionais", icon: "fa-solid fa-plus", order: 3.1 },
         { key: "c_fam", name: "Refeições Família", icon: "fa-solid fa-users", order: 3.2 },
-        { key: "c4", name: "Lanches", icon: "fa-solid fa-shrimp", order: 4 },
-        { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 5 },
-        { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 6 },
-        { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 7 },
-        { key: "c8", name: "Bolos", icon: "fa-solid fa-cake-candles", order: 8 },
-        { key: "c9", name: "Bebidas", icon: "fa-solid fa-beer-mug-empty", order: 9 }
+        { key: "c10", name: "Combos", icon: "fa-solid fa-boxes-stacked", order: 4 },
+        { key: "c4", name: "Petiscos", icon: "fa-solid fa-shrimp", order: 5 },
+        { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 6 },
+        { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 7 },
+        { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 8 },
+        { key: "c8", name: "Bolos", icon: "fa-solid fa-cake-candles", order: 9 },
+        { key: "c9", name: "Bebidas", icon: "fa-solid fa-beer-mug-empty", order: 10 }
     ];
     renderHomeCategories();
     renderProducts();
@@ -3020,6 +3549,22 @@ function updateUserProfileUI() {
         window.logPerf('xp');
         return;
     }
+
+    const userKeyForWallet = userProfile.contato.replace(/\D/g, '');
+    
+    // Escuta saldo e recompensa diária em tempo real (cache local para carregar instantâneo)
+    onValue(ref(db, `users/${userKeyForWallet}`), (snap) => {
+        const userData = snap.val() || {};
+        const balance = userData.walletBalance || 0;
+        window.cachedDailyReward = userData.dailyReward || { streak: 0, lastDate: "" };
+        
+        document.getElementById('wallet-balance-display').innerText = `R$ ${balance.toFixed(2).replace('.', ',')}`;
+        
+        if(document.getElementById('modal-daily-reward').style.display === 'flex') {
+            renderDailyRewardUI();
+        }
+    });
+
     const firstName = userProfile.nome.split(' ')[0];
     const userKey = userProfile.contato.replace(/\D/g, '');
     
@@ -3541,9 +4086,15 @@ function renderFakeReviews() {
         const card = document.createElement('div');
         let cardClass = p.isSoldOut ? 'product-card esgotado' : 'product-card';
         if (p.isMegaPromo && !p.isSoldOut) cardClass += ' mega-promo-card';
+        if (p.isCustomSub && !p.isSoldOut) cardClass += ' custom-sub-card';
         card.className = cardClass;
         
-        const originalPrice = (p.price / 0.8).toFixed(2).replace('.', ',');
+        if (p.isCustomSub && !p.isSoldOut) {
+            card.style.border = "2px solid #ea1d2c";
+            card.style.boxShadow = "0 4px 12px rgba(234, 29, 44, 0.15)";
+        }
+
+        const originalPrice = p.oldPrice ? p.oldPrice.toFixed(2).replace('.', ',') : (p.price / 0.8).toFixed(2).replace('.', ',');
         const currentPrice = p.price.toFixed(2).replace('.', ',');
     
         const priceHTML = p.isOffer 
@@ -3556,18 +4107,25 @@ function renderFakeReviews() {
         card.innerHTML = `
             ${p.isSoldOut ? '<div class="esgotado-label">ESGOTADO VOLTA AMANHÃ</div>' : ''}
             ${p.isMegaPromo && !p.isSoldOut ? `<div class="mega-promo-tag"><div class="fire-container"><i class="fa-solid fa-fire"></i><span class="percent">%</span></div>MEGA PROMO</div>` : ''}
+            ${p.isCustomSub && !p.isSoldOut ? `<div class="mega-promo-tag" style="background: #ea1d2c;"><i class="fa-solid fa-wand-magic-sparkles"></i> ESPECIAL</div>` : ''}
             <img src="${getThumb(p.img)}" alt="${p.name}" class="product-img-click" loading="lazy" onload="this.classList.add('img-loaded')" onerror="this.src='https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg'">
             ${p.serveCount ? `<div style="background: #ea1d2c; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; margin-bottom: 5px; display: inline-block; text-transform: uppercase;">SERVE ${p.serveCount} PESSOAS</div>` : ''}
             <p class="p-name">${p.name}</p>
             <p class="p-weight">${p.weight}</p>
             <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
                 <div>${priceHTML}</div>
-                ${p.isSoldOut ? '<span style="font-size:10px; color:red; font-weight:bold;">Indisponível</span>' : `<button class="add-btn" data-id="${p.id}">+</button>`}
+                ${p.isSoldOut ? '<span style="font-size:10px; color:red; font-weight:bold;">Indisponível</span>' : 
+                  (p.isCustomSub ? `<button class="btn-next" style="padding: 5px 12px; font-size: 10px; border-radius: 6px;">MONTAR</button>` : `<button class="add-btn" data-id="${p.id}">+</button>`)
+                }
             </div>
         `;
         if(!p.isSoldOut) {
-            card.querySelector('.add-btn').onclick = (e) => { e.stopPropagation(); addToCart(p.id); };
-            card.onclick = () => openProductDetails(p);
+            if(p.isCustomSub) {
+                card.onclick = () => openSubLineBuilder();
+            } else {
+                card.querySelector('.add-btn').onclick = (e) => { e.stopPropagation(); addToCart(p.id); };
+                card.onclick = () => openProductDetails(p);
+            }
         }
         return card;
     }
@@ -3845,6 +4403,70 @@ window.addBagToCart = (key) => {
 
     window.renderCart = function() {
         const container = document.getElementById('cart-items-container');
+        if (!userProfile) return;
+        
+        const isRecharge = cart.some(i => i.isWalletTopup);
+        const uKey = userProfile.contato.replace(/\D/g, '');
+
+        // Atualiza saldo na tela de pagamento (Lógica unificada)
+        get(ref(db, `users/${uKey}/walletBalance`)).then(snap => {
+            const balance = snap.val() || 0;
+            const badge = document.getElementById('checkout-wallet-badge');
+            const walletRadio = document.querySelector('input[name="pay-method"][value="carteira"]');
+            const partialContainer = document.getElementById('partial-wallet-container');
+            const partialValSpan = document.getElementById('partial-wallet-val');
+            
+            if(badge) badge.innerText = `R$ ${balance.toFixed(2).replace('.', ',')}`;
+            
+            if(isRecharge) {
+                if(walletRadio) walletRadio.parentElement.style.display = 'none';
+                if(partialContainer) partialContainer.style.display = 'none';
+            } else {
+                if(walletRadio) walletRadio.parentElement.style.display = 'flex';
+                
+                const selectedPay = document.querySelector('input[name="pay-method"]:checked')?.value;
+                if(balance > 0 && selectedPay !== 'carteira') {
+                    if(partialContainer) partialContainer.style.display = 'flex';
+                    if(partialValSpan) partialValSpan.innerText = `R$ ${balance.toFixed(2).replace('.', ',')}`;
+                } else {
+                    if(partialContainer) partialContainer.style.display = 'none';
+                    const usePartialCheck = document.getElementById('use-wallet-partial');
+                    if(usePartialCheck) usePartialCheck.checked = false;
+                }
+            }
+        });
+        
+        // Esconde logística e endereço se for recarga
+        const logisticsSection = document.getElementById('delivery-options-container')?.parentElement;
+        const addressBar = document.getElementById('address-checkout-bar');
+        const deliveryTypeContainer = document.getElementById('delivery-options-container');
+
+        if(isRecharge) {
+            if(logisticsSection) logisticsSection.style.display = 'none';
+            if(addressBar) addressBar.style.display = 'none';
+            if(deliveryTypeContainer) deliveryTypeContainer.style.display = 'none';
+            
+            // Força PIX e limpa outros
+            setTimeout(() => {
+                const pixInput = document.querySelector('input[name="pay-method"][value="pix"]');
+                if(pixInput) {
+                    pixInput.checked = true;
+                    // Altera o texto para o solicitado
+                    const labelSpan = pixInput.parentElement.querySelector('span');
+                    if(labelSpan) labelSpan.innerText = "Pagamento via PIX";
+                }
+                document.querySelectorAll('input[name="pay-method"]').forEach(input => {
+                    if(input.value !== 'pix') input.parentElement.style.display = 'none';
+                });
+            }, 10);
+        } else {
+            if(logisticsSection) logisticsSection.style.display = 'block';
+            if(addressBar) addressBar.style.display = 'flex';
+            if(deliveryTypeContainer) deliveryTypeContainer.style.display = 'flex';
+            document.querySelectorAll('input[name="pay-method"]').forEach(input => {
+                input.parentElement.style.display = 'flex';
+            });
+        }
         
         const deliveryRadio = document.querySelector('input[name="delivery-type"][value="delivery"]');
         const pickupRadio = document.querySelector('input[name="delivery-type"][value="pickup"]');
@@ -3948,6 +4570,7 @@ window.addBagToCart = (key) => {
         const threshold = 84.90;
         const deliveryType = document.querySelector('input[name="delivery-type"]:checked')?.value || 'delivery';
         let deliveryFee = (deliveryType === 'delivery' && subtotal > 0 && subtotal < threshold) ? 4.99 : 0;
+        if(isRecharge) deliveryFee = 0;
 
         if (appliedCoupon === "AMORDEPESSOA100%OFF") {
             deliveryFee = 0;
@@ -4058,7 +4681,36 @@ window.addBagToCart = (key) => {
         document.getElementById('subtotal-val').innerText = `R$ ${subtotal.toFixed(2).replace('.',',')}`;
         
         const originalTotal = subtotal + deliveryFee + selectedDonation;
-        const finalTotal = subtotal + deliveryFee + selectedDonation - couponDiscount;
+        let finalTotal = subtotal + deliveryFee + selectedDonation - couponDiscount;
+        
+        // Aplica desconto da carteira no resumo visual
+        const useWallet = document.getElementById('use-wallet-partial')?.checked;
+        if(useWallet) {
+            const userKeyW = userProfile.contato.replace(/\D/g, '');
+            get(ref(db, `users/${userKeyW}/walletBalance`)).then(snap => {
+                const bal = snap.val() || 0;
+                const discount = Math.min(bal, finalTotal);
+                finalTotal -= discount;
+                
+                const totalValEl = document.getElementById('total-val');
+                totalValEl.innerText = `R$ ${finalTotal.toFixed(2).replace('.', ',')}`;
+                
+                // Adiciona linha de desconto da carteira no resumo
+                if(!document.getElementById('wallet-discount-row')) {
+                    const row = document.createElement('div');
+                    row.className = 'row';
+                    row.id = 'wallet-discount-row';
+                    row.style.color = "#ea1d2c";
+                    row.style.fontWeight = "bold";
+                    row.innerHTML = `<span>Desconto Carteira RedLine</span><span>- R$ ${discount.toFixed(2).replace('.',',')}</span>`;
+                    document.querySelector('.payment-details').insertBefore(row, document.querySelector('.total-row'));
+                }
+            });
+        } else {
+            const oldRow = document.getElementById('wallet-discount-row');
+            if(oldRow) oldRow.remove();
+        }
+
         const totalValEl = document.getElementById('total-val');
 
         if (couponDiscount > 0) {
@@ -4928,7 +5580,7 @@ document.getElementById('btn-add-to-active').onclick = function() {
         });
     }
 
-    document.getElementById('finish-order').onclick = function() {
+    document.getElementById('finish-order').onclick = async function() {
         const status = updateStoreStatusUI();
         const loader = document.getElementById('order-processing-loader');
         
@@ -4974,19 +5626,22 @@ document.getElementById('btn-add-to-active').onclick = function() {
         const totalComFrete = subtotal + deliveryFee;
         const minVal = deliveryType === 'delivery' ? 20 : 15;
 
-        if (appliedCoupon !== "AMORDEPESSOA100%OFF" && totalComFrete < minVal) {
+        const isRecharge = cart.some(i => i.isWalletTopup);
+
+        if (!isRecharge && appliedCoupon !== "AMORDEPESSOA100%OFF" && totalComFrete < minVal) {
             removeLoader();
             showToast(deliveryType === 'delivery' ? "O total com frete deve ser no mínimo R$ 20,00" : "O total deve ser no mínimo R$ 15,00 para retirada");
             return;
         }
 
-        if (deliveryType === 'delivery' && !userProfile.lat && !userProfile.declinedMap) {
+        if (!isRecharge && deliveryType === 'delivery' && !userProfile.lat && !userProfile.declinedMap) {
             removeLoader();
             document.getElementById('modal-map-ask').style.display = 'flex';
             return;
         }
         
-        const finalTotal = Math.max(0, (subtotal + deliveryFee) - couponDiscount);
+        let currentFinalTotal = Math.max(0, (subtotal + deliveryFee) - couponDiscount);
+        
         const extras = [];
         if(document.getElementById('opt-maionese').checked) extras.push("Maionese Hellmann's");
         if(document.getElementById('opt-ketchup').checked) extras.push("Ketchup Hellmann's");
@@ -4998,6 +5653,28 @@ document.getElementById('btn-add-to-active').onclick = function() {
 
         const paymentMethod = document.querySelector('input[name="pay-method"]:checked').value;
         const changeVal = document.getElementById('pay-change').value;
+        const useWalletPartial = document.getElementById('use-wallet-partial')?.checked || false;
+        let walletAmountUsed = 0;
+
+        // Validação de Saldo da Carteira (Pagamento Total ou Parcial)
+        const uKeyFinish = userProfile.contato.replace(/\D/g, '');
+        const balanceSnap = await get(ref(db, `users/${uKeyFinish}/walletBalance`));
+        const currentBalance = balanceSnap.val() || 0;
+
+        if (paymentMethod === 'carteira') {
+            if (currentBalance < currentFinalTotal) {
+                removeLoader();
+                alert(`Saldo insuficiente! Você tem R$ ${currentBalance.toFixed(2).replace('.', ',')} e o pedido deu R$ ${currentFinalTotal.toFixed(2).replace('.', ',')}.`);
+                return;
+            }
+            walletAmountUsed = currentFinalTotal;
+            currentFinalTotal = 0;
+            await set(ref(db, `users/${uKeyFinish}/walletBalance`), currentBalance - walletAmountUsed);
+        } else if (useWalletPartial) {
+            walletAmountUsed = Math.min(currentBalance, currentFinalTotal);
+            currentFinalTotal -= walletAmountUsed;
+            await set(ref(db, `users/${uKeyFinish}/walletBalance`), currentBalance - walletAmountUsed);
+        }
 
         const newOrderRef = push(ref(db, 'orders'));
         set(newOrderRef, {
@@ -5007,9 +5684,10 @@ document.getElementById('btn-add-to-active').onclick = function() {
             observacao: document.getElementById('order-observation').value,
             sticker: selectedSticker,
             coupon: appliedCoupon,
-            total: finalTotal,
-            deliveryFee: deliveryFee,
-            deliveryType: document.querySelector('input[name="delivery-type"]:checked')?.value || 'delivery',
+            total: currentFinalTotal,
+            walletPaid: walletAmountUsed,
+            deliveryFee: isRecharge ? 0 : deliveryFee,
+            deliveryType: isRecharge ? 'recharge' : deliveryType,
             paymentMethod: paymentMethod,
             change: paymentMethod === 'especie' ? changeVal : null,
             modoPresente: document.getElementById('opt-presente').checked,
@@ -5019,7 +5697,7 @@ document.getElementById('btn-add-to-active').onclick = function() {
         }).then(() => {
             setTimeout(() => {
                 removeLoader();
-                const formattedTotal = 'R$ ' + finalTotal.toFixed(2).replace('.', ',');
+                const formattedTotal = 'R$ ' + currentFinalTotal.toFixed(2).replace('.', ',');
                 document.getElementById('pay-total-val').innerText = formattedTotal;
                 
                 cart = [];
@@ -5029,12 +5707,19 @@ document.getElementById('btn-add-to-active').onclick = function() {
                 
                 if (paymentMethod === 'pix') {
                     changeTab('payment');
+                } else if (paymentMethod === 'carteira' || (walletAmountUsed > 0 && currentFinalTotal === 0)) {
+                    const msg = `Olá RedLine! Acabei de realizar meu pedido utilizando o saldo da minha *CARTEIRA REDLINE*. Gostaria de acompanhar as atualizações sobre a entrega por aqui.`;
+                    const wpUrl = `https://wa.me/559881422644?text=${encodeURIComponent(msg)}`;
+                    window.location.href = wpUrl;
+                    changeTab('home');
+                    showToast("Pagamento realizado com saldo da carteira!");
                 } else {
                     const msg = `Olá RedLine! Acabei de realizar meu pedido agora pelo site. Gostaria de acompanhar as atualizações sobre a entrega por aqui.`;
                     const wpUrl = `https://wa.me/559881422644?text=${encodeURIComponent(msg.replace('🚀 ', ''))}`;
                     
                     document.getElementById('pay-change').value = "";
-                    document.getElementById('change-field-container').style.display = 'none';
+                    const changeField = document.getElementById('change-field-container');
+                    if(changeField) changeField.style.display = 'none';
                     
                     window.location.href = wpUrl;
                     changeTab('home');
