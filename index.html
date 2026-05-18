@@ -1138,6 +1138,34 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+    @keyframes marmita-layer1-entry {
+        0% { transform: translateX(-110%); opacity: 0; }
+        70% { transform: translateX(5%); opacity: 1; }
+        100% { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes marmita-layer2-entry {
+        0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+        100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    @keyframes marmita-breath {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-3px); }
+    }
+    @keyframes wobble-bounce {
+        0%, 100% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(-12px) scale(1.05); }
+    }
+    .marmita-layer1-anim, .marmita-layer2-anim { opacity: 0; }
+    
+    .start-marmita-anim .marmita-layer1-anim {
+        animation: marmita-layer1-entry 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, 
+                   marmita-breath 3s infinite ease-in-out 1s;
+    }
+    .start-marmita-anim .marmita-layer2-anim {
+        animation: marmita-layer2-entry 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.5s forwards, 
+                   wobble-bounce 2s infinite ease-in-out 1.3s;
+    }
+    .spinner-orange {
     </style>
 </head>
 <body>
@@ -2029,6 +2057,9 @@
 
     const catalogData = [
         { id: "p0_uva", name: "Suco Uva del Vale", weight: "suco de uva 450 ml del valle", price: 4.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/---weewuba.png" },
+        { id: "fam_1", name: "File com Fritas", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 138.50, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1filecomfritas.png", serveCount: 4 },
+        { id: "fam_2", name: "Frango & Carne", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 128.40, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1frangoecarne.png", serveCount: 4 },
+        { id: "fam_3", name: "File acebolado", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 112.80, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1carneacebolada.png", serveCount: 4 },
         { id: "p1", name: "Marmita Executiva Frango Parmegiana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, salada de maionese, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805317455_Marmita_Executiva_Frango_Parmegiana.png", isOffer: true, popular: true },
         { id: "p2", name: "Subline de Carne", weight: "Disco de carne Friboi fatiado, Pepino, Cebola, Tomate, Pepino, Alface, Repolho, Queijo, Molho especial", price: 17.90, oldPrice: 21.12, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806259695_0000000000000000000000000000s.png", isOffer: true },
         { id: "p3", name: "BIG Cheddar Cremoso", weight: "1 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa, queijo, molho especial", price: 16.90, oldPrice: 21.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805607723_0-00-0-ewew.png", isOffer: true, isMegaPromo: true, popular: true },
@@ -2936,22 +2967,21 @@ let userActiveOrderData = null;
         document.querySelectorAll('.sticker-option').forEach(opt => opt.classList.remove('selected'));
     };
 
-    const catRef = ref(db, 'categories');
-    onValue(catRef, (snapshot) => {
-        const data = snapshot.val();
-        let dbCategories = data ? Object.entries(data).map(([key, value]) => ({ key, ...value })) : [];
-        
-        const hasAdicionais = dbCategories.some(c => c.name === "Adicionais");
-        if (!hasAdicionais) {
-            const marmitaCat = dbCategories.find(c => c.name === "Marmitas");
-            const orderVal = marmitaCat ? (marmitaCat.order + 0.1) : 3.1;
-            dbCategories.push({ key: "c_add", name: "Adicionais", icon: "fa-solid fa-plus", order: orderVal });
-        }
-        
-        categories = dbCategories;
-        renderHomeCategories();
-        renderProducts();
-    });
+    categories = [
+        { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 1 },
+        { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
+        { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 3 },
+        { key: "c_add", name: "Adicionais", icon: "fa-solid fa-plus", order: 3.1 },
+        { key: "c_fam", name: "Refeições Família", icon: "fa-solid fa-users", order: 3.2 },
+        { key: "c4", name: "Lanches", icon: "fa-solid fa-shrimp", order: 4 },
+        { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 5 },
+        { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 6 },
+        { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 7 },
+        { key: "c8", name: "Bolos", icon: "fa-solid fa-cake-candles", order: 8 },
+        { key: "c9", name: "Bebidas", icon: "fa-solid fa-beer-mug-empty", order: 9 }
+    ];
+    renderHomeCategories();
+    renderProducts();
 
     if(userProfile) {
         updateUserProfileUI();
@@ -2959,6 +2989,8 @@ let userActiveOrderData = null;
         updateFloatingCart();
         updateLoyaltyUI();
         renderOrderHistory();
+    } else {
+        document.getElementById('onboarding').style.display = 'flex';
     }
 
     
@@ -3371,12 +3403,17 @@ function renderFakeReviews() {
                 
                 const catProducts = sortedAllProducts.filter(p => p.category.trim() === cat.name.trim());
                 if (catProducts.length > 0) {
-                    if (cat.name.trim().toLowerCase() === 'marmitas' && marmitaBannerData && marmitaBannerData.active && marmitaBannerData.img) {
-                        const mBanner = document.createElement('div');
-                        mBanner.style = "grid-column: 1 / -1; margin-top: 20px; margin-bottom: 10px; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);";
-                        mBanner.innerHTML = `<img src="${marmitaBannerData.img}" style="width: 100%; display: block; border-radius: 15px;">`;
-                        listFragment.appendChild(mBanner);
-                    }
+                    if (cat.name.trim().toLowerCase() === 'marmitas' && marmitaBannerData && marmitaBannerData.active) {
+                    const mBanner = document.createElement('div');
+                    mBanner.className = "marmita-observer-trigger";
+                    mBanner.style = "grid-column: 1 / -1; margin-top: 20px; margin-bottom: 10px; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; width: 100%; line-height: 0; background: transparent;";
+                    mBanner.innerHTML = `
+                        <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----camada%20marmita0.png" style="width: 100%; height: auto; display: block; position: relative; z-index: 0;">
+                        <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----camada%20marmita1.png" style="width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 1;" class="marmita-layer1-anim">
+                        <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----camada%20marmita2.png" style="width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 2;" class="marmita-layer2-anim">
+                    `;
+                    listFragment.appendChild(mBanner);
+                }
 
                     const sectionTitle = document.createElement('div');
                     sectionTitle.className = 'section-title';
@@ -3406,10 +3443,15 @@ function renderFakeReviews() {
         } else {
             const catName = activeCat.getAttribute('data-catname');
 
-            if (catName && catName.toLowerCase() === 'marmitas' && marmitaBannerData && marmitaBannerData.active && marmitaBannerData.img) {
+            if (catName && catName.toLowerCase() === 'marmitas' && marmitaBannerData && marmitaBannerData.active) {
                 const mBanner = document.createElement('div');
-                mBanner.style = "grid-column: 1 / -1; margin-bottom: 15px; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);";
-                mBanner.innerHTML = `<img src="${marmitaBannerData.img}" style="width: 100%; display: block; border-radius: 15px;">`;
+                mBanner.className = "marmita-observer-trigger";
+                mBanner.style = "grid-column: 1 / -1; margin-bottom: 15px; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; width: 100%; line-height: 0; background: transparent;";
+                mBanner.innerHTML = `
+                    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----camada%20marmita0.png" style="width: 100%; height: auto; display: block; position: relative; z-index: 0;">
+                    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----camada%20marmita1.png" style="width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 1;" class="marmita-layer1-anim">
+                    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----camada%20marmita2.png" style="width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 2;" class="marmita-layer2-anim">
+                `;
                 list.appendChild(mBanner);
             }
 
@@ -3477,6 +3519,16 @@ function renderFakeReviews() {
         }
         list.appendChild(listFragment);
         recList.appendChild(recFragment);
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('start-marmita-anim');
+                }
+            });
+        }, { threshold: 0.3 });
+
+        document.querySelectorAll('.marmita-observer-trigger').forEach(el => observer.observe(el));
     }
 
     function getThumb(url) {
@@ -3494,17 +3546,18 @@ function renderFakeReviews() {
         const originalPrice = (p.price / 0.8).toFixed(2).replace('.', ',');
         const currentPrice = p.price.toFixed(2).replace('.', ',');
     
-    const priceHTML = p.isOffer 
-    ? `<div style="display: flex; flex-direction: column; line-height: 1.1;">
-        <span style="color: #888; text-decoration: line-through; font-size: 10px;">R$ ${originalPrice}</span>
-        <span class="p-price" style="color: var(--primary-orange);">R$ ${currentPrice}</span>
-       </div>`
-    : `<span class="p-price">R$ ${currentPrice}</span>`;
+        const priceHTML = p.isOffer 
+        ? `<div style="display: flex; flex-direction: column; line-height: 1.1;">
+            <span style="color: #888; text-decoration: line-through; font-size: 10px;">R$ ${originalPrice}</span>
+            <span class="p-price" style="color: var(--primary-orange);">R$ ${currentPrice}</span>
+           </div>`
+        : `<span class="p-price">R$ ${currentPrice}</span>`;
 
         card.innerHTML = `
             ${p.isSoldOut ? '<div class="esgotado-label">ESGOTADO VOLTA AMANHÃ</div>' : ''}
             ${p.isMegaPromo && !p.isSoldOut ? `<div class="mega-promo-tag"><div class="fire-container"><i class="fa-solid fa-fire"></i><span class="percent">%</span></div>MEGA PROMO</div>` : ''}
             <img src="${getThumb(p.img)}" alt="${p.name}" class="product-img-click" loading="lazy" onload="this.classList.add('img-loaded')" onerror="this.src='https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg'">
+            ${p.serveCount ? `<div style="background: #ea1d2c; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; margin-bottom: 5px; display: inline-block; text-transform: uppercase;">SERVE ${p.serveCount} PESSOAS</div>` : ''}
             <p class="p-name">${p.name}</p>
             <p class="p-weight">${p.weight}</p>
             <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
