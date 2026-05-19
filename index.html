@@ -1520,6 +1520,23 @@
     </div>
 </div>
 
+<div id="modal-club-confirm" class="modal-overlay" style="z-index: 11000;">
+    <div class="modal-content" style="text-align: center; gap: 15px;">
+        <div style="background: var(--primary-orange); width: 60px; height: 60px; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; margin: 0 auto; font-size: 30px; box-shadow: 0 8px 20px rgba(234, 29, 44, 0.2);">
+            <i class="fa-solid fa-cart-shopping"></i>
+        </div>
+        <h3 id="club-confirm-title">Confirmar Compra</h3>
+        <p id="club-confirm-text" style="font-size: 14px; color: #666;"></p>
+        <div style="background: #fdf2f2; padding: 10px; border-radius: 10px; border: 1px dashed #ea1d2c;">
+            <p style="font-size: 12px; color: #ea1d2c; font-weight: 800;">O valor será debitado da sua carteira.</p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+            <button class="btn-next" id="btn-club-execute" style="background: var(--primary-orange);">CONFIRMAR COMPRA</button>
+            <button class="btn-back" onclick="document.getElementById('modal-club-confirm').style.display='none'">CANCELAR</button>
+        </div>
+    </div>
+</div>
+
 <div class="app-container">
     
     <section id="tracking-screen" class="screen" style="background: #f8f9fa; padding: 0; padding-bottom: 20px;">
@@ -1614,11 +1631,21 @@
                     </div>
                     <img id="slide-bag-img" src="https://www.kfc.com.br/_next/image?url=https%3A%2F%2Fd7364jmfys2bj.cloudfront.net%2Fproducts%2Fb4656e01-5f59-43eb-b070-6b1fd47cfd03_1775734445438.png&w=384&q=75&dpl=dpl_HFvgmW3E9mo43JiD11KDo85XKwWs" style="width: 110px; height: 110px; object-fit: contain; transform: rotate(-5deg); animation: floatBannerImg 3s ease-in-out infinite;">
                 </div>
+                <!-- Propaganda Show de Cupons -->
+                <div class="promo-banner" style="background: #ea1d2c; cursor: pointer;" onclick="changeTab('test')">
+                    <div style="flex: 1;">
+                        <h2 style="font-size: 18px;">Show de Cupons</h2>
+                        <p style="font-size: 12px; margin-bottom: 10px;">Ative frete grátis e descontos exclusivos!</p>
+                        <span style="background: white; color: #ea1d2c; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold;">ATIVAR AGORA</span>
+                    </div>
+                    <img src="https://www.smplaces.com.br/blog/wp-content/uploads/2019/08/cupom.png" style="width: 130px; height: 110px; object-fit: contain; transform: rotate(-5deg); animation: floatBannerImg 3s ease-in-out infinite;">
+                </div>
             </div>
             <div class="promo-indicators">
                 <div class="indicator-bar active" id="ind-0"></div>
                 <div class="indicator-bar" id="ind-1"></div>
                 <div class="indicator-bar" id="ind-2"></div>
+                <div class="indicator-bar" id="ind-3"></div>
             </div>
         </div>
 
@@ -1794,9 +1821,16 @@
             <h4 style="margin-bottom: 12px; font-size: 14px;"><i class="fa-solid fa-ticket" style="color: var(--primary-orange);"></i> Cupom de Desconto</h4>
             <div style="display: flex; gap: 8px;">
                 <input type="text" id="coupon-input" placeholder="Digite seu cupom" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; outline: none; text-transform: uppercase;">
-                <button onclick="applyCoupon()" style="background: var(--primary-orange); color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer;">APLICAR</button>
+                <button id="btn-apply-coupon" onclick="applyCoupon()" style="background: var(--primary-orange); color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; min-width: 80px; height: 38px; display: flex; align-items: center; justify-content: center;">APLICAR</button>
             </div>
             <p id="coupon-msg" style="font-size: 11px; margin-top: 5px; font-weight: bold; display: none;"></p>
+            <div style="margin-top: 15px; border-top: 1px dashed #eee; padding-top: 10px; cursor: pointer;" onclick="const list = document.getElementById('my-coupons-list'); list.style.display = list.style.display === 'none' ? 'block' : 'none';">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 13px; font-weight: bold; color: var(--text-dark);">Meus Cupons</span>
+                    <i class="fa-solid fa-chevron-down" style="font-size: 12px; color: var(--text-gray);"></i>
+                </div>
+                <div id="my-coupons-list" style="display: none; margin-top: 10px;"></div>
+            </div>
         </div>
 
         <div id="donation-section" class="donation-container" style="display: none;">
@@ -2040,6 +2074,17 @@
             <i class="fa-solid fa-chevron-right" style="font-size: 12px; opacity: 0.7;"></i>
         </div>
 
+        <div class="daily-reward-trigger" onclick="changeTab('test')" style="background: linear-gradient(135deg, #6c5ce7, #a29bfe); animation: none; margin-top: 10px;">
+            <div style="background: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                <i class="fa-solid fa-ticket"></i>
+            </div>
+            <div style="flex: 1;">
+                <h4 style="font-size: 14px; font-weight: 900; margin-bottom: 2px;">MEUS CUPONS</h4>
+                <p style="font-size: 11px; opacity: 0.9; font-weight: 600;">Visualize e ative seus benefícios</p>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="font-size: 12px; opacity: 0.7;"></i>
+        </div>
+
     </div>
 
     <!-- MODAL RECOMPENSA DIÁRIA -->
@@ -2167,6 +2212,124 @@
 
     <div id="bags-list-container" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
         <!-- Bags via JS -->
+    </div>
+</section>
+
+<section id="test-screen" class="screen">
+    <div class="cart-header">
+        <i class="fa-solid fa-arrow-left" onclick="changeTab('home')"></i>
+        <h3>Meus Cupons</h3>
+        <span></span>
+    </div>
+
+    <!-- SEÇÃO: CUPONS ATIVOS DO USUÁRIO -->
+    <div id="user-active-coupons-section" style="margin-bottom: 30px; display: none;">
+        <h3 style="font-size: 16px; font-weight: 900; color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-star" style="color: #f1c40f;"></i> MEUS BENEFÍCIOS ATIVOS
+        </h3>
+        <div id="club-coupons-profile-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+    </div>
+
+    <h3 style="font-size: 16px; font-weight: 900; color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+        <i class="fa-solid fa-shop" style="color: var(--primary-orange);"></i> LOJA DE CUPONS
+    </h3>
+
+    <div style="background: var(--primary-orange); color: white; padding: 25px 20px; border-radius: 20px; margin-bottom: 20px; position: relative; overflow: hidden; box-shadow: 0 8px 20px rgba(234, 29, 44, 0.2);">
+        <div style="position: relative; z-index: 2;">
+            <h2 style="font-size: 24px; font-weight: 900; letter-spacing: -1px; margin-bottom: 5px;">CUPONS REDLINE 🔥</h2>
+            <p style="font-size: 13px; opacity: 0.9; font-weight: 500;">Economize muito com nossas caixas exclusivas</p>
+        </div>
+        <i class="fa-solid fa-ticket" style="position: absolute; right: -15px; bottom: -15px; font-size: 100px; color: rgba(255,255,255,0.1); transform: rotate(-15deg);"></i>
+    </div>
+
+    <div style="margin-bottom: 25px; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; width: 100%; line-height: 0; background: transparent;">
+        <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----redimg0.png" style="width: 100%; height: auto; display: block; position: relative; z-index: 0;">
+        <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----redimg1.png" style="width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 2; animation: marmita-breath 3s infinite ease-in-out; opacity: 1;">
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 20px; padding-bottom: 30px;">
+        <!-- Caixinha -->
+        <div style="background: white; border-radius: 20px; padding: 18px; border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-size: 18px; font-weight: 900; color: #333;">Caixinha de Cupons</h3>
+                <span style="background: #fff0f0; color: #ea1d2c; font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: 800;">ECONÔMICA</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
+                    <i class="fa-solid fa-truck-fast" style="color: #2ecc71; width: 20px;"></i> <span>2 fretes grátis até R$25</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
+                    <i class="fa-solid fa-ticket" style="color: #ea1d2c; width: 20px;"></i> <span>2 cupons de 10%</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
+                    <i class="fa-solid fa-calendar-check" style="color: #999; width: 20px;"></i> <span>Validade 30 dias</span>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #eee; padding-top: 15px;">
+                <span style="font-size: 22px; font-weight: 900; color: var(--primary-orange);">R$ 14,90</span>
+                <button onclick="buyCouponBox('caixinha', this)" style="background: var(--primary-orange); color: white; border: none; padding: 10px 15px; border-radius: 10px; font-size: 11px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 12px rgba(234, 29, 44, 0.3); transition: 0.3s;">COMPRAR COM CARTEIRA</button>
+            </div>
+        </div>
+
+        <!-- Caixa -->
+        <div style="background: white; border-radius: 20px; padding: 18px; border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-size: 18px; font-weight: 900; color: #333;">Caixa de Cupons</h3>
+                <span style="background: #fff3e0; color: #ff9800; font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: 800;">MAIS VENDIDA</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
+                    <i class="fa-solid fa-truck-fast" style="color: #2ecc71; width: 20px;"></i> <span>3 fretes grátis até R$25</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
+                    <i class="fa-solid fa-ticket" style="color: #ea1d2c; width: 20px;"></i> <span>3 cupons de 10%</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
+                    <i class="fa-solid fa-coins" style="color: #f1c40f; width: 20px;"></i> <span>Cashback 2%</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
+                    <i class="fa-solid fa-calendar-check" style="color: #999; width: 20px;"></i> <span>Validade 30 dias</span>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #eee; padding-top: 15px;">
+                <span style="font-size: 22px; font-weight: 900; color: var(--primary-orange);">R$ 19,90</span>
+                <button onclick="buyCouponBox('caixa', this)" style="background: var(--primary-orange); color: white; border: none; padding: 10px 15px; border-radius: 10px; font-size: 11px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 12px rgba(234, 29, 44, 0.3); transition: 0.3s;">COMPRAR COM CARTEIRA</button>
+            </div>
+        </div>
+
+        <!-- Caixona -->
+        <div style="background: white; border-radius: 20px; padding: 18px; border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-size: 18px; font-weight: 900; color: #333;">Caixona de Cupons</h3>
+                <span style="background: #fff0f0; color: #ea1d2c; font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: 800;">VIP GOLD</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
+                    <i class="fa-solid fa-truck-fast" style="color: #2ecc71; width: 20px;"></i> <span>6 fretes grátis até R$30</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
+                    <i class="fa-solid fa-ticket" style="color: #ea1d2c; width: 20px;"></i> <span>4 cupons de 10%</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
+                    <i class="fa-solid fa-star" style="color: #ea1d2c; width: 20px;"></i> <span>1 cupom de 20%</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
+                    <i class="fa-solid fa-hand-holding-dollar" style="color: #f1c40f; width: 20px;"></i> <span>Cashback 5%</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
+                    <i class="fa-solid fa-calendar-check" style="color: #999; width: 20px;"></i> <span>Validade 30 dias</span>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #eee; padding-top: 15px;">
+                <span style="font-size: 22px; font-weight: 900; color: var(--primary-orange);">R$ 34,90</span>
+                <button onclick="buyCouponBox('caixona', this)" style="background: var(--primary-orange); color: white; border: none; padding: 10px 15px; border-radius: 10px; font-size: 11px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 12px rgba(234, 29, 44, 0.3); transition: 0.3s;">COMPRAR COM CARTEIRA</button>
+            </div>
+        </div>
+
+        <!-- Termos -->
+        <div style="margin-top: 20px; padding: 15px; border-top: 1px solid #eee; font-size: 10px; color: #999; text-align: justify; line-height: 1.5;">
+            <p><strong>TERMOS E CONDIÇÕES DO CLUBE:</strong> Os benefícios adquiridos nestas caixas são de uso pessoal e intransferível, válidos por 30 dias corridos após a confirmação da compra. Os fretes grátis possuem o valor de desconto limitado conforme a descrição da caixa selecionada. O cashback é creditado automaticamente na Carteira RedLine após a conclusão de pedidos válidos. Esta transação não permite cancelamento ou estorno após a confirmação, sendo o valor debitado exclusivamente do saldo da sua Carteira RedLine.</p>
+        </div>
     </div>
 </section>
 
@@ -2326,6 +2489,7 @@
 let cart = JSON.parse(localStorage.getItem('userCart')) || [];
 let appliedCoupon = null;
 let couponDiscount = 0;
+let selectedClubCoupon = null; // { subId, type, benefitData }
 let stickersList = [];
 let selectedSticker = null;
 let storeSettings = null;
@@ -3189,7 +3353,8 @@ function init() {
         const indicators = [
             document.getElementById('ind-0'),
             document.getElementById('ind-1'),
-            document.getElementById('ind-2')
+            document.getElementById('ind-2'),
+            document.getElementById('ind-3')
         ];
         
         indicators.forEach((ind, idx) => {
@@ -3200,7 +3365,7 @@ function init() {
     const startAutoSlide = () => {
         stopAutoSlide();
         slideInterval = setInterval(() => {
-            currentSlide = (currentSlide + 1) % 3;
+            currentSlide = (currentSlide + 1) % 4;
             updateSlider();
         }, 5000);
     };
@@ -3221,9 +3386,9 @@ function init() {
             const diff = startX - clientX;
             if (Math.abs(diff) > 50) {
                 if (diff > 0) {
-                    currentSlide = (currentSlide + 1) % 3;
+                    currentSlide = (currentSlide + 1) % 4;
                 } else {
-                    currentSlide = (currentSlide - 1 + 3) % 3;
+                    currentSlide = (currentSlide - 1 + 4) % 4;
                 }
                 updateSlider();
             }
@@ -3983,6 +4148,22 @@ function renderFakeReviews() {
                         listFragment.appendChild(banner);
                     }
                     catProducts.forEach(p => listFragment.appendChild(createProductCard(p)));
+
+                    if (cat.name.trim().toLowerCase() === 'macarronadas') {
+                        const couponBanner = document.createElement('div');
+                        couponBanner.className = 'promo-banner';
+                        couponBanner.style = "grid-column: 1 / -1; margin-top: 20px; margin-bottom: 15px; background: #ea1d2c; cursor: pointer; border-radius: 15px !important; overflow: hidden; display: flex; align-items: center; padding: 15px;";
+                        couponBanner.onclick = () => changeTab('test');
+                        couponBanner.innerHTML = `
+                            <div style="flex: 1;">
+                                <h2 style="font-size: 18px; color: white; font-weight: 900;">Show de Cupons 🎟️</h2>
+                                <p style="font-size: 11px; color: white; opacity: 0.9; margin-bottom: 10px;">Ative frete grátis e descontos exclusivos!</p>
+                                <span style="background: white; color: #ea1d2c; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold;">VER CLUBE</span>
+                            </div>
+                            <img src="https://www.smplaces.com.br/blog/wp-content/uploads/2019/08/cupom.png" style="width: 100px; height: 80px; object-fit: contain; transform: rotate(-5deg); animation: floatBannerImg 3s ease-in-out infinite;">
+                        `;
+                        listFragment.appendChild(couponBanner);
+                    }
                 }
             });
         } else {
@@ -4030,6 +4211,22 @@ function renderFakeReviews() {
                     <i class="fa-solid fa-bag-shopping" style="font-size: 50px; color: rgba(255,255,255,0.2); transform: rotate(-15deg);"></i>
                 `;
                 list.prepend(bagBanner);
+            }
+
+            if(catName && catName.toLowerCase() === 'macarronadas') {
+                const couponBanner = document.createElement('div');
+                couponBanner.className = 'promo-banner';
+                couponBanner.style = "grid-column: 1 / -1; margin-bottom: 15px; background: #ea1d2c; cursor: pointer; border-radius: 15px !important; overflow: hidden; display: flex; align-items: center; padding: 15px;";
+                couponBanner.onclick = () => changeTab('test');
+                couponBanner.innerHTML = `
+                    <div style="flex: 1;">
+                        <h2 style="font-size: 18px; color: white; font-weight: 900;">Show de Cupons 🎟️</h2>
+                        <p style="font-size: 11px; color: white; opacity: 0.9; margin-bottom: 10px;">Aproveite o frete grátis do clube!</p>
+                        <span style="background: white; color: #ea1d2c; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold;">VER AGORA</span>
+                    </div>
+                    <img src="https://www.smplaces.com.br/blog/wp-content/uploads/2019/08/cupom.png" style="width: 100px; height: 80px; object-fit: contain; transform: rotate(-5deg); animation: floatBannerImg 3s ease-in-out infinite;">
+                `;
+                list.prepend(couponBanner);
             }
 
             const filteredAndSorted = sortedAllProducts.filter(p => p.category === catName);
@@ -4572,8 +4769,19 @@ window.addBagToCart = (key) => {
         let deliveryFee = (deliveryType === 'delivery' && subtotal > 0 && subtotal < threshold) ? 4.99 : 0;
         if(isRecharge) deliveryFee = 0;
 
-        if (appliedCoupon === "AMORDEPESSOA100%OFF") {
-            deliveryFee = 0;
+        // Código removido (AMORDEPESSOA100%OFF)
+
+        // Aplica Frete Grátis do Clube com verificação de segurança de valor
+        if(selectedClubCoupon && selectedClubCoupon.type === 'freeShipping' && deliveryType === 'delivery') {
+            if (subtotal < 25) {
+                selectedClubCoupon = null;
+                showToast("Cupom de frete removido: valor abaixo de R$ 25,00");
+                renderMyCoupons();
+            } else {
+                const limit = selectedClubCoupon.limitFS || 25;
+                const discountFS = Math.min(deliveryFee, limit);
+                deliveryFee -= discountFS;
+            }
         }
         
         const xpToGain = Math.floor(subtotal * 2);
@@ -4644,14 +4852,19 @@ window.addBagToCart = (key) => {
         const couponRow = document.getElementById('coupon-discount-row');
         
         couponDiscount = 0;
-        if (appliedCoupon) {
+
+        // Aplica Desconto de Porcentagem do Clube
+        if(selectedClubCoupon) {
+            if(selectedClubCoupon.type === 'd10') couponDiscount = subtotal * 0.10;
+            if(selectedClubCoupon.type === 'd20') couponDiscount = subtotal * 0.20;
+        }
+        
+if (appliedCoupon) {
             const coupons10 = ["REDLINE10%OFF", "ANACYNTHIA10%OFF", "JOSYBRAGA10%OFF", "PHODIVULGA10%OFF", "GEYSAXUXU10%OFF", "HUNTER10%OFF"];
             const coupons20 = ["QUERIDAS20%OFF"];
-            const coupons100 = ["AMORDEPESSOA100%OFF"];
             let percent = 0;
             if (coupons10.includes(appliedCoupon)) percent = 0.10;
             else if (coupons20.includes(appliedCoupon)) percent = 0.20;
-            else if (coupons100.includes(appliedCoupon)) percent = 1.0;
             
             couponDiscount = subtotal * percent;
             subtotalEl.style.color = "var(--primary-orange)";
@@ -4669,7 +4882,8 @@ window.addBagToCart = (key) => {
                 row.style.color = "#f46b21";
                 row.style.fontWeight = "bold";
                 row.innerHTML = `<span>Cupom Aplicado (${appliedCoupon})</span><span>${percLabel}</span>`;
-                document.querySelector('.payment-details').insertBefore(row, document.querySelector('.total-row'));
+                const totalRow = document.querySelector('.total-row');
+                totalRow.parentElement.insertBefore(row, totalRow);
             } else {
                 couponRowHtml.style.display = 'flex';
                 couponRowHtml.innerHTML = `<span>Cupom Aplicado (${appliedCoupon})</span><span>${percLabel}</span>`;
@@ -4703,7 +4917,8 @@ window.addBagToCart = (key) => {
                     row.style.color = "#ea1d2c";
                     row.style.fontWeight = "bold";
                     row.innerHTML = `<span>Desconto Carteira RedLine</span><span>- R$ ${discount.toFixed(2).replace('.',',')}</span>`;
-                    document.querySelector('.payment-details').insertBefore(row, document.querySelector('.total-row'));
+                    const totalRow = document.querySelector('.total-row');
+                    totalRow.parentElement.insertBefore(row, totalRow);
                 }
             });
         } else {
@@ -4719,6 +4934,29 @@ window.addBagToCart = (key) => {
             totalValEl.innerText = `R$ ${originalTotal.toFixed(2).replace('.', ',')}`;
         }
         window.updateGoldRewardsUI();
+
+        // Gerenciamento visual do campo de cupom
+        const couponInput = document.getElementById('coupon-input');
+        if (couponInput) {
+            if (selectedClubCoupon) {
+                const label = selectedClubCoupon.type === 'freeShipping' ? 'CUPOM DE FRETE GRÁTIS' : 'CUPOM DE DESCONTO';
+                couponInput.value = label;
+                couponInput.disabled = true;
+                couponInput.style.background = "#f8f3ff";
+                couponInput.style.color = "#6c5ce7";
+                couponInput.style.fontWeight = "900";
+                couponInput.style.border = "1px solid #6c5ce7";
+            } else {
+                if (couponInput.disabled) {
+                    couponInput.value = appliedCoupon || "";
+                    couponInput.disabled = false;
+                    couponInput.style.background = "#fff";
+                    couponInput.style.color = "inherit";
+                    couponInput.style.fontWeight = "normal";
+                    couponInput.style.border = "1px solid #ddd";
+                }
+            }
+        }
     }
 
     function updateQty(id, delta) {
@@ -4752,35 +4990,63 @@ function removeItem(id) {
     }
 }
 
-window.applyCoupon = function() {
+window.applyCoupon = async function() {
+    if(selectedClubCoupon) {
+        showToast("Remova o cupom do clube para usar um cupom manual.");
+        return;
+    }
     const input = document.getElementById('coupon-input').value.trim().toUpperCase();
     const msg = document.getElementById('coupon-msg');
-    
-    const coupons10 = ["REDLINE10%OFF", "ANACYNTHIA10%OFF", "JOSYBRAGA10%OFF", "PHODIVULGA10%OFF"];
-    const coupons20 = ["QUERIDAS20%OFF"];
-    const coupons100 = ["AMORDEPESSOA100%OFF"];
+    const btn = document.getElementById('btn-apply-coupon');
 
-    if (coupons10.includes(input)) {
-        appliedCoupon = input;
-        msg.innerText = "CUPOM DE 10% APLICADO!";
-        msg.style.color = "#28a745";
-        msg.style.display = "block";
-    } else if (coupons20.includes(input)) {
-        appliedCoupon = input;
-        msg.innerText = "CUPOM DE 20% APLICADO!";
-        msg.style.color = "#28a745";
-        msg.style.display = "block";
-    } else if (coupons100.includes(input)) {
-        appliedCoupon = input;
-        msg.innerText = "CUPOM DE 100% + FRETE GRÁTIS!";
-        msg.style.color = "#28a745";
-        msg.style.display = "block";
-    } else {
+    if(!input) return;
+
+    const originalBtnHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+    
+    const coupons10 = ["REDLINE10%OFF", "ANACYNTHIA10%OFF", "JOSYBRAGA10%OFF", "PHODIVULGA10%OFF", "GEYSAXUXU10%OFF", "HUNTER10%OFF"];
+    const coupons20 = ["QUERIDAS20%OFF"];
+
+    if (!coupons10.includes(input) && !coupons20.includes(input)) {
         appliedCoupon = null;
         msg.innerText = "CUPOM INVÁLIDO";
         msg.style.color = "#e74c3c";
         msg.style.display = "block";
+        btn.disabled = false;
+        btn.innerHTML = originalBtnHtml;
+        renderCart();
+        return;
     }
+
+    const ordersSnap = await get(ref(db, 'orders'));
+    const allOrders = ordersSnap.val();
+    let alreadyUsed = false;
+
+    if (allOrders) {
+        alreadyUsed = Object.values(allOrders).some(o => 
+            o.cliente && 
+            o.cliente.contato === userProfile.contato && 
+            o.coupon === input &&
+            o.status !== 'cancelado'
+        );
+    }
+
+    if (alreadyUsed) {
+        appliedCoupon = null;
+        msg.innerText = "ESTE CUPOM SÓ PODE SER USADO UMA VEZ!";
+        msg.style.color = "#e74c3c";
+        msg.style.display = "block";
+    } else {
+        appliedCoupon = input;
+        const discountLabel = coupons20.includes(input) ? "20%" : "10%";
+        msg.innerText = `CUPOM DE ${discountLabel} APLICADO!`;
+        msg.style.color = "#28a745";
+        msg.style.display = "block";
+    }
+    
+    btn.disabled = false;
+    btn.innerHTML = originalBtnHtml;
     renderCart();
 };
 
@@ -5357,15 +5623,32 @@ document.getElementById('btn-add-to-active').onclick = function() {
 
         if(!newName || !newPhone) return alert("Preencha todos os campos!");
 
+        // Atualiza o objeto global e o localStorage
         userProfile.nome = newName;
         userProfile.contato = newPhone;
 
         localStorage.setItem('userProfile', JSON.stringify(userProfile));
         
         const userKey = userProfile.contato.replace(/\D/g, '');
-        set(ref(db, 'users/' + userKey), userProfile);
+        
+        // Busca dados existentes no banco para este novo número (Carteira, XP, etc)
+        get(ref(db, 'users/' + userKey)).then((snap) => {
+            const existingData = snap.val() || {};
+            // Mescla nome e contato novos com dados de saldo/xp que já podem existir no número
+            const updatedUser = { ...existingData, ...userProfile };
+            
+            set(ref(db, 'users/' + userKey), updatedUser).then(() => {
+                // Força a reinicialização de todos os componentes que dependem do número de telefone
+                updateUserProfileUI();
+                updateLoyaltyUI();
+                renderOrderHistory();
+                renderMyCoupons();
+                if(typeof renderCart === 'function') renderCart();
+                
+                showToast("Número alterado! Dados sincronizados.");
+            });
+        });
 
-        updateUserProfileUI();
         document.getElementById('modal-profile').style.display = 'none';
     };
 
@@ -5587,9 +5870,7 @@ document.getElementById('btn-add-to-active').onclick = function() {
         loader.style.display = 'flex';
 
         const removeLoader = function() {
-            setTimeout(() => {
-                loader.style.display = 'none';
-            }, 500);
+            loader.style.display = 'none';
         };
 
         const errorMsg = document.getElementById('status-error-msg');
@@ -5621,14 +5902,13 @@ document.getElementById('btn-add-to-active').onclick = function() {
         const deliveryType = document.querySelector('input[name="delivery-type"]:checked')?.value || 'delivery';
         
         let deliveryFee = (deliveryType === 'delivery' && subtotal < 84.90) ? 4.99 : 0;
-        if (appliedCoupon === "AMORDEPESSOA100%OFF") deliveryFee = 0;
 
         const totalComFrete = subtotal + deliveryFee;
         const minVal = deliveryType === 'delivery' ? 20 : 15;
 
         const isRecharge = cart.some(i => i.isWalletTopup);
 
-        if (!isRecharge && appliedCoupon !== "AMORDEPESSOA100%OFF" && totalComFrete < minVal) {
+        if (!isRecharge && totalComFrete < minVal) {
             removeLoader();
             showToast(deliveryType === 'delivery' ? "O total com frete deve ser no mínimo R$ 20,00" : "O total deve ser no mínimo R$ 15,00 para retirada");
             return;
@@ -5684,6 +5964,7 @@ document.getElementById('btn-add-to-active').onclick = function() {
             observacao: document.getElementById('order-observation').value,
             sticker: selectedSticker,
             coupon: appliedCoupon,
+            clubCoupon: selectedClubCoupon ? selectedClubCoupon.type : null,
             total: currentFinalTotal,
             walletPaid: walletAmountUsed,
             deliveryFee: isRecharge ? 0 : deliveryFee,
@@ -5694,37 +5975,46 @@ document.getElementById('btn-add-to-active').onclick = function() {
             donation: selectedDonation,
             timestamp: Date.now(),
             status: 'pendente'
-        }).then(() => {
-            setTimeout(() => {
-                removeLoader();
-                const formattedTotal = 'R$ ' + currentFinalTotal.toFixed(2).replace('.', ',');
-                document.getElementById('pay-total-val').innerText = formattedTotal;
-                
-                cart = [];
-                saveCart();
-                clearImageSelection(); 
-                document.getElementById('order-observation').value = "";
-                
-                if (paymentMethod === 'pix') {
-                    changeTab('payment');
-                } else if (paymentMethod === 'carteira' || (walletAmountUsed > 0 && currentFinalTotal === 0)) {
-                    const msg = `Olá RedLine! Acabei de realizar meu pedido utilizando o saldo da minha *CARTEIRA REDLINE*. Gostaria de acompanhar as atualizações sobre a entrega por aqui.`;
-                    const wpUrl = `https://wa.me/559881422644?text=${encodeURIComponent(msg)}`;
-                    window.location.href = wpUrl;
-                    changeTab('home');
-                    showToast("Pagamento realizado com saldo da carteira!");
-                } else {
-                    const msg = `Olá RedLine! Acabei de realizar meu pedido agora pelo site. Gostaria de acompanhar as atualizações sobre a entrega por aqui.`;
-                    const wpUrl = `https://wa.me/559881422644?text=${encodeURIComponent(msg.replace('🚀 ', ''))}`;
-                    
-                    document.getElementById('pay-change').value = "";
-                    const changeField = document.getElementById('change-field-container');
-                    if(changeField) changeField.style.display = 'none';
-                    
-                    window.location.href = wpUrl;
-                    changeTab('home');
+        }).then(async () => {
+            // Se usou cupom do clube, atualiza a quantidade restante no banco
+            if(selectedClubCoupon) {
+                const subRef = ref(db, `users/${uKeyFinish}/clubSubscriptions/${selectedClubCoupon.subId}/benefits/${selectedClubCoupon.type}`);
+                const currentQtySnap = await get(subRef);
+                const currentQty = currentQtySnap.val() || 0;
+                if(currentQty > 0) {
+                    await set(subRef, currentQty - 1);
                 }
-            }, 300);
+            }
+
+            removeLoader();
+            const formattedTotal = 'R$ ' + currentFinalTotal.toFixed(2).replace('.', ',');
+            document.getElementById('pay-total-val').innerText = formattedTotal;
+            
+            cart = [];
+            saveCart();
+            clearImageSelection(); 
+            document.getElementById('order-observation').value = "";
+            selectedClubCoupon = null; // Limpa seleção de cupom do clube
+            
+            if (paymentMethod === 'pix') {
+                changeTab('payment');
+            } else if (paymentMethod === 'carteira' || (walletAmountUsed > 0 && currentFinalTotal === 0)) {
+                const msg = `Olá RedLine! Acabei de realizar meu pedido utilizando o saldo da minha *CARTEIRA REDLINE*. Gostaria de acompanhar as atualizações sobre a entrega por aqui.`;
+                const wpUrl = `https://wa.me/559881422644?text=${encodeURIComponent(msg)}`;
+                window.location.href = wpUrl;
+                changeTab('home');
+                showToast("Pagamento realizado com saldo da carteira!");
+            } else {
+                const msg = `Olá RedLine! Acabei de realizar meu pedido agora pelo site. Gostaria de acompanhar as atualizações sobre a entrega por aqui.`;
+                const wpUrl = `https://wa.me/559881422644?text=${encodeURIComponent(msg.replace('🚀 ', ''))}`;
+                
+                document.getElementById('pay-change').value = "";
+                const changeField = document.getElementById('change-field-container');
+                if(changeField) changeField.style.display = 'none';
+                
+                window.location.href = wpUrl;
+                changeTab('home');
+            }
         });
     };
 
@@ -5958,6 +6248,9 @@ window.changeTab = function(tab) {
             document.getElementById('nav-bags').classList.add('active');
             document.getElementById('floating-cart').style.display = 'none';
             renderBagsPromo();
+        } else if(tab === 'test') {
+            document.getElementById('test-screen').classList.add('active');
+            document.getElementById('floating-cart').style.display = 'none';
         }
     }
 
@@ -6044,6 +6337,213 @@ window.closeReviewModal = () => {
     document.getElementById('modal-review').style.display = 'none';
 };
 
+window.buyCouponBox = async function(type, btn) {
+    if(!userProfile) return;
+    const uKey = userProfile.contato.replace(/\D/g, '');
+    const balanceSnap = await get(ref(db, `users/${uKey}/walletBalance`));
+    const currentBalance = balanceSnap.val() || 0;
+
+    const boxes = {
+        'caixinha': { name: 'Caixinha de Cupons', price: 14.90, benefits: { freeShipping: 2, limitFS: 25, d10: 2, d20: 0, cashback: 0 } },
+        'caixa': { name: 'Caixa de Cupons', price: 19.90, benefits: { freeShipping: 3, limitFS: 25, d10: 3, d20: 0, cashback: 2 } },
+        'caixona': { name: 'Caixona de Cupons', price: 34.90, benefits: { freeShipping: 6, limitFS: 30, d10: 4, d20: 1, cashback: 5 } }
+    };
+
+    const box = boxes[type];
+    
+    if(currentBalance < box.price) {
+        showToast("Saldo insuficiente na carteira!");
+        return;
+    }
+
+    // Efeito de Check-in no botão
+    const originalText = btn.innerHTML;
+    btn.style.background = "#2ecc71";
+    btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> SELECIONADO';
+    btn.disabled = true;
+
+    setTimeout(() => {
+        document.getElementById('club-confirm-title').innerText = box.name;
+        document.getElementById('club-confirm-text').innerText = `Deseja ativar os benefícios desta caixa por R$ ${box.price.toFixed(2).replace('.',',')}?`;
+        document.getElementById('modal-club-confirm').style.display = 'flex';
+
+        // Restaura botão se cancelar ou fechar
+        const closeModal = () => {
+            btn.style.background = "var(--primary-orange)";
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        };
+        
+        // Listener temporário para o botão cancelar
+        document.getElementById('modal-club-confirm').querySelector('.btn-back').onclick = () => {
+            document.getElementById('modal-club-confirm').style.display = 'none';
+            closeModal();
+        };
+
+        document.getElementById('btn-club-execute').onclick = async () => {
+            document.getElementById('modal-club-confirm').style.display = 'none';
+            const loader = document.getElementById('order-processing-loader');
+            loader.style.display = 'flex';
+
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + 30);
+
+            const subscription = {
+                boxType: type,
+                boxName: box.name,
+                purchaseDate: Date.now(),
+                expiryDate: expiryDate.getTime(),
+                benefits: box.benefits,
+                active: true
+            };
+
+            await set(ref(db, `users/${uKey}/walletBalance`), currentBalance - box.price);
+            await push(ref(db, `users/${uKey}/clubSubscriptions`), subscription);
+
+            setTimeout(() => {
+            loader.style.display = 'none';
+            showToast("Caixa ativada com sucesso!");
+            closeModal();
+            renderMyCoupons();
+        }, 800);
+        };
+    }, 400);
+};
+
+window.renderMyCoupons = function() {
+    if(!userProfile) return;
+    const uKey = userProfile.contato.replace(/\D/g, '');
+    const containerCheckout = document.getElementById('my-coupons-list');
+    const containerProfile = document.getElementById('club-coupons-profile-list');
+    const profileSection = document.getElementById('user-active-coupons-section');
+
+    get(ref(db, `users/${uKey}/clubSubscriptions`)).then((snap) => {
+        const subs = snap.val();
+        
+        if(containerCheckout) containerCheckout.innerHTML = "";
+        if(containerProfile) containerProfile.innerHTML = "";
+
+        if(!subs) {
+            if(containerCheckout) containerCheckout.innerHTML = "<p style='font-size:11px; color:#999;'>Você não possui cupons ativos.</p>";
+            if(profileSection) profileSection.style.display = 'none';
+            return;
+        }
+
+        let hasActive = false;
+        const now = Date.now();
+
+        Object.entries(subs).forEach(([subId, sub]) => {
+            // Lógica de Expiração
+            if (now > sub.expiryDate) {
+                if (sub.active) update(ref(db, `users/${uKey}/clubSubscriptions/${subId}`), { active: false });
+                return;
+            }
+            if (!sub.active) return;
+
+            const hasAnyLeft = (sub.benefits.freeShipping > 0 || sub.benefits.d10 > 0 || sub.benefits.d20 > 0);
+            if (!hasAnyLeft) return;
+
+            hasActive = true;
+            const daysRemaining = Math.ceil((sub.expiryDate - now) / (1000 * 60 * 60 * 24));
+
+            // HTML para o Checkout (Com Seleção)
+            if(containerCheckout) {
+                const boxDiv = document.createElement('div');
+                boxDiv.style = "margin-bottom: 20px;";
+                boxDiv.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;"><p style="font-size: 11px; font-weight: 900; color: #6c5ce7; text-transform: uppercase; letter-spacing: 1px; margin: 0;">${sub.boxName}</p><span style="font-size: 9px; color: #aaa; font-weight: bold; background: #f8f9fa; padding: 2px 6px; border-radius: 4px; border: 1px solid #eee;">EXPIRA EM ${daysRemaining} DIAS</span></div>`;
+                const tagsGrid = document.createElement('div');
+                tagsGrid.style = "display: flex; flex-direction: column; gap: 10px;";
+                if(sub.benefits.freeShipping > 0) tagsGrid.appendChild(createCouponTag(subId, 'freeShipping', `${sub.benefits.freeShipping}`, 'Frete Grátis', sub));
+                if(sub.benefits.d10 > 0) tagsGrid.appendChild(createCouponTag(subId, 'd10', `${sub.benefits.d10}`, '10% OFF', sub));
+                if(sub.benefits.d20 > 0) tagsGrid.appendChild(createCouponTag(subId, 'd20', `${sub.benefits.d20}`, '20% OFF', sub));
+                boxDiv.appendChild(tagsGrid);
+                containerCheckout.appendChild(boxDiv);
+                if (selectedClubCoupon) containerCheckout.style.display = 'block';
+            }
+
+            // HTML para o Perfil (Apenas Visualização)
+            if(containerProfile) {
+                const profDiv = document.createElement('div');
+                profDiv.style = "background: white; border-radius: 15px; padding: 15px; border: 1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.02);";
+                profDiv.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <strong style="font-size:13px; color:#6c5ce7;">${sub.boxName}</strong>
+                        <span style="font-size:9px; font-weight:800; color:#999; text-transform:uppercase;">Expira em ${daysRemaining} dias</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                        ${sub.benefits.freeShipping > 0 ? `<div style="background:#f8f3ff; padding:8px; border-radius:8px; font-size:10px; color:#6c5ce7; font-weight:bold;"><i class="fa-solid fa-truck-fast"></i> ${sub.benefits.freeShipping}x Frete Grátis</div>` : ''}
+                        ${sub.benefits.d10 > 0 ? `<div style="background:#f8f3ff; padding:8px; border-radius:8px; font-size:10px; color:#6c5ce7; font-weight:bold;"><i class="fa-solid fa-ticket"></i> ${sub.benefits.d10}x 10% OFF</div>` : ''}
+                        ${sub.benefits.d20 > 0 ? `<div style="background:#f8f3ff; padding:8px; border-radius:8px; font-size:10px; color:#6c5ce7; font-weight:bold;"><i class="fa-solid fa-star"></i> ${sub.benefits.d20}x 20% OFF</div>` : ''}
+                    </div>
+                `;
+                containerProfile.appendChild(profDiv);
+            }
+        });
+
+        if(profileSection) profileSection.style.display = hasActive ? 'block' : 'none';
+    });
+};
+
+function createCouponTag(subId, type, qty, label, subData) {
+    const tag = document.createElement('div');
+    const isSelected = selectedClubCoupon && selectedClubCoupon.subId === subId && selectedClubCoupon.type === type;
+    
+    const purpleMain = "#6c5ce7";
+    const fullLabel = type === 'freeShipping' ? 'Cupom de Frete Grátis' : `Cupom de Desconto de ${label}`;
+
+    tag.style = `
+        display: flex; 
+        align-items: center; 
+        background: ${isSelected ? purpleMain : '#fff'}; 
+        border: 2px solid ${isSelected ? purpleMain : '#f0f0f0'};
+        border-radius: 15px; 
+        overflow: hidden; 
+        cursor: pointer;
+        transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        min-height: 55px;
+        width: 100%;
+        box-shadow: ${isSelected ? '0 5px 15px rgba(108, 92, 231, 0.3)' : 'none'};
+        transform: ${isSelected ? 'scale(1.02)' : 'scale(1)'};
+    `;
+    
+    tag.innerHTML = `
+        <div style="background: ${isSelected ? 'rgba(255,255,255,0.2)' : '#f8f3ff'}; padding: 0 20px; height: 55px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900; color: ${isSelected ? '#fff' : purpleMain}; border-right: 2px dashed ${isSelected ? '#fff' : '#e0d5ff'};">
+            ${qty}
+        </div>
+        <div style="padding: 0 15px; flex: 1; display: flex; flex-direction: column; justify-content: center;">
+            <span style="font-size: ${isSelected ? '12px' : '14px'}; font-weight: 900; color: ${isSelected ? '#fff' : '#333'}; transition: 0.2s;">
+                ${isSelected ? fullLabel : label}
+            </span>
+            ${isSelected ? '<span style="font-size: 9px; color: rgba(255,255,255,0.8); font-weight: bold; text-transform: uppercase;">Selecionado</span>' : ''}
+        </div>
+        <div style="padding-right: 15px;">
+            <i class="fa-solid ${isSelected ? 'fa-circle-check' : 'fa-circle'} " style="color: ${isSelected ? '#fff' : '#eee'}; font-size: 18px;"></i>
+        </div>
+    `;
+
+    tag.onclick = () => {
+        if(isSelected) {
+            selectedClubCoupon = null;
+        } else {
+            // Verificação de valor mínimo para Frete Grátis do Clube
+            if(type === 'freeShipping') {
+                const currentSubtotal = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
+                if(currentSubtotal < 25) {
+                    showToast("O frete grátis do clube exige pedido mínimo de R$ 25,00");
+                    return;
+                }
+            }
+            selectedClubCoupon = { subId, type, limitFS: subData.benefits.limitFS };
+            appliedCoupon = null; // Remove cupom digitado manualmente
+            document.getElementById('coupon-msg').style.display = 'none';
+        }
+        renderMyCoupons();
+        renderCart();
+    };
+
+    return tag;
+}
+
 window.submitReview = () => {
     const text = document.getElementById('rev-text').value;
     if (!text && selectedStars < 4) return alert("Por favor, conte-nos o que podemos melhorar!");
@@ -6066,6 +6566,7 @@ window.submitReview = () => {
 };
 window.addEventListener('hashchange', checkTrackingHash);
 init();
+window.renderMyCoupons();
 </script>
 
 </body>
