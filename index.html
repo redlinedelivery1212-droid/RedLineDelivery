@@ -2356,13 +2356,13 @@
     import { getDatabase, ref, onValue, set, push, remove, get, query, limitToLast, update } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
     const firebaseConfig = {
-        apiKey: "AIzaSyBEQaIIAYGSDRteg_jERuHtfjQRMpaQYmU",
-        authDomain: "redline-6eabc.firebaseapp.com",
-        databaseURL: "https://redline-6eabc-default-rtdb.firebaseio.com",
-        projectId: "redline-6eabc",
-        storageBucket: "redline-6eabc.firebasestorage.app",
-        messagingSenderId: "1079987279636",
-        appId: "1:1079987279636:web:0f76a619589e116bd9d401"
+        apiKey: "AIzaSyCYfG0soItKe0_lKbNxHMxEmRjnabqx0WE",
+        authDomain: "newredline-e7cdb.firebaseapp.com",
+        databaseURL: "https://newredline-e7cdb-default-rtdb.firebaseio.com",
+        projectId: "newredline-e7cdb",
+        storageBucket: "newredline-e7cdb.firebasestorage.app",
+        messagingSenderId: "301627101780",
+        appId: "1:301627101780:web:56232ef4aafdb60cb0d3c1"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -3584,24 +3584,52 @@ function init() {
         }
     });
 
-    document.getElementById('user-photo-upload').onchange = (e) => {
+    document.getElementById('user-photo-upload').onchange = async (e) => {
         const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                selectedSticker = ev.target.result;
+        if (!file) return;
+
+        const status = document.getElementById('image-btn-status');
+        const preview = document.getElementById('image-btn-preview');
+        
+        status.innerText = "Enviando imagem...";
+        status.style.color = "#f39c12";
+        preview.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" style="color: #6c5ce7;"></i>';
+
+        const supabaseUrl = "https://shscuqqqezibwkibhyix.supabase.co";
+        const supabaseKey = "sb_secret_bwpqhN76aZMoZzMBpc_Teg_tO73RMzv";
+        const fileName = `order_pics/${Date.now()}_${file.name.replace(/\s/g, '_')}`;
+        const filePath = `${supabaseUrl}/storage/v1/object/ecs/${fileName}`;
+
+        try {
+            const response = await fetch(filePath, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${supabaseKey}`,
+                    'apikey': supabaseKey,
+                    'Content-Type': file.type
+                },
+                body: file
+            });
+
+            if (response.ok) {
+                const publicUrl = `${supabaseUrl}/storage/v1/object/public/ecs/${fileName}`;
+                selectedSticker = publicUrl;
                 tempSticker = null;
 
-                const preview = document.getElementById('image-btn-preview');
-                const status = document.getElementById('image-btn-status');
-                preview.innerHTML = `<img src="${selectedSticker}" style="width:100%; height:100%; object-fit:cover;">`;
+                preview.innerHTML = `<img src="${publicUrl}" style="width:100%; height:100%; object-fit:cover;">`;
                 status.innerText = "Sua foto foi selecionada!";
                 status.style.color = "#28a745";
 
                 document.getElementById('btn-remove-selection').style.display = 'block';
                 document.getElementById('modal-stickers').style.display = 'none';
-            };
-            reader.readAsDataURL(file);
+            } else {
+                throw new Error("Erro no upload");
+            }
+        } catch (error) {
+            alert("Erro ao enviar imagem. Tente novamente.");
+            status.innerText = "Erro ao carregar foto";
+            status.style.color = "#e74c3c";
+            preview.innerHTML = `<i class="fa-solid fa-image" style="color: #6c5ce7;"></i>`;
         }
     };
 
