@@ -555,6 +555,10 @@
             border: 2px solid #f46b21 !important;
             box-shadow: 0 0 12px rgba(244, 107, 33, 0.2) !important;
         }
+        .kids-card {
+            border: 2px solid #ea1d2c !important;
+            box-shadow: 0 0 12px rgba(234, 29, 44, 0.2) !important;
+        }
         .mega-promo-tag {
         position: absolute;
         top: 6px;
@@ -2409,6 +2413,7 @@
 
     const catalogData = [
     { id: "p0_uva", name: "Suco Uva del Vale", weight: "suco de uva 450 ml del valle", price: 4.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/---weewuba.png" },
+    { id: "k1", name: "Combo Kids Brinquedo Bolhas", weight: "Acompanha um hamburguer de salada com requeijao e maionese, uma batata p crocante e um brinquedo de bolhas magicas estilo coelho verde", price: 29.90, category: "KIDS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/kids.png" },
     { id: "fam_1", name: "File com Fritas", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 138.50, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1filecomfritas.png", serveCount: 4 },
     { id: "fam_2", name: "Frango & Carne", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 128.40, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1frangoecarne.png", serveCount: 4 },
     { id: "fam_3", name: "File acebolado", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 112.80, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1carneacebolada.png", serveCount: 4 },
@@ -2472,6 +2477,7 @@
 
     const catalogCategories = [
         { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 1 },
+        { key: "c_kids", name: "KIDS", icon: "fa-solid fa-child", order: 1.5 },
         { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
         { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 3 },
         { key: "c10", name: "Combos", icon: "fa-solid fa-boxes-stacked", order: 4 },
@@ -3082,13 +3088,13 @@ function init() {
             const soldOutMap = {};
             if (dbData) {
                 Object.values(dbData).forEach(item => { 
-                    if(item.isSoldOut) soldOutMap[item.name] = true; 
+                    if(item.isSoldOut && item.name) soldOutMap[item.name.trim().toLowerCase()] = true; 
                 });
             }
 
             allProducts = catalogData.map(p => ({
                 ...p,
-                isSoldOut: !!soldOutMap[p.name]
+                isSoldOut: !!soldOutMap[p.name.trim().toLowerCase()]
             }));
 
             renderHomeCategories();
@@ -3099,14 +3105,14 @@ function init() {
         // Mantém a escuta em tempo real para mudanças de estoque (Esgotado)
         onValue(ref(db, 'products'), (snapshot) => {
             const dbData = snapshot.val();
-            if (dbData) {
+            if (snapshot.exists()) {
                 const soldOutMap = {};
                 Object.values(dbData).forEach(item => { 
-                    if(item.isSoldOut) soldOutMap[item.name] = true; 
+                    if(item.isSoldOut && item.name) soldOutMap[item.name.trim().toLowerCase()] = true; 
                 });
                 
                 allProducts.forEach(p => {
-                    p.isSoldOut = !!soldOutMap[p.name];
+                    p.isSoldOut = !!soldOutMap[p.name.trim().toLowerCase()];
                 });
 
                 const activeCat = document.querySelector('.cat-item.active-cat');
@@ -3690,6 +3696,7 @@ function init() {
 
     categories = [
         { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 1 },
+        { key: "c_kids", name: "KIDS", icon: "fa-solid fa-child", order: 1.5 },
         { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
         { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 3 },
         { key: "c_add", name: "Adicionais", icon: "fa-solid fa-plus", order: 3.1 },
@@ -4312,6 +4319,7 @@ function renderFakeReviews() {
         let cardClass = p.isSoldOut ? 'product-card esgotado' : 'product-card';
         if (p.isMegaPromo && !p.isSoldOut) cardClass += ' mega-promo-card';
         if (p.isCustomSub && !p.isSoldOut) cardClass += ' custom-sub-card';
+        if (p.category === 'KIDS' && !p.isSoldOut) cardClass += ' kids-card';
         card.className = cardClass;
         
         if (p.isCustomSub && !p.isSoldOut) {
@@ -4333,6 +4341,7 @@ function renderFakeReviews() {
             ${p.isSoldOut ? '<div class="esgotado-label">ESGOTADO VOLTA AMANHÃ</div>' : ''}
             ${p.isMegaPromo && !p.isSoldOut ? `<div class="mega-promo-tag"><div class="fire-container"><i class="fa-solid fa-fire"></i><span class="percent">%</span></div>MEGA PROMO</div>` : ''}
             ${p.isCustomSub && !p.isSoldOut ? `<div class="mega-promo-tag" style="background: #ea1d2c;"><i class="fa-solid fa-wand-magic-sparkles"></i> ESPECIAL</div>` : ''}
+            ${p.category === 'KIDS' && !p.isSoldOut ? `<div class="mega-promo-tag" style="background: #ea1d2c;"><i class="fa-solid fa-child"></i> KIDS</div>` : ''}
             <img src="${getThumb(p.img)}" alt="${p.name}" class="product-img-click" loading="lazy" onload="this.classList.add('img-loaded')" onerror="this.src='https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg'">
             ${p.serveCount ? `<div style="background: #ea1d2c; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; margin-bottom: 5px; display: inline-block; text-transform: uppercase;">SERVE ${p.serveCount} PESSOAS</div>` : ''}
             <p class="p-name">${p.name}</p>
