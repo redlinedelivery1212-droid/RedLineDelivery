@@ -354,7 +354,7 @@
             60% {transform: translateY(-5px);}
         }
 
-        .categories { display: flex; gap: 10px; overflow-x: auto; padding: 10px 5px; margin-bottom: 20px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .categories { display: none; }
         .cat-item { text-align: center; font-size: 12px; min-width: 75px; cursor: pointer; transition: 0.3s; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
         .cat-item.active-cat .cat-img { background: var(--primary-orange); color: white; transform: scale(1.05); }
         .cat-item.active-cat { font-weight: bold; color: var(--primary-orange); }
@@ -435,6 +435,63 @@
             background-size: 200% 100%;
             animation: shimmer 1.5s infinite;
             border-radius: 4px;
+        }
+
+        .category-cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .category-card {
+            height: 90px;
+            border-radius: 15px;
+            padding: 12px 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .category-card:active {
+            transform: scale(0.95);
+        }
+
+        .category-card span {
+            color: white;
+            font-size: 9px;
+            font-weight: 900;
+            text-transform: uppercase;
+            z-index: 2;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .category-card img {
+            width: 70px;
+            height: 70px;
+            position: absolute;
+            bottom: -8px;
+            right: -8px;
+            object-fit: contain;
+            z-index: 1;
+            filter: drop-shadow(0 5px 8px rgba(0,0,0,0.2));
+        }
+
+        .category-card::after {
+            content: "";
+            position: absolute;
+            top: -15%;
+            right: -10%;
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
         }
         .product-grid, #recommended-list, #reviews-list, #order-history-container {
             content-visibility: auto;
@@ -1246,6 +1303,21 @@
         animation: marmita-layer2-entry 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.5s forwards, 
                    wobble-bounce 2s infinite ease-in-out 1.3s;
     }
+
+    @keyframes subline-slide-in {
+        0% { transform: translateY(-50%) translateX(-250px); }
+        100% { transform: translateY(-50%) translateX(-60px); }
+    }
+
+    .subline-img-anim { 
+        transform: translateY( 0%) translateX(-250px);
+        opacity: 1 !important;
+    }
+    
+    .start-subline-anim .subline-img-anim {
+        animation: subline-slide-in 1.5s ease-out forwards;
+    }
+
     .spinner-orange {
     </style>
 </head>
@@ -1612,49 +1684,132 @@
 
         <div class="promo-slider-container">
             <div class="promo-wrapper" id="promo-wrapper">
-                <div class="promo-banner" id="banner-dinamico" style="position: relative;">
-                    <div>
-                        <h2 style="font-size: 20px;">Big Cheddar Cremoso !!!</h2>
-                        <p style="font-size: 13px;">Promo! nosso hamburguer mais cremoso! por R$: 16,90</p>
+                <div class="promo-banner" style="background: #5e0000; position: relative; overflow: hidden; padding: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="filterCategory('Marmitas')">
+                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;">
+                        <svg viewBox="0 0 500 200" preserveAspectRatio="none" style="height: 100%; width: 100%;">
+                            <path d="M0,120 C150,180 350,50 500,120 L500,200 L0,200 Z" fill="#9e0000" opacity="0.6"></path>
+                            <path d="M0,150 C120,200 300,120 500,180 L500,200 L0,200 Z" fill="#ea1d2c"></path>
+                        </svg>
                     </div>
-                    <img src="https://d3sn2rlrwxy0ce.cloudfront.net/1Cheddar-thumb-cupom-m-d.png?mtime=20221005072526&focal=none" alt="promo" style="opacity: 1;">
+                    <div style="z-index: 2; flex: 1; display: flex; flex-direction: column; justify-content: center; height: 100%;">
+                        <div style="display: flex; align-items: baseline; gap: 3px; margin-top: -12px; margin-bottom: 8px;">
+                            <div style="font-size: 18px; font-weight: 900; color: white;">R$</div>
+                            <h2 style="font-size: 65px; font-weight: 900; line-height: 0.9; color: white; letter-spacing: -3px;">19</h2>
+                            <span style="font-size: 22px; font-weight: 900; color: white;">,90</span>
+                        </div>
+                        <div style="background: #ffde00; color: #5e0000; padding: 4px 12px; border-radius: 8px; font-weight: 900; font-size: 12px; width: fit-content; text-transform: uppercase; margin-bottom: 5px; box-shadow: 0 4px 0px rgba(0,0,0,0.1);">
+                            MEGA PROMO
+                        </div>
+                        <p style="font-size: 12px; font-weight: 800; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">Carne & Toscana</p>
+                    </div>
+                    <img src="https://www.scores.ca/wp-content/uploads/2024/11/QUART-POITRINE-SAVEUR-ET-DEMI-RIBS-576x411.png" style="width: 200px; height: 160px; object-fit: contain; z-index: 2; filter: drop-shadow(0 20px 205px rgba(0,0,0,0.5)); transform: scale(81.2) translateX(25%); margin-right: -20px; animation: floatBannerImg 4s ease-in-out infinite;">
                 </div>
-                <div class="promo-banner subline-banner" style="background: #e74c3c; cursor: pointer;" onclick="openSubLineBuilder()">
-                    <div style="flex: 1;">
-                        <h2 style="font-size: 18px;">Monte seu SubLine</h2>
-                        <p style="font-size: 12px; margin-bottom: 10px;">Personalize do seu jeito!</p>
-                        <span style="background: white; color: #e74c3c; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold;">MONTAR AGORA</span>
+                <div class="promo-banner" style="background: #f39c12; position: relative; overflow: hidden; padding: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="filterCategory('Hambúrguer')">
+                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;">
+                        <svg viewBox="0 0 500 200" preserveAspectRatio="none" style="height: 100%; width: 100%;">
+                            <path d="M0,120 C150,180 350,50 500,120 L500,200 L0,200 Z" fill="#e67e22" opacity="0.6"></path>
+                            <path d="M0,150 C120,200 300,120 500,180 L500,200 L0,200 Z" fill="#f46b21"></path>
+                        </svg>
                     </div>
-                    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/-2e2.png" style="width: 110px; height: 110px; object-fit: contain; transform: rotate(15deg); animation: floatBannerSub 3s ease-in-out infinite;">
+                    <div style="z-index: 2; flex: 1; display: flex; flex-direction: column; justify-content: center; height: 100%;">
+                        <div style="display: flex; align-items: baseline; gap: 3px; margin-top: -12px; margin-bottom: 8px;">
+                            <div style="font-size: 18px; font-weight: 900; color: white;">R$</div>
+                            <h2 style="font-size: 65px; font-weight: 900; line-height: 0.9; color: white; letter-spacing: -3px;">16</h2>
+                            <span style="font-size: 22px; font-weight: 900; color: white;">,90</span>
+                        </div>
+                        <div style="background: #ffffff; color: #f46b21; padding: 4px 12px; border-radius: 8px; font-weight: 900; font-size: 12px; width: fit-content; text-transform: uppercase; margin-bottom: 5px; box-shadow: 0 4px 0px rgba(0,0,0,0.1);">
+                            MEGA PROMO
+                        </div>
+                        <p style="font-size: 12px; font-weight: 800; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">Big Cheddar Cremoso</p>
+                    </div>
+                    <img src="https://d3sn2rlrwxy0ce.cloudfront.net/_800x600_crop_center-center_none/whopper-thumb_2021-09-16-125319_mppe.png?mtime=20210916095320&focal=none&tmtime=20241024134409" style="width: 200px; height: 160px; object-fit: contain; z-index: 2; filter: drop-shadow(0 20px 25px rgba(0,0,0,0.3)); transform: scale(1.1) translateX(15%); margin-right: -20px; animation: floatBannerImg 4s ease-in-out infinite;">
                 </div>
-                <div class="promo-banner" style="background: #6c5ce7; cursor: pointer;" id="slide-bag-promo" onclick="changeTab('bags')">
-                    <div style="flex: 1;">
-                        <h2 id="slide-bag-title" style="font-size: 18px;">BAG PROMO!</h2>
-                        <p id="slide-bag-desc" style="font-size: 12px; margin-bottom: 10px;">Economia garantida.</p>
-                        <span style="background: white; color: #6c5ce7; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold;">VER PACOTES</span>
+                <div class="promo-banner subline-banner subline-observer-trigger" style="background: #27ae60; position: relative; overflow: hidden; padding: 20px; display: flex; align-items: center; justify-content: flex-end; cursor: pointer;" onclick="openSubLineBuilder()">
+                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;">
+                        <svg viewBox="0 0 500 200" preserveAspectRatio="none" style="height: 100%; width: 100%;">
+                            <path d="M0,80 C150,150 350,20 500,80 L500,200 L0,200 Z" fill="#2ecc71" opacity="0.6"></path>
+                            <path d="M0,120 C120,180 300,100 500,160 L500,200 L0,200 Z" fill="#1e8449"></path>
+                        </svg>
                     </div>
-                    <img id="slide-bag-img" src="https://www.kfc.com.br/_next/image?url=https%3A%2F%2Fd7364jmfys2bj.cloudfront.net%2Fproducts%2Fb4656e01-5f59-43eb-b070-6b1fd47cfd03_1775734445438.png&w=384&q=75&dpl=dpl_HFvgmW3E9mo43JiD11KDo85XKwWs" style="width: 110px; height: 110px; object-fit: contain; transform: rotate(-5deg); animation: floatBannerImg 3s ease-in-out infinite;">
+                    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-------------redreddasdassdasdds.png" class="subline-img-anim" style="width: 320px; height: 150px; object-fit: contain; position: absolute; left: -30px; top: 50%; transform: translateY(-50%); z-index: 2; filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.3));">
+                    <div style="z-index: 3; text-align: right; width: 55%; display: flex; flex-direction: column; align-items: flex-end; gap: 2px;">
+                        <h2 style="font-size: 32px; font-weight: 900; color: white; line-height: 0.8; text-transform: uppercase; text-shadow: 2px 2px 5px rgba(0,0,0,0.2);">MONTE<br>O SEU</h2>
+                        <h3 style="font-size: 16px; color: #ffde00; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px;">SubLine</h3>
+                        <p style="font-size: 11px; font-weight: 700; color: white; opacity: 0.95; max-width: 150px; line-height: 1.2;">Crie sua combinação perfeita de pão, recheio e molhos!</p>
+                        <span style="background: #ffde00; color: #1e8449; padding: 8px 16px; border-radius: 10px; font-size: 11px; font-weight: 900; margin-top: 10px; box-shadow: 0 4px 0 rgba(0,0,0,0.15); text-transform: uppercase;">Montar Agora</span>
+                    </div>
+                </div>
+                <div class="promo-banner" style="background: linear-gradient(135deg, #6c5ce7, #4834d4); cursor: pointer; position: relative; overflow: hidden; border: none !important; margin: 0 !important; padding: 25px 20px; display: flex; align-items: center;" id="slide-bag-promo" onclick="changeTab('bags')">
+                    <div style="flex: 1; z-index: 2; display: flex; flex-direction: column; justify-content: center; position: relative;">
+                        <div style="background: #ffde00; color: #6c5ce7; padding: 3px 10px; border-radius: 6px; font-size: 9px; font-weight: 900; width: fit-content; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">OFERTA IMPERDÍVEL</div>
+                        <h2 id="slide-bag-title" style="font-size: 32px; font-weight: 900; color: white; line-height: 0.8; margin-bottom: 8px; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">BAG<br>PROMO!</h2>
+                        <p id="slide-bag-desc" style="font-size: 13px; margin-bottom: 18px; color: rgba(255,255,255,0.95); font-weight: 600; max-width: 150px; line-height: 1.2;">Ganhe Super desconto pedindo uma bag!</p>
+                        <span style="background: #ffde00; color: #4834d4; padding: 10px 22px; border-radius: 12px; font-size: 12px; font-weight: 900; width: fit-content; text-transform: uppercase; box-shadow: 0 4px 0 rgba(0,0,0,0.1);">VER PACOTES</span>
+                    </div>
+                    <img id="slide-bag-img" src="https://www.kfc.com.br/_next/image?url=https%3A%2F%2Fd7364jmfys2bj.cloudfront.net%2Fproducts%2Fb4656e01-5f59-43eb-b070-6b1fd47cfd03_1775734445438.png&w=384&q=75&dpl=dpl_HFvgmW3E9mo43JiD11KDo85XKwWs" style="width: 280px; height: 200px; object-fit: contain; position: absolute; right: -30px; top: 15px; z-index: 1; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.4)); animation: floatBannerImg 4s ease-in-out infinite; opacity: 0.35;">
                 </div>
                 <!-- Propaganda Show de Cupons -->
-                <div class="promo-banner" style="background: #ea1d2c; cursor: pointer;" onclick="changeTab('test')">
-                    <div style="flex: 1;">
-                        <h2 style="font-size: 18px;">Show de Cupons</h2>
-                        <p style="font-size: 12px; margin-bottom: 10px;">Ative frete grátis e descontos exclusivos!</p>
-                        <span style="background: white; color: #ea1d2c; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold;">ATIVAR AGORA</span>
-                    </div>
-                    <img src="https://www.smplaces.com.br/blog/wp-content/uploads/2019/08/cupom.png" style="width: 130px; height: 110px; object-fit: contain; transform: rotate(-5deg); animation: floatBannerImg 3s ease-in-out infinite;">
+            <div class="promo-banner" style="background: #ea1d2c; position: relative; overflow: hidden; padding: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="changeTab('test')">
+                <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;">
+                    <svg viewBox="0 0 500 200" preserveAspectRatio="none" style="height: 100%; width: 100%;">
+                        <path d="M0,120 C150,180 350,50 500,120 L500,200 L0,200 Z" fill="#c0392b" opacity="0.6"></path>
+                        <path d="M0,150 C120,200 300,120 500,180 L500,200 L0,200 Z" fill="#96151d"></path>
+                    </svg>
                 </div>
+                <div style="z-index: 2; flex: 1; display: flex; flex-direction: column; justify-content: center; height: 100%;">
+                    <h2 style="font-size: 28px; font-weight: 900; color: white; line-height: 0.9; margin-bottom: 5px; text-transform: uppercase; text-shadow: 2px 2px 0px rgba(0,0,0,0.1);">Show de<br>Cupons</h2>
+                    <div style="background: #ffde00; color: #ea1d2c; padding: 4px 12px; border-radius: 8px; font-weight: 900; font-size: 11px; width: fit-content; text-transform: uppercase; margin-bottom: 8px; box-shadow: 0 4px 0px rgba(0,0,0,0.1);">
+                        CLUBE DE VANTAGENS
+                    </div>
+                    <p style="font-size: 11px; font-weight: 800; color: white; opacity: 0.9;">Frete grátis e descontos!</p>
+                </div>
+                <img src="https://www.smplaces.com.br/blog/wp-content/uploads/2019/08/cupom.png" style="width: 160px; height: 130px; object-fit: contain; z-index: 2; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.3)); transform: rotate(-8deg); animation: floatBannerImg 4s ease-in-out infinite; margin-right: -10px;">
+            </div>
             </div>
             <div class="promo-indicators">
                 <div class="indicator-bar active" id="ind-0"></div>
                 <div class="indicator-bar" id="ind-1"></div>
                 <div class="indicator-bar" id="ind-2"></div>
                 <div class="indicator-bar" id="ind-3"></div>
+                <div class="indicator-bar" id="ind-4"></div>
+            </div>
+        </div>
+
+        <div class="category-cards-grid">
+            <div class="category-card" style="background: linear-gradient(135deg, #6c5ce7, #a29bfe);" onclick="filterCategory('Marmitas')">
+                <span>Marmitas</span>
+                <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----wwwwwwwwwwwwwwww---------------w%20(5).png">
+            </div>
+            <div class="category-card" style="background: linear-gradient(135deg, #ea1d2c, #ff4757);" onclick="filterCategory('Hambúrguer')">
+                <span>Hamburguers</span>
+                <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----wwwwwwwwwwwwwwww---------------w%20(1).png">
+            </div>
+            <div class="category-card" style="background: linear-gradient(135deg, #e67e22, #f39c12);" onclick="filterCategory('SubLine')">
+                <span>Sublines</span>
+                <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----wwwwwwwwwwwwwwww---------------w%20(1).webp">
+            </div>
+            <div class="category-card" style="background: linear-gradient(135deg, #f1c40f, #ffde00);" onclick="filterCategory('Macarronadas')">
+                <span>Macarronadas</span>
+                <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----wwwwwwwwwwwwwwww---------------w%20(2).png">
+            </div>
+            <div class="category-card" style="background: linear-gradient(135deg, #d35400, #e67e22);" onclick="filterCategory('Cachorro Quente')">
+                <span>Dogues</span>
+                <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----wwwwwwwwwwwwwwww---------------w%20(4).png">
+            </div>
+            <div class="category-card" style="background: linear-gradient(135deg, #3498db, #2980b9);" onclick="filterCategory('Bebidas')">
+                <span>Bebidas</span>
+                <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----wwwwwwwwwwwwwwww---------------w%20(3).png">
             </div>
         </div>
 
         <div class="categories" id="home-categories">
             <!-- Categorias dinâmicas -->
+        </div>
+
+        <div id="return-all-container" style="display: none; padding: 0 0 15px 0;">
+            <button onclick="filterCategory('all')" style="width: 100%; background: #eee; color: #666; border: 1px solid #ddd; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <i class="fa-solid fa-arrow-left-long"></i> RETORNAR VER TODOS OS PRODUTOS
+            </button>
         </div>
 
         <div class="section-title">
@@ -1663,6 +1818,12 @@
         </div>
 
         <div class="product-grid" id="product-list"></div>
+
+        <div id="return-all-bottom-container" style="display: none; padding: 20px 0 30px 0;">
+            <button onclick="filterCategory('all')" style="width: 100%; background: #eee; color: #666; border: 1px solid #ddd; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <i class="fa-solid fa-arrow-left-long"></i> RETORNAR VER TODOS OS PRODUTOS
+            </button>
+        </div>
 
         <div id="section-recommended" style="display: none;">
             <div class="section-title" style="margin-top: 25px;">
@@ -2219,114 +2380,133 @@
     </div>
 </section>
 
-<section id="test-screen" class="screen">
-    <div class="cart-header">
+<section id="test-screen" class="screen" style="background: #f8f9fa;">
+    <div class="cart-header" style="background: white; padding: 20px; border-bottom: 1px solid #eee; margin-bottom: 0;">
         <i class="fa-solid fa-arrow-left" onclick="changeTab('home')"></i>
-        <h3>Meus Cupons</h3>
-        <span></span>
+        <h3 style="flex: 1; text-align: center; margin-right: 30px; font-weight: 900;">Clube de Cupons</h3>
     </div>
 
-    <!-- SEÇÃO: CUPONS ATIVOS DO USUÁRIO -->
-    <div id="user-active-coupons-section" style="margin-bottom: 30px; display: none;">
-        <h3 style="font-size: 16px; font-weight: 900; color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-            <i class="fa-solid fa-star" style="color: #f1c40f;"></i> MEUS BENEFÍCIOS ATIVOS
-        </h3>
-        <div id="club-coupons-profile-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
-    </div>
-
-    <h3 style="font-size: 16px; font-weight: 900; color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-        <i class="fa-solid fa-shop" style="color: var(--primary-orange);"></i> LOJA DE CUPONS
-    </h3>
-
-    <div style="background: var(--primary-orange); color: white; padding: 25px 20px; border-radius: 20px; margin-bottom: 20px; position: relative; overflow: hidden; box-shadow: 0 8px 20px rgba(234, 29, 44, 0.2);">
+    <div style="background: linear-gradient(135deg, #ea1d2c, #c0392b); color: white; padding: 30px 20px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(234, 29, 44, 0.15);">
         <div style="position: relative; z-index: 2;">
-            <h2 style="font-size: 24px; font-weight: 900; letter-spacing: -1px; margin-bottom: 5px;">CUPONS REDLINE 🔥</h2>
-            <p style="font-size: 13px; opacity: 0.9; font-weight: 500;">Economize muito com nossas caixas exclusivas</p>
+            <div style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 50px; font-size: 10px; font-weight: 900; width: fit-content; margin-bottom: 10px; text-transform: uppercase;">Economia Garantida</div>
+            <h2 style="font-size: 28px; font-weight: 900; letter-spacing: -1px; line-height: 1; margin-bottom: 8px;">SHOW DE<br>CUPONS! 🎟️</h2>
+            <p style="font-size: 13px; opacity: 0.9; font-weight: 500; max-width: 200px;">Assine e garanta frete grátis e descontos exclusivos o mês todo!</p>
         </div>
-        <i class="fa-solid fa-ticket" style="position: absolute; right: -15px; bottom: -15px; font-size: 100px; color: rgba(255,255,255,0.1); transform: rotate(-15deg);"></i>
+        <i class="fa-solid fa-ticket" style="position: absolute; right: -20px; bottom: -20px; font-size: 140px; color: rgba(255,255,255,0.1); transform: rotate(-15deg);"></i>
     </div>
 
-    <div style="margin-bottom: 25px; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; width: 100%; line-height: 0; background: transparent;">
-        <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----redimg0.png" style="width: 100%; height: auto; display: block; position: relative; z-index: 0;">
-        <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----redimg1.png" style="width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 2; animation: marmita-breath 3s infinite ease-in-out; opacity: 1;">
-    </div>
-
-    <div style="display: flex; flex-direction: column; gap: 20px; padding-bottom: 30px;">
-        <!-- Caixinha -->
-        <div style="background: white; border-radius: 20px; padding: 18px; border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h3 style="font-size: 18px; font-weight: 900; color: #333;">Caixinha de Cupons</h3>
-                <span style="background: #fff0f0; color: #ea1d2c; font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: 800;">ECONÔMICA</span>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
-                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
-                    <i class="fa-solid fa-truck-fast" style="color: #2ecc71; width: 20px;"></i> <span>2 fretes grátis até R$25</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
-                    <i class="fa-solid fa-ticket" style="color: #ea1d2c; width: 20px;"></i> <span>2 cupons de 10%</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
-                    <i class="fa-solid fa-calendar-check" style="color: #999; width: 20px;"></i> <span>Validade 30 dias</span>
-                </div>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #eee; padding-top: 15px;">
-                <span style="font-size: 22px; font-weight: 900; color: var(--primary-orange);">R$ 14,90</span>
-                <button onclick="buyCouponBox('caixinha', this)" style="background: var(--primary-orange); color: white; border: none; padding: 10px 15px; border-radius: 10px; font-size: 11px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 12px rgba(234, 29, 44, 0.3); transition: 0.3s;">COMPRAR COM CARTEIRA</button>
-            </div>
+    <div style="padding: 20px;">
+        <!-- SEÇÃO: CUPONS ATIVOS DO USUÁRIO -->
+        <div id="user-active-coupons-section" style="margin-bottom: 35px; display: none;">
+            <h3 style="font-size: 16px; font-weight: 900; color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-star" style="color: #f1c40f;"></i> MEUS BENEFÍCIOS ATIVOS
+            </h3>
+            <div id="club-coupons-profile-list" style="display: flex; flex-direction: column; gap: 15px;"></div>
         </div>
 
-        <!-- Caixa -->
-        <div style="background: white; border-radius: 20px; padding: 18px; border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h3 style="font-size: 18px; font-weight: 900; color: #333;">Caixa de Cupons</h3>
-                <span style="background: #fff3e0; color: #ff9800; font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: 800;">MAIS VENDIDA</span>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
-                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
-                    <i class="fa-solid fa-truck-fast" style="color: #2ecc71; width: 20px;"></i> <span>3 fretes grátis até R$25</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
-                    <i class="fa-solid fa-ticket" style="color: #ea1d2c; width: 20px;"></i> <span>3 cupons de 10%</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
-                    <i class="fa-solid fa-coins" style="color: #f1c40f; width: 20px;"></i> <span>Cashback 2%</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
-                    <i class="fa-solid fa-calendar-check" style="color: #999; width: 20px;"></i> <span>Validade 30 dias</span>
-                </div>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #eee; padding-top: 15px;">
-                <span style="font-size: 22px; font-weight: 900; color: var(--primary-orange);">R$ 19,90</span>
-                <button onclick="buyCouponBox('caixa', this)" style="background: var(--primary-orange); color: white; border: none; padding: 10px 15px; border-radius: 10px; font-size: 11px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 12px rgba(234, 29, 44, 0.3); transition: 0.3s;">COMPRAR COM CARTEIRA</button>
-            </div>
-        </div>
+        <h3 style="font-size: 16px; font-weight: 900; color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-store" style="color: var(--primary-orange);"></i> LOJA DE BENEFÍCIOS
+        </h3>
 
-        <!-- Caixona -->
-        <div style="background: white; border-radius: 20px; padding: 18px; border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h3 style="font-size: 18px; font-weight: 900; color: #333;">Caixona de Cupons</h3>
-                <span style="background: #fff0f0; color: #ea1d2c; font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: 800;">VIP GOLD</span>
+        <div style="display: flex; flex-direction: column; gap: 25px; padding-bottom: 40px;">
+            <!-- Caixinha -->
+            <div style="background: white; border-radius: 25px; padding: 20px; border: 1px solid #eee; box-shadow: 0 8px 25px rgba(0,0,0,0.05); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; right: 0; background: #ea1d2c; color: white; padding: 5px 15px; font-size: 9px; font-weight: 900; border-bottom-left-radius: 15px;">ECONÔMICA</div>
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <div style="width: 55px; height: 55px; background: #fff5f5; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #ea1d2c;">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 900; color: #333;">Caixinha de Cupons</h3>
+                        <p style="font-size: 11px; color: #999; font-weight: 600;">Para quem pede ocasionalmente</p>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px;">
+                    <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: #444; font-weight: 600;">
+                        <i class="fa-solid fa-truck-fast" style="color: #2ecc71; background: #f0fff4; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center;"></i> 
+                        <span>2 Fretes Grátis <small style="color:#999">(até R$25)</small></span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: #444; font-weight: 600;">
+                        <i class="fa-solid fa-ticket" style="color: #ea1d2c; background: #fff5f5; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center;"></i> 
+                        <span>2 Cupons de 10% OFF</span>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #eee; padding-top: 20px;">
+                    <div>
+                        <span style="display: block; font-size: 10px; color: #aaa; font-weight: bold; text-transform: uppercase;">Por apenas</span>
+                        <span style="font-size: 24px; font-weight: 900; color: var(--primary-orange);">R$ 6,90</span>
+                    </div>
+                    <button onclick="buyCouponBox('caixinha', this)" style="background: #333; color: white; border: none; padding: 12px 18px; border-radius: 12px; font-size: 11px; font-weight: 900; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">ASSINAR</button>
+                </div>
             </div>
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
-                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
-                    <i class="fa-solid fa-truck-fast" style="color: #2ecc71; width: 20px;"></i> <span>6 fretes grátis até R$30</span>
+
+            <!-- Caixa -->
+            <div style="background: white; border-radius: 25px; padding: 20px; border: 2px solid #ff9800; box-shadow: 0 10px 30px rgba(255, 152, 0, 0.1); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; right: 0; background: #ff9800; color: white; padding: 5px 15px; font-size: 9px; font-weight: 900; border-bottom-left-radius: 15px;">MAIS VENDIDA 🔥</div>
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <div style="width: 55px; height: 55px; background: #fff8f0; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #ff9800;">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 900; color: #333;">Caixa de Cupons</h3>
+                        <p style="font-size: 11px; color: #999; font-weight: 600;">O equilíbrio perfeito</p>
+                    </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
-                    <i class="fa-solid fa-ticket" style="color: #ea1d2c; width: 20px;"></i> <span>4 cupons de 10%</span>
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px;">
+                    <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: #444; font-weight: 600;">
+                        <i class="fa-solid fa-truck-fast" style="color: #2ecc71; background: #f0fff4; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center;"></i> 
+                        <span>3 Fretes Grátis <small style="color:#999">(até R$25)</small></span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: #444; font-weight: 600;">
+                        <i class="fa-solid fa-ticket" style="color: #ea1d2c; background: #fff5f5; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center;"></i> 
+                        <span>3 Cupons de 10% OFF</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: #444; font-weight: 600;">
+                        <i class="fa-solid fa-coins" style="color: #f1c40f; background: #fffdf0; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center;"></i> 
+                        <span>Cashback de 2%</span>
+                    </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
-                    <i class="fa-solid fa-star" style="color: #ea1d2c; width: 20px;"></i> <span>1 cupom de 20%</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
-                    <i class="fa-solid fa-hand-holding-dollar" style="color: #f1c40f; width: 20px;"></i> <span>Cashback 5%</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555;">
-                    <i class="fa-solid fa-calendar-check" style="color: #999; width: 20px;"></i> <span>Validade 30 dias</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #eee; padding-top: 20px;">
+                    <div>
+                        <span style="display: block; font-size: 10px; color: #aaa; font-weight: bold; text-transform: uppercase;">Por apenas</span>
+                        <span style="font-size: 24px; font-weight: 900; color: #ff9800;">R$ 14,90</span>
+                    </div>
+                    <button onclick="buyCouponBox('caixa', this)" style="background: #ff9800; color: white; border: none; padding: 12px 18px; border-radius: 12px; font-size: 11px; font-weight: 900; cursor: pointer; box-shadow: 0 5px 15px rgba(255, 152, 0, 0.2);">ASSINAR</button>
                 </div>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #eee; padding-top: 15px;">
-                <span style="font-size: 22px; font-weight: 900; color: var(--primary-orange);">R$ 34,90</span>
-                <button onclick="buyCouponBox('caixona', this)" style="background: var(--primary-orange); color: white; border: none; padding: 10px 15px; border-radius: 10px; font-size: 11px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 12px rgba(234, 29, 44, 0.3); transition: 0.3s;">COMPRAR COM CARTEIRA</button>
+
+            <!-- Caixona -->
+            <div style="background: white; border-radius: 25px; padding: 20px; border: 2px solid #f1c40f; box-shadow: 0 10px 30px rgba(241, 196, 15, 0.1); position: relative; overflow: hidden;">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <div style="width: 55px; height: 55px; background: #fef9e7; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #f1c40f;">
+                        <i class="fa-solid fa-crown"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 900; color: #333;">Caixona de Cupons</h3>
+                        <p style="font-size: 11px; color: #999; font-weight: 600;">Para o verdadeiro fã</p>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px;">
+                    <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: #444; font-weight: 600;">
+                        <i class="fa-solid fa-truck-fast" style="color: #2ecc71; background: #f0fff4; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center;"></i> 
+                        <span>6 Fretes Grátis <small style="color:#999">(até R$30)</small></span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: #444; font-weight: 600;">
+                        <i class="fa-solid fa-ticket" style="color: #ea1d2c; background: #fff5f5; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center;"></i> 
+                        <span>4 Cupons de 10% OFF</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: #444; font-weight: 600;">
+                        <i class="fa-solid fa-star" style="color: #f1c40f; background: #fef9e7; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center;"></i> 
+                        <span>1 Cupom de 20% OFF</span>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #eee; padding-top: 20px;">
+                    <div>
+                        <span style="display: block; font-size: 10px; color: #aaa; font-weight: bold; text-transform: uppercase;">Por apenas</span>
+                        <span style="font-size: 24px; font-weight: 900; color: #f1c40f;">R$ 29,90</span>
+                    </div>
+                    <button onclick="buyCouponBox('caixona', this)" style="background: #f1c40f; color: #000; border: none; padding: 12px 18px; border-radius: 12px; font-size: 11px; font-weight: 900; cursor: pointer; box-shadow: 0 5px 15px rgba(241, 196, 15, 0.2);">ASSINAR</button>
+                </div>
             </div>
         </div>
 
@@ -2470,18 +2650,18 @@
     { id: "p50", name: "Agua Mineral", weight: "Garrafa de agua de 500 ML Mineral", price: 3.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806034299_---001.png" },
     { id: "p51", name: "Executivo Presidencial de Picanha Bovina", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 26.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(2).png" },
     { id: "p52", name: "Churrasco Misto Exc de Carne, Toscana e Frango", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(3).png" },
-    { id: "p53", name: "Churrasco Exc de Carne e Toscana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(1).png" },
+    { id: "p53", name: "Churrasco Exc de Carne e Toscana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 19.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(1).png", isMegaPromo: true },
     { id: "p54", name: "Feijoadinha 500 ml", weight: "feijoada de 500 ml acompanha calabresa sadia, bacon fatiado e feijao preto saboroso", price: 6.90, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/--------feiojo.png" },
     { id: "p55", name: "Farofa de Bacon & Calabresa", weight: "Na farofa de bacon acompanha farofa, manteiga corante, bacon fatiado picado, calabresa fatiada picada, crocante", price: 6.90, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/---------------farofa.png" }
 ];
 
     const catalogCategories = [
-        { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 1 },
-        { key: "c_kids", name: "KIDS", icon: "fa-solid fa-child", order: 1.5 },
-        { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
-        { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 3 },
-        { key: "c10", name: "Combos", icon: "fa-solid fa-boxes-stacked", order: 4 },
-        { key: "c4", name: "Petiscos", icon: "fa-solid fa-shrimp", order: 5 },
+    { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 1 },
+    { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
+    { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 3 },
+    { key: "c10", name: "Combos", icon: "fa-solid fa-boxes-stacked", order: 4 },
+    { key: "c_kids", name: "KIDS", icon: "fa-solid fa-child", order: 4.5 },
+    { key: "c4", name: "Petiscos", icon: "fa-solid fa-shrimp", order: 5 },
         { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 6 },
         { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 7 },
         { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 8 },
@@ -3305,19 +3485,7 @@ function init() {
         renderCart();
     };
 
-    onValue(ref(db, 'settings/promo_banner'), (snapshot) => {
-        const data = snapshot.val();
-        if(!data) return;
-        const banner = document.getElementById('banner-dinamico');
-        const title = banner.querySelector('h2');
-        const desc = banner.querySelector('p');
-        const img = banner.querySelector('img');
-
-        title.innerText = data.title || "Big Cheddar Cremoso !!!";
-        desc.innerText = data.desc || "Promo! nosso hamburguer mais cremoso! por R$: 16,90";
-        img.src = data.img || "https://d3sn2rlrwxy0ce.cloudfront.net/1Cheddar-thumb-cupom-m-d.png?mtime=20221005072526&focal=none";
-        img.style.opacity = "1";
-    });
+    // Dynamic Banner Listener Removed to prevent unwanted overrides
 
     onValue(ref(db, 'settings/subline_config'), (snap) => {
         sublineSettings = snap.val();
@@ -3360,7 +3528,8 @@ function init() {
             document.getElementById('ind-0'),
             document.getElementById('ind-1'),
             document.getElementById('ind-2'),
-            document.getElementById('ind-3')
+            document.getElementById('ind-3'),
+            document.getElementById('ind-4')
         ];
         
         indicators.forEach((ind, idx) => {
@@ -3371,7 +3540,7 @@ function init() {
     const startAutoSlide = () => {
         stopAutoSlide();
         slideInterval = setInterval(() => {
-            currentSlide = (currentSlide + 1) % 4;
+            currentSlide = (currentSlide + 1) % 5;
             updateSlider();
         }, 5000);
     };
@@ -3392,9 +3561,9 @@ function init() {
             const diff = startX - clientX;
             if (Math.abs(diff) > 50) {
                 if (diff > 0) {
-                    currentSlide = (currentSlide + 1) % 4;
+                    currentSlide = (currentSlide + 1) % 5;
                 } else {
-                    currentSlide = (currentSlide - 1 + 4) % 4;
+                    currentSlide = (currentSlide - 1 + 5) % 5;
                 }
                 updateSlider();
             }
@@ -3695,14 +3864,14 @@ function init() {
     };
 
     categories = [
-        { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 1 },
-        { key: "c_kids", name: "KIDS", icon: "fa-solid fa-child", order: 1.5 },
-        { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
-        { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 3 },
-        { key: "c_add", name: "Adicionais", icon: "fa-solid fa-plus", order: 3.1 },
-        { key: "c_fam", name: "Refeições Família", icon: "fa-solid fa-users", order: 3.2 },
-        { key: "c10", name: "Combos", icon: "fa-solid fa-boxes-stacked", order: 4 },
-        { key: "c4", name: "Petiscos", icon: "fa-solid fa-shrimp", order: 5 },
+    { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 1 },
+    { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
+    { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 3 },
+    { key: "c_add", name: "Adicionais", icon: "fa-solid fa-plus", order: 3.1 },
+    { key: "c_fam", name: "Refeições Família", icon: "fa-solid fa-users", order: 3.2 },
+    { key: "c10", name: "Combos", icon: "fa-solid fa-boxes-stacked", order: 4 },
+    { key: "c_kids", name: "KIDS", icon: "fa-solid fa-child", order: 4.5 },
+    { key: "c4", name: "Petiscos", icon: "fa-solid fa-shrimp", order: 5 },
         { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 6 },
         { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 7 },
         { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 8 },
@@ -3794,8 +3963,8 @@ function updateLoyaltyUI() {
     const xpCard = document.getElementById('xp-card');
     const goldTag = document.getElementById('gold-tag-home');
 
-    // Otimização Extrema: Reduzimos para os últimos 5 pedidos para cálculo instantâneo no load
-    const q = query(ref(db, 'orders'), limitToLast(5)); 
+    // Aumentado o limite para garantir que todos os pedidos do usuario sejam contabilizados no XP
+    const q = query(ref(db, 'orders')); 
 
     get(q).then((snapshot) => {
         const data = snapshot.val();
@@ -3803,8 +3972,11 @@ function updateLoyaltyUI() {
 
         if(data) {
             totalSpent = Object.values(data).reduce((acc, o) => {
-                if((o.status === 'pago' || o.status === 'finalizado' || o.status === 'pendente') && o.cliente && o.cliente.contato) {
-                    if(o.cliente.contato.replace(/\D/g, '') === userTel) return acc + (o.total || 0);
+                if(o.cliente && o.cliente.contato) {
+                    const orderTel = o.cliente.contato.replace(/\D/g, '');
+                    if(orderTel === userTel && (o.status === 'pago' || o.status === 'finalizado' || o.status === 'pendente')) {
+                        return acc + (o.total || 0);
+                    }
                 }
                 return acc;
             }, 0);
@@ -3822,8 +3994,11 @@ function updateLoyaltyUI() {
                 xpCard.style.display = 'block';
                 const progress = Math.min((currentXP / targetXP) * 100, 100);
                 document.getElementById('xp-fill-bar').style.width = progress + '%';
-                document.getElementById('xp-text').innerText = `${currentXP} / ${targetXP} XP`;
-                document.getElementById('xp-text').style.color = "#ea1d2c";
+                const xpTextEl = document.getElementById('xp-text');
+                if(xpTextEl) {
+                    xpTextEl.innerText = `${currentXP} / ${targetXP} XP`;
+                    xpTextEl.style.color = "#ea1d2c";
+                }
             }
         }
         window.logPerf('xp');
@@ -4035,21 +4210,35 @@ function renderFakeReviews() {
         });
     }
 
-    function filterCategory(catName) {
+    window.filterCategory = function(catName) {
         document.querySelectorAll('.cat-item').forEach(item => item.classList.remove('active-cat'));
-        
+        const returnBtn = document.getElementById('return-all-container');
+        const returnBtnBottom = document.getElementById('return-all-bottom-container');
+
         if(catName === 'all') {
+            if(returnBtn) returnBtn.style.display = 'none';
+            if(returnBtnBottom) returnBtnBottom.style.display = 'none';
             products = [...allProducts];
-            document.getElementById('cat-all').classList.add('active-cat');
-            document.querySelector('.section-title h3').innerText = "Populares";
+            const catAll = document.getElementById('cat-all');
+            if(catAll) catAll.classList.add('active-cat');
+            const sectionH3 = document.querySelector('.section-title h3');
+            if(sectionH3) sectionH3.innerText = "Populares";
         } else {
+            if(returnBtn) returnBtn.style.display = 'block';
+            if(returnBtnBottom) returnBtnBottom.style.display = 'block';
             products = allProducts.filter(p => p.category === catName);
             const activeEl = document.querySelector(`[data-catname="${catName}"]`);
             if(activeEl) activeEl.classList.add('active-cat');
-            document.querySelector('.section-title h3').innerText = catName;
+            const sectionH3 = document.querySelector('.section-title h3');
+            if(sectionH3) sectionH3.innerText = catName;
+
+            const sectionHeader = document.querySelector('.section-title');
+            if(sectionHeader) {
+                sectionHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
         renderProducts();
-    }
+    };
 
     function renderAdminCategories() {
         const container = document.getElementById('admin-category-list');
@@ -4169,16 +4358,23 @@ function renderFakeReviews() {
                     
                     if (cat.name.toLowerCase() === 'subline' && sublineSettings && sublineSettings.active) {
                         const banner = document.createElement('div');
-                        banner.className = 'promo-banner subline-banner';
-                        banner.style = "grid-column: 1 / -1; margin-bottom: 15px; background: #e74c3c; cursor: pointer; border-radius: 15px !important; overflow: hidden;";
+                        banner.className = 'promo-banner subline-banner subline-observer-trigger';
+                        banner.style = "grid-column: 1 / -1; margin-bottom: 15px; background: #27ae60; cursor: pointer; border-radius: 15px !important; overflow: hidden; position: relative; height: 160px; display: flex; align-items: center; justify-content: flex-end; padding: 20px;";
                         banner.onclick = () => openSubLineBuilder();
                         banner.innerHTML = `
-                            <div style="flex: 1;">
-                                <h2 style="font-size: 18px;">Monte seu SubLine</h2>
-                                <p style="font-size: 12px; margin-bottom: 10px;">Escolha pão, recheio e molhos!</p>
-                                <span style="background: white; color: #e74c3c; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold;">MONTAR AGORA</span>
+                            <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;">
+                                <svg viewBox="0 0 500 200" preserveAspectRatio="none" style="height: 100%; width: 100%;">
+                                    <path d="M0,80 C150,150 350,20 500,80 L500,200 L0,200 Z" fill="#2ecc71" opacity="0.6"></path>
+                                    <path d="M0,120 C120,180 300,100 500,160 L500,200 L0,200 Z" fill="#1e8449"></path>
+                                </svg>
                             </div>
-                            <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/-2e2.png" style="width: 100px; height: 100px; object-fit: contain; transform: rotate(15deg); animation: floatBannerSub 3s ease-in-out infinite;">
+                            <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-------------redreddasdassdasdds.png" class="subline-img-anim" style="width: 300px; height: 140px; object-fit: contain; position: absolute; left: -30px; top: 50%; transform: translateY(-50%); z-index: 2; filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.3));">
+                            <div style="z-index: 3; text-align: right; width: 55%; display: flex; flex-direction: column; align-items: flex-end; gap: 2px;">
+                                <h2 style="font-size: 26px; font-weight: 900; color: white; line-height: 0.8; text-transform: uppercase;">MONTE<br>O SEU</h2>
+                                <h3 style="font-size: 15px; color: #ffde00; font-weight: 900; text-transform: uppercase; margin-bottom: 4px;">SubLine</h3>
+                                <p style="font-size: 10px; font-weight: 700; color: white; opacity: 0.95; max-width: 140px; line-height: 1.1;">Pão, recheio e molhos do seu jeito!</p>
+                                <span style="background: #ffde00; color: #1e8449; padding: 7px 14px; border-radius: 8px; font-size: 10px; font-weight: 900; margin-top: 8px; text-transform: uppercase;">Montar Agora</span>
+                            </div>
                         `;
                         listFragment.appendChild(banner);
                     }
@@ -4218,16 +4414,23 @@ function renderFakeReviews() {
 
             if(catName && catName.toLowerCase() === 'subline' && sublineSettings && sublineSettings.active) {
                 const banner = document.createElement('div');
-                banner.className = 'promo-banner subline-banner';
-                banner.style = "grid-column: 1 / -1; margin-bottom: 15px; background: #e74c3c; cursor: pointer; border-radius: 15px !important; overflow: hidden;";
+                banner.className = 'promo-banner subline-banner subline-observer-trigger';
+                banner.style = "grid-column: 1 / -1; margin-bottom: 15px; background: #27ae60; cursor: pointer; border-radius: 15px !important; overflow: hidden; position: relative; height: 160px; display: flex; align-items: center; justify-content: flex-end; padding: 20px;";
                 banner.onclick = () => openSubLineBuilder();
                 banner.innerHTML = `
-                    <div style="flex: 1;">
-                        <h2 style="font-size: 18px;">Monte o seu SubLine</h2>
-                        <p style="font-size: 12px; margin-bottom: 10px;">Personalize seu lanche completo!</p>
-                        <span style="background: white; color: #e74c3c; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold;">MONTAR</span>
+                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;">
+                        <svg viewBox="0 0 500 200" preserveAspectRatio="none" style="height: 100%; width: 100%;">
+                            <path d="M0,80 C150,150 350,20 500,80 L500,200 L0,200 Z" fill="#2ecc71" opacity="0.6"></path>
+                            <path d="M0,120 C120,180 300,100 500,160 L500,200 L0,200 Z" fill="#1e8449"></path>
+                        </svg>
                     </div>
-                    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/-2e2.png" style="width: 100px; height: 100px; object-fit: contain; transform: rotate(15deg); animation: floatBannerSub 3s ease-in-out infinite;">
+                    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-------------redreddasdassdasdds.png" class="subline-img-anim" style="width: 300px; height: 140px; object-fit: contain; position: absolute; left: -30px; top: 50%; transform: translateY(-50%); z-index: 2; filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.3));">
+                    <div style="z-index: 3; text-align: right; width: 55%; display: flex; flex-direction: column; align-items: flex-end; gap: 2px;">
+                        <h2 style="font-size: 26px; font-weight: 900; color: white; line-height: 0.8; text-transform: uppercase;">MONTE<br>O SEU</h2>
+                        <h3 style="font-size: 15px; color: #ffde00; font-weight: 900; text-transform: uppercase; margin-bottom: 4px;">SubLine</h3>
+                        <p style="font-size: 10px; font-weight: 700; color: white; opacity: 0.95; max-width: 140px; line-height: 1.1;">Pão, recheio e molhos do seu jeito!</p>
+                        <span style="background: #ffde00; color: #1e8449; padding: 7px 14px; border-radius: 8px; font-size: 10px; font-weight: 900; margin-top: 8px; text-transform: uppercase;">Montar Agora</span>
+                    </div>
                 `;
                 list.prepend(banner);
             }
@@ -4300,12 +4503,17 @@ function renderFakeReviews() {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('start-marmita-anim');
+                    if (entry.target.classList.contains('marmita-observer-trigger')) {
+                        entry.target.classList.add('start-marmita-anim');
+                    }
+                    if (entry.target.classList.contains('subline-observer-trigger')) {
+                        entry.target.classList.add('start-subline-anim');
+                    }
                 }
             });
-        }, { threshold: 0.3 });
+        }, { threshold: 0.1 });
 
-        document.querySelectorAll('.marmita-observer-trigger').forEach(el => observer.observe(el));
+        document.querySelectorAll('.marmita-observer-trigger, .subline-observer-trigger').forEach(el => observer.observe(el));
     }
 
     function getThumb(url) {
@@ -4330,12 +4538,12 @@ function renderFakeReviews() {
         const originalPrice = p.oldPrice ? p.oldPrice.toFixed(2).replace('.', ',') : (p.price / 0.8).toFixed(2).replace('.', ',');
         const currentPrice = p.price.toFixed(2).replace('.', ',');
     
-        const priceHTML = p.isOffer 
-        ? `<div style="display: flex; flex-direction: column; line-height: 1.1;">
-            <span style="color: #888; text-decoration: line-through; font-size: 10px;">R$ ${originalPrice}</span>
-            <span class="p-price" style="color: var(--primary-orange);">R$ ${currentPrice}</span>
-           </div>`
-        : `<span class="p-price">R$ ${currentPrice}</span>`;
+        const priceHTML = (p.isOffer || p.isMegaPromo)
+? `<div style="display: flex; flex-direction: column; line-height: 1.1;">
+    <span style="color: #888; text-decoration: line-through; font-size: 10px;">R$ ${originalPrice}</span>
+    <span class="p-price" style="color: var(--primary-orange);">R$ ${currentPrice}</span>
+   </div>`
+: `<span class="p-price">R$ ${currentPrice}</span>`;
 
         card.innerHTML = `
             ${p.isSoldOut ? '<div class="esgotado-label">ESGOTADO VOLTA AMANHÃ</div>' : ''}
@@ -6381,9 +6589,9 @@ window.buyCouponBox = async function(type, btn) {
     const currentBalance = balanceSnap.val() || 0;
 
     const boxes = {
-        'caixinha': { name: 'Caixinha de Cupons', price: 14.90, benefits: { freeShipping: 2, limitFS: 25, d10: 2, d20: 0, cashback: 0 } },
-        'caixa': { name: 'Caixa de Cupons', price: 19.90, benefits: { freeShipping: 3, limitFS: 25, d10: 3, d20: 0, cashback: 2 } },
-        'caixona': { name: 'Caixona de Cupons', price: 34.90, benefits: { freeShipping: 6, limitFS: 30, d10: 4, d20: 1, cashback: 5 } }
+        'caixinha': { name: 'Caixinha de Cupons', price: 6.90, benefits: { freeShipping: 2, limitFS: 25, d10: 2, d20: 0, cashback: 0 } },
+        'caixa': { name: 'Caixa de Cupons', price: 14.90, benefits: { freeShipping: 3, limitFS: 25, d10: 3, d20: 0, cashback: 2 } },
+        'caixona': { name: 'Caixona de Cupons', price: 29.90, benefits: { freeShipping: 6, limitFS: 30, d10: 4, d20: 1, cashback: 5 } }
     };
 
     const box = boxes[type];
