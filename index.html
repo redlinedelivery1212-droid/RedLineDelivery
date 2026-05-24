@@ -4735,15 +4735,22 @@ window.addBagToCart = (key) => {
             return;
         }
 
-        const marmitasQty = cart.reduce((acc, curr) => {
-            // Conta apenas itens da categoria Marmitas que NÃO sejam o brinde
+        const marmitasTotalQty = cart.reduce((acc, curr) => {
             if (curr.category && curr.category.trim() === 'Marmitas' && !curr.isPromo) {
                 return acc + curr.qty;
             }
             return acc;
         }, 0);
 
-        if (marmitasQty >= 2) {
+        const marmitasStandardQty = cart.reduce((acc, curr) => {
+            if (curr.category && curr.category.trim() === 'Marmitas' && !curr.isPromo && !curr.isMegaPromo) {
+                return acc + curr.qty;
+            }
+            return acc;
+        }, 0);
+
+        if (marmitasTotalQty >= 2) {
+            const isLocked = marmitasStandardQty < 2;
             if (promoIndex === -1) {
                 const guaraná = allProducts.find(p => p.id === 'p46');
                 if (guaraná) {
@@ -4753,9 +4760,12 @@ window.addBagToCart = (key) => {
                         price: 0,
                         qty: 1,
                         isPromo: true,
-                        category: 'Bebidas' // Garante que não entre no loop de contagem de marmitas
+                        isLocked: isLocked,
+                        category: 'Bebidas'
                     });
                 }
+            } else {
+                cart[promoIndex].isLocked = isLocked;
             }
         } else {
             if (promoIndex !== -1) {
@@ -4980,19 +4990,28 @@ window.addBagToCart = (key) => {
             subtotal += (item.price * item.qty);
             itemsCount += item.qty;
             const div = document.createElement('div');
-            div.className = 'cart-item';
+            div.className = item.isLocked ? 'cart-item esgotado' : 'cart-item';
             if(item.isBag) {
                 div.style.border = "2px solid #6c5ce7";
                 div.style.boxShadow = "0 4px 12px rgba(108, 92, 231, 0.15)";
             }
+            if(item.isLocked) {
+                div.style.filter = "grayscale(1)";
+                div.style.opacity = "0.7";
+            }
+            
+            const promoBadge = item.isPromo ? (item.isLocked ? '<span style="background:#ea1d2c; color:white; font-size:9px; padding:2px 5px; border-radius:4px; margin-left:5px;">VOCÊ JÁ TEM UMA PROMOÇÃO ATIVA NO MOMENTO</span>' : '<span style="background:#27ae60; color:white; font-size:9px; padding:2px 5px; border-radius:4px; margin-left:5px;">PROMOÇÃO ATIVA</span>') : '';
+            const megaPromoTag = item.isMegaPromo ? '<span style="background:#f46b21; color:white; font-size:8px; padding:2px 5px; border-radius:4px; font-weight:900; margin-left:5px; text-transform:uppercase;">MEGA PROMO</span>' : '';
+            const priceColor = (item.isMegaPromo || item.isOffer) ? 'var(--primary-orange)' : 'var(--text-dark)';
+
             div.innerHTML = `
                 <img src="${item.img}">
                 <div class="cart-item-info">
-                    <p class="p-name">${item.isBag ? '<i class="fa-solid fa-fire" style="color:#6c5ce7; font-size:10px;"></i> ' : ''}${item.name} ${item.isPromo ? '<span style="background:#27ae60; color:white; font-size:9px; padding:2px 5px; border-radius:4px; margin-left:5px;">PROMOÇÃO ATIVA</span>' : ''}</p>
+                    <p class="p-name">${item.isBag ? '<i class="fa-solid fa-fire" style="color:#6c5ce7; font-size:10px;"></i> ' : ''}${item.name} ${promoBadge}${megaPromoTag}</p>
                     <div class="p-weight">${item.weight}${item.drink ? ` <span style="color:var(--primary-orange); font-weight:bold;">[${item.drink}]</span>` : ''}</div>
-                    <p class="p-price">R$ ${item.price.toFixed(2).replace('.',',')}</p>
+                    <p class="p-price" style="color: ${priceColor}; font-weight: bold;">R$ ${item.price.toFixed(2).replace('.',',')}</p>
                 </div>
-                <div class="qty-controls" style="${item.isPromo ? 'opacity:0.5; pointer-events:none;' : ''}">
+                <div class="qty-controls" style="${(item.isPromo || item.isLocked) ? 'opacity:0.5; pointer-events:none;' : ''}">
                     <button class="qty-btn" data-op="${item.isPromo ? '' : 'minus'}">-</button>
                     <span>${item.qty}</span>
                     <button class="qty-btn" data-op="${item.isPromo ? '' : 'plus'}">+</button>
@@ -6204,7 +6223,7 @@ document.getElementById('btn-add-to-active').onclick = function() {
         const newOrderRef = push(ref(db, 'orders'));
         set(newOrderRef, {
             cliente: userProfile,
-            items: [...cart],
+            items: cart.filter(i => !i.isLocked),
             extras: extras,
             observacao: document.getElementById('order-observation').value,
             sticker: selectedSticker,
