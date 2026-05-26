@@ -1394,6 +1394,9 @@
             <button class="btn-back" id="btn-cancel-addr" style="flex: 1;">Cancelar</button>
             <button class="btn-next" id="btn-save-addr" style="flex: 1;">Salvar</button>
         </div>
+        <button onclick="document.getElementById('modal-address').style.display='none'; openHelpScreen();" style="width: 100%; background: #fdfdfd; color: #555; border: 1px dashed #f39c12; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px;">
+            <i class="fa-solid fa-circle-question" style="color: #f39c12;"></i> PROBLEMAS COM MEU PEDIDO
+        </button>
     </div>
 </div>
 
@@ -1499,6 +1502,9 @@
 
             <p style="margin-bottom: 15px;"><strong>8. PROPRIEDADE INTELECTUAL</strong><br>
             Todo o conteúdo visual, logotipos, nomes de produtos e interface do aplicativo são de propriedade exclusiva do RedLine Delivery. A reprodução não autorizada de qualquer elemento desta plataforma é proibida por lei.</p>
+
+            <p style="margin-bottom: 15px;"><strong>9. IMAGENS ILUSTRATIVAS</strong><br>
+            As imagens dos produtos apresentadas no aplicativo são meramente ilustrativas. O aspecto real dos pratos, embalagens e guarnições pode variar conforme a disponibilidade de insumos e a preparação artesanal do estabelecimento no momento do pedido.</p>
             
             <p style="text-align: center; color: #999; margin-top: 10px; font-style: italic;">Última atualização: Abril de 2026</p>
         </div>
@@ -2119,7 +2125,8 @@
             </div>
         </div>
 
-        <button id="finish-order" style="width: 100%; background: var(--primary-orange); color: white; border: none; padding: 15px; border-radius: 12px; margin-top: 20px; font-weight: bold; cursor: pointer;">Finalizar Pedido</button>
+        <p style="text-align: center; font-size: 10px; color: #999; margin-top: 15px;">Ao finalizar o pedido, você concorda com os termos do site</p>
+        <button id="finish-order" style="width: 100%; background: var(--primary-orange); color: white; border: none; padding: 15px; border-radius: 12px; margin-top: 5px; font-weight: bold; cursor: pointer;">Finalizar Pedido</button>
         <button id="schedule-order-btn" style="width: 100%; background: #34495e; color: white; border: none; padding: 15px; border-radius: 12px; margin-top: 10px; font-weight: bold; cursor: pointer; display: none;" onclick="openScheduleModal()">Agendar para mais tarde</button>
     </div>
 </section>
@@ -2206,8 +2213,25 @@
             <img id="user-photo" src="https://api.dicebear.com/7.x/big-smile/svg?seed=Aneka" style="width: 100%; height: 100%; object-fit: cover;">
             <div style="position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.4); color: white; font-size: 10px; padding: 2px 0;">Trocar</div>
         </div>
-        <h2 id="profile-name-display" style="font-size: 20px;">Nome do Usuário</h2>
-        <p id="profile-phone-display" style="color: var(--text-gray); font-size: 14px;"></p>
+
+        <div style="background: white; border-radius: 20px; padding: 20px; margin: 0 10px 15px 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #eee; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #f8f9fa; padding-bottom: 10px;">
+                <div>
+                    <p style="font-size: 10px; color: #999; font-weight: 800; text-transform: uppercase;">Nome cadastrado</p>
+                    <h2 id="profile-name-display" style="font-size: 16px; color: #333;">Nome do Usuário</h2>
+                </div>
+                <i class="fa-solid fa-user-pen" onclick="openProfileModal()" style="color: var(--primary-orange); cursor: pointer;"></i>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div>
+                    <p style="font-size: 10px; color: #999; font-weight: 800; text-transform: uppercase;">Número de celular</p>
+                    <p id="profile-phone-display" style="color: #333; font-size: 14px; font-weight: 600;"></p>
+                </div>
+                <button onclick="localStorage.clear(); location.reload();" style="background: #fdf2f2; color: #ea1d2c; border: 1px solid #ffebeb; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 900; cursor: pointer;">
+                    <i class="fa-solid fa-right-from-bracket"></i> SAIR DA CONTA
+                </button>
+            </div>
+        </div>
         
         <div class="loyalty-card" id="loyalty-section" style="display: none;"></div>
 
@@ -2432,6 +2456,45 @@
     </div>
 </section>
 
+<section id="help-screen" class="screen" style="background: #f8f9fa;">
+    <div class="cart-header" style="background: white; padding: 20px; border-bottom: 1px solid #eee;">
+        <i class="fa-solid fa-arrow-left" onclick="changeTab('profile')"></i>
+        <h3 style="flex: 1; text-align: center; margin-right: 30px; font-weight: 900;">Ajuda e Suporte</h3>
+    </div>
+
+    <div style="padding: 20px;">
+        <div style="background: white; border-radius: 20px; padding: 20px; border: 1px solid #eee; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px;">
+            <h3 style="font-size: 16px; margin-bottom: 10px;">Relatar um Problema</h3>
+            <p style="font-size: 12px; color: #666; margin-bottom: 20px;">Selecione o pedido e envie as evidências do que aconteceu para análise de reembolso ou troca.</p>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="font-size: 11px; font-weight: 900; color: #999; text-transform: uppercase;">1. Selecione o Pedido</label>
+                <div id="help-orders-list" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px; max-height: 200px; overflow-y: auto; padding-right: 5px;">
+                    <!-- Pedidos via JS -->
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="font-size: 11px; font-weight: 900; color: #999; text-transform: uppercase;">2. O que aconteceu?</label>
+                <textarea id="help-text" placeholder="Descreva detalhadamente o problema (item faltante, atraso, qualidade...)" style="width: 100%; height: 100px; padding: 12px; border-radius: 12px; border: 1px solid #ddd; outline: none; font-size: 13px; resize: none; margin-top: 10px;"></textarea>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 25px;">
+                <label style="font-size: 11px; font-weight: 900; color: #999; text-transform: uppercase;">3. Foto da Evidência (Obrigatório)</label>
+                <input type="file" id="help-photo-upload" accept="image/*" style="display:none;">
+                <div onclick="document.getElementById('help-photo-upload').click()" id="help-photo-preview" style="width: 100%; height: 120px; background: #f9f9f9; border: 2px dashed #ddd; border-radius: 12px; margin-top: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer;">
+                    <i class="fa-solid fa-camera" style="font-size: 24px; color: #ccc;"></i>
+                    <span style="font-size: 11px; color: #999;">Toque para enviar foto</span>
+                </div>
+            </div>
+
+            <button id="btn-submit-help" onclick="submitHelpRequest()" style="width: 100%; background: var(--primary-orange); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 12px rgba(234, 29, 44, 0.2);">
+                ENVIAR SOLICITAÇÃO
+            </button>
+        </div>
+    </div>
+</section>
+
 <section id="test-screen" class="screen" style="background: #f8f9fa;">
     <div class="cart-header" style="background: white; padding: 20px; border-bottom: 1px solid #eee; margin-bottom: 0;">
         <i class="fa-solid fa-arrow-left" onclick="changeTab('home')"></i>
@@ -2651,20 +2714,20 @@
     { id: "fam_3", name: "File acebolado", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 112.80, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1carneacebolada.png", serveCount: 4 },
     { id: "p1", name: "Marmita Executiva Frango Parmegiana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805317455_Marmita_Executiva_Frango_Parmegiana.png", isOffer: true, popular: true },
     { id: "p2", name: "Subline de Carne", weight: "Disco de carne Friboi fatiado, Pepino, Cebola, Tomate, Pepino, Alface, Repolho, Molho especial", price: 17.90, oldPrice: 21.12, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806259695_0000000000000000000000000000s.png", isOffer: true },
-    { id: "p_requeijao", name: "BIG Requeijão Cremoso", weight: "1 disco de carne Friboi tradicional, Requeijão, alface, cebola, tomate, pepino, calabresa, molho especial", price: 15.80, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/--------oprai.png", isMegaPromo: true, popular: true },
+    { id: "p_requeijao", name: "BIG Requeijão Cremoso", weight: "1 disco de carne Friboi tradicional, Requeijão, alface, cebola, tomate, pepino, calabresa, molho especial", price: 15.80, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-Bigrequeijaocrem.png", isMegaPromo: true, popular: true },
     { id: "p4", name: "Camarão Internacional", weight: "Risoto cremoso recheado com camarão, milho, ervilha, calabresa, arroz, batata palha, cheiro verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805413051_ewweew.png", isOffer: true, popular: true },
-    { id: "p5", name: "BIG Salada X", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805562776_BIG_Salada_X.png" },
-    { id: "p6", name: "BIG Egg", weight: "1 disco de carne Friboi tradicional, ovo, alface, cebola, tomate, pepino, calabresa", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805580478_BIG_Egg.png" },
-    { id: "p3", name: "BIG Cheddar Cremoso", weight: "1 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa, queijo, molho especial", price: 16.90, oldPrice: 21.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805607723_0-00-0-ewew.png", isOffer: true, isMegaPromo: true, popular: true },
-    { id: "p7", name: "BIG Barbecue Cremoso", weight: "1 disco de carne Friboi tradicional, calabresa, alface, cebola, tomate, pepino, molho Barbecue", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805640792_===========na.png" },
-    { id: "p8", name: "BIG Hot Spice", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho especial apimentado", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805658962_--------ma.png" },
-    { id: "p9", name: "BIG Caramelizado", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, cebola caramelizada na manteiga", price: 17.90, oldPrice: 22.37, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805680805_-----zenis_(1).png", isOffer: true },
-    { id: "p10", name: "BIG Chicken", weight: "1 Frango Krispy, alface, cebola, tomate, pepino, Steak Perdigão", price: 18.90, oldPrice: 23.62, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805700730_BIG_Chicken.png", isOffer: true },
-    { id: "p11", name: "BIG Holandês", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho de carne moída e Requeijão", price: 19.90, oldPrice: 24.87, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805730980_-----zenis_(2).png", isOffer: true },
-    { id: "p12", name: "BIG Bacon Mussarela", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho tasty, Bacon, Queijo Mussarela", price: 19.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805744847_-----zenis_(3).png" },
-    { id: "p13", name: "BIG Cheddar Duplo", weight: "2 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa", price: 23.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805783011_BIG_Cheddar_Duplo.png" },
-    { id: "p14", name: "BIG Bacon Triplo", weight: "3 disco de carne Friboi tradicional, Bacon, alface, cebola, tomate, pepino, calabresa, molho especial", price: 24.90, oldPrice: 31.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805850515_download.png", isOffer: true },
-    { id: "p15", name: "BIG Tudo", weight: "2 disco de carne Friboi tradicional, Bacon, alface, cebola, tomate, pepino, calabresa, salsicha, cheddar, ovo, batata palha", price: 28.90, oldPrice: 36.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805887048_BIG_Tudo.png", isOffer: true },
+    { id: "p5", name: "BIG Salada X", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigsalada.png" },
+    { id: "p6", name: "BIG Egg", weight: "1 disco de carne Friboi tradicional, ovo, alface, cebola, tomate, pepino, calabresa", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigegg.png" },
+    { id: "p3", name: "BIG Cheddar Cremoso", weight: "1 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa, queijo, molho especial", price: 16.90, oldPrice: 21.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-Bigcheddarcremseeeda.png", isOffer: true, isMegaPromo: true, popular: true },
+    { id: "p7", name: "BIG Barbecue Cremoso", weight: "1 disco de carne Friboi tradicional, calabresa, alface, cebola, tomate, pepino, molho Barbecue", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigbarbecue.png" },
+    { id: "p8", name: "BIG Hot Spice", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho especial apimentado", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bighotspice.png" },
+    { id: "p9", name: "BIG Caramelizado", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, cebola caramelizada na manteiga", price: 17.90, oldPrice: 22.37, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigcarameliszad.png", isOffer: true },
+    { id: "p10", name: "BIG Chicken", weight: "1 Frango Krispy, alface, cebola, tomate, pepino, Steak Perdigão", price: 18.90, oldPrice: 23.62, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-frangocripsy.png", isOffer: true },
+    { id: "p11", name: "BIG Holandês", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho de carne moída e Requeijão", price: 19.90, oldPrice: 24.87, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigholansedesdacnce.png", isOffer: true },
+    { id: "p12", name: "BIG Bacon Mussarela", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho tasty, Bacon, Queijo Mussarela", price: 19.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-baconmussarela.png" },
+    { id: "p13", name: "BIG Cheddar Duplo", weight: "2 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa", price: 23.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-Bigcheddarduplo.png" },
+    { id: "p14", name: "BIG Bacon Triplo", weight: "3 disco de carne Friboi tradicional, Bacon, alface, cebola, tomate, pepino, calabresa, molho especial", price: 24.90, oldPrice: 31.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigbacontriplo.png", isOffer: true },
+    { id: "p15", name: "BIG Tudo", weight: "2 disco de carne Friboi tradicional, Bacon, alface, cebola, tomate, pepino, calabresa, salsicha, cheddar, ovo, batata palha", price: 28.90, oldPrice: 36.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-Bigtudo.png", isOffer: true },
     { id: "p16", name: "Subline de Frango", weight: "Steak de frango perdigão fatiado, Cebola, Tomate, Alface, Repolho, Molho especial", price: 17.90, oldPrice: 22.37, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806282305_dsds.png", isOffer: true, popular: true },
     { id: "p17", name: "Subline de Bacon Carne e Cheddar", weight: "Disco de carne Friboi fatiado, Cebola, Tomate, Alface, Pepino, Repolho, Molho especial", price: 18.90, oldPrice: 23.62, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806300866_0000000000000000000sub.png", isOffer: true },
     { id: "p_sub_nuggets", name: "Subline de Nuggets Crocante", weight: "Nuggets de frango crocantes fatiados, Cebola, Tomate, Alface, Molho especial, pepino, Repolho", price: 19.90, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/1--------------nuggets.png" },
@@ -6667,11 +6730,98 @@ window.changeTab = function(tab) {
             document.getElementById('nav-bags').classList.add('active');
             document.getElementById('floating-cart').style.display = 'none';
             renderBagsPromo();
+        } else if(tab === 'help') {
+            document.getElementById('help-screen').classList.add('active');
+            document.getElementById('floating-cart').style.display = 'none';
+            renderHelpOrders();
         } else if(tab === 'test') {
             document.getElementById('test-screen').classList.add('active');
             document.getElementById('floating-cart').style.display = 'none';
         }
     }
+
+    let selectedHelpOrderKey = null;
+    let helpPhotoUrl = null;
+
+    window.openHelpScreen = () => changeTab('help');
+
+    window.renderHelpOrders = () => {
+        const container = document.getElementById('help-orders-list');
+        container.innerHTML = "";
+        get(ref(db, 'orders')).then(snap => {
+            const orders = snap.val();
+            if(!orders) return;
+            const myOrders = Object.entries(orders)
+                .filter(([k, o]) => o.cliente && o.cliente.contato === userProfile.contato)
+                .sort((a,b) => b[1].timestamp - a[1].timestamp)
+                .slice(0, 10);
+            
+            myOrders.forEach(([key, o]) => {
+                const date = new Date(o.timestamp).toLocaleDateString('pt-BR');
+                const div = document.createElement('div');
+                div.style = "padding: 12px; background: #f9f9f9; border: 2px solid #eee; border-radius: 10px; cursor: pointer; font-size: 13px;";
+                div.innerHTML = `<strong>Pedido ${date}</strong><br><small style="color:#666;">R$ ${o.total.toFixed(2)} - ${o.items.map(i=>i.name).join(', ')}</small>`;
+                div.onclick = () => {
+                    document.querySelectorAll('#help-orders-list div').forEach(d => d.style.borderColor = "#eee");
+                    div.style.borderColor = "var(--primary-orange)";
+                    selectedHelpOrderKey = key;
+                };
+                container.appendChild(div);
+            });
+        });
+    };
+
+    document.getElementById('help-photo-upload').onchange = async (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const preview = document.getElementById('help-photo-preview');
+        preview.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Subindo...';
+        
+        const supabaseUrl = "https://shscuqqqezibwkibhyix.supabase.co";
+        const supabaseKey = "sb_secret_bwpqhN76aZMoZzMBpc_Teg_tO73RMzv";
+        const fileName = `help_pics/${Date.now()}_${file.name}`;
+        const filePath = `${supabaseUrl}/storage/v1/object/ecs/${fileName}`;
+
+        try {
+            const response = await fetch(filePath, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${supabaseKey}`, 'apikey': supabaseKey, 'Content-Type': file.type },
+                body: file
+            });
+            if(response.ok) {
+                helpPhotoUrl = `${supabaseUrl}/storage/v1/object/public/ecs/${fileName}`;
+                preview.innerHTML = `<img src="${helpPhotoUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">`;
+            }
+        } catch(err) { alert("Erro no upload"); }
+    };
+
+    window.submitHelpRequest = () => {
+        const text = document.getElementById('help-text').value;
+        if(!selectedHelpOrderKey) return alert("Selecione o pedido!");
+        if(!text) return alert("Descreva o problema!");
+        if(!helpPhotoUrl) return alert("Envie uma foto da evidência!");
+
+        const btn = document.getElementById('btn-submit-help');
+        btn.disabled = true;
+        btn.innerText = "ENVIANDO...";
+
+        push(ref(db, 'help_requests'), {
+            orderKey: selectedHelpOrderKey,
+            text,
+            photo: helpPhotoUrl,
+            user: userProfile,
+            timestamp: Date.now(),
+            status: 'pendente'
+        }).then(() => {
+            alert("Sua solicitação foi enviada! Analisaremos o ocorrido.");
+            changeTab('profile');
+            document.getElementById('help-text').value = "";
+            helpPhotoUrl = null;
+            selectedHelpOrderKey = null;
+            btn.disabled = false;
+            btn.innerText = "ENVIAR SOLICITAÇÃO";
+        });
+    };
 
 window.addEventListener('load', () => {
     checkTrackingHash();
