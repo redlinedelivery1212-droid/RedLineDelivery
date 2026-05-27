@@ -2650,6 +2650,25 @@
     </div>
 </div>
 
+<div id="modal-meat-point" class="modal-overlay" style="z-index: 8000;">
+    <div class="modal-content">
+        <h3>Ponto da Carne</h3>
+        <p style="font-size: 13px; color: var(--text-gray); margin-bottom: 10px;">Como você prefere sua carne?</p>
+        <div id="meat-point-options" style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="display: flex; align-items: center; gap: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px; cursor: pointer;">
+                <input type="radio" name="selected-meat-point" value="Mal Passada"> <span style="font-size: 14px;">Mal Passada</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px; cursor: pointer;">
+                <input type="radio" name="selected-meat-point" value="Ao Ponto" checked> <span style="font-size: 14px;">Ao Ponto</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px; cursor: pointer;">
+                <input type="radio" name="selected-meat-point" value="Bem Passada"> <span style="font-size: 14px;">Bem Passada</span>
+            </label>
+        </div>
+        <button class="btn-next" id="btn-confirm-meat-point" style="margin-top: 15px;">Confirmar e Adicionar</button>
+    </div>
+</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getDatabase, ref, onValue, set, push, remove, get, query, limitToLast, update } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
@@ -4889,7 +4908,21 @@ window.addBagToCart = (key) => {
                 return;
             }
         }
-        if (item.isCombo) {
+        if (item.category === 'Marmitas' && (item.name.toLowerCase().includes('carne') || item.name.toLowerCase().includes('picanha') || item.name.toLowerCase().includes('file'))) {
+            document.getElementById('modal-meat-point').style.display = 'flex';
+            document.getElementById('btn-confirm-meat-point').onclick = () => {
+                const selected = document.querySelector('input[name="selected-meat-point"]:checked').value;
+                const cartItem = {...item, qty: 1, meatPoint: selected, id: item.id + '_' + selected.replace(/\s/g, '')};
+                const inCart = cart.find(c => c.id === cartItem.id);
+                if(inCart) inCart.qty++;
+                else cart.push(cartItem);
+                document.getElementById('modal-meat-point').style.display = 'none';
+                saveCart();
+                updateFloatingCart();
+                if(document.getElementById('details-screen').classList.contains('active')) changeTab('home');
+                checkMarmitaPromo();
+            };
+        } else if (item.isCombo) {
             onValue(ref(db, 'settings/combo_drinks'), (snap) => {
                 const drinksStr = snap.val() || "";
                 const drinks = drinksStr.split(',').map(d => d.trim()).filter(d => d !== "");
@@ -5111,7 +5144,7 @@ window.addBagToCart = (key) => {
                 <img src="${item.img}">
                 <div class="cart-item-info">
                     <p class="p-name">${item.isBag ? '<i class="fa-solid fa-fire" style="color:#6c5ce7; font-size:10px;"></i> ' : ''}${item.name} ${promoBadge}${megaPromoTag}</p>
-                    <div class="p-weight">${item.weight}${item.drink ? ` <span style="color:var(--primary-orange); font-weight:bold;">[${item.drink}]</span>` : ''}</div>
+                    <div class="p-weight">${item.weight}${item.drink ? ` <span style="color:var(--primary-orange); font-weight:bold;">[${item.drink}]</span>` : ''}${item.meatPoint ? ` <span style="color:var(--primary-orange); font-weight:bold;">[${item.meatPoint}]</span>` : ''}</div>
                     <p class="p-price" style="color: ${priceColor}; font-weight: bold;">R$ ${item.price.toFixed(2).replace('.',',')}</p>
                 </div>
                 <div class="qty-controls" style="${(item.isPromo || item.isLocked) ? 'opacity:0.5; pointer-events:none;' : ''}">
