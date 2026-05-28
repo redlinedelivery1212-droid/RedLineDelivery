@@ -6485,9 +6485,7 @@ document.getElementById('btn-add-to-active').onclick = function() {
         let currentFinalTotal = Math.max(0, (subtotal + deliveryFee) - couponDiscount);
         
         const extras = [];
-        if(document.getElementById('opt-maionese')?.checked) extras.push("Maionese Hellmann's");
-        if(document.getElementById('opt-ketchup')?.checked) extras.push("Ketchup Hellmann's");
-        if(document.getElementById('opt-tasty')?.checked) extras.push("Molho Tasty");
+        document.querySelectorAll('.opt-free-dynamic:checked').forEach(cb => extras.push(cb.getAttribute('data-nome')));
         document.querySelectorAll('.opt-brinde-dinamico:checked').forEach(cb => extras.push(cb.getAttribute('data-nome')));
 
         const paymentMethod = document.querySelector('input[name="pay-method"]:checked').value;
