@@ -362,23 +362,56 @@
 
         .section-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .product-card { background: white; border-radius: 15px; padding: 10px; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .product-card { 
+            background: #fff; 
+            border-radius: 16px; 
+            padding: 0; 
+            position: relative; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+            border: 1px solid #f0f0f0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
         .product-card img { 
             width: 100%; 
-            height: 120px; 
+            height: 140px; 
             object-fit: cover; 
-            border-radius: 10px; 
-            margin-bottom: 10px; 
-            background: #eee linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            transition: opacity 0.3s;
+            border-radius: 0; 
+            margin-bottom: 0;
+            display: block;
         }
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
+        .product-card-body {
+            padding: 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
-        .img-loaded { animation: none !important; background: transparent !important; }
+        .p-name { 
+            font-weight: 700; 
+            font-size: 14px; 
+            color: #3e3e3e; 
+            line-height: 1.2;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 34px;
+        }
+        .p-weight { 
+            font-size: 11px; 
+            color: #717171; 
+            margin-bottom: 8px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 28px;
+            flex: 1;
+        }
 
         .skeleton-card {
             background: white;
@@ -523,21 +556,29 @@
         }
         
         .add-btn { 
-            background: var(--primary-orange); 
-            color: white; 
-            border: none; 
+            background: #fff; 
+            color: #ea1d2c; 
+            border: 1px solid #f0f0f0; 
             border-radius: 8px; 
-            width: 32px; 
-            height: 32px; 
-            float: right; 
+            width: 34px; 
+            height: 34px; 
             cursor: pointer; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            font-size: 20px; 
-            transition: transform 0.2s; 
-            box-shadow: 0 3px 6px rgba(234, 29, 44, 0.3); 
-            margin-top: -10px; 
+            font-size: 18px; 
+            transition: 0.2s; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            margin: 0;
+        }
+        .add-btn:active {
+            background: #ea1d2c;
+            color: #fff;
+            transform: scale(0.9);
+        }
+        .add-btn:hover {
+            background: #d63031;
+            transform: translateY(-2px);
         }
         .add-btn:active { transform: scale(0.9); }
 
@@ -1805,13 +1846,14 @@
                 <span>Marmitas</span>
                 <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----wwwwwwwwwwwwwwww---------------w%20(5).png">
             </div>
-            <div class="category-card" style="background: linear-gradient(135deg, #ea1d2c, #ff4757);" onclick="filterCategory('Hambúrguer')">
-                <span>Hamburguers</span>
-                <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----wwwwwwwwwwwwwwww---------------w%20(1).png">
-            </div>
             <div class="category-card" style="background: linear-gradient(135deg, #e67e22, #f39c12);" onclick="filterCategory('SubLine')">
                 <span>Sublines</span>
                 <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----wwwwwwwwwwwwwwww---------------w%20(1).webp">
+            </div>
+            <div class="category-card" style="background: linear-gradient(135deg, #ea1d2c, #ff4757);" onclick="filterCategory('Hambúrguer')">
+                <span style="font-size: 7px; margin-bottom: 2px; opacity: 0.9;">( NAO ARTESANAL )</span>
+                <span>Hamburguers</span>
+                <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----wwwwwwwwwwwwwwww---------------w%20(1).png">
             </div>
             <div class="category-card" style="background: linear-gradient(135deg, #f1c40f, #ffde00);" onclick="filterCategory('Macarronadas')">
                 <span>Macarronadas</span>
@@ -1835,6 +1877,16 @@
             <button onclick="filterCategory('all')" style="width: 100%; background: #eee; color: #666; border: 1px solid #ddd; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
                 <i class="fa-solid fa-arrow-left-long"></i> RETORNAR VER TODOS OS PRODUTOS
             </button>
+        </div>
+
+        <div id="category-suggestion-carousel" style="margin-bottom: 25px; display: none;">
+            <div class="section-title">
+                <h3>Sugestões do Dia</h3>
+                <span style="color: var(--text-gray); font-size: 10px; font-weight: bold; text-transform: uppercase;">Arraste <i class="fa-solid fa-arrows-left-right"></i></span>
+            </div>
+            <div id="suggestion-list-horizontal" style="display: flex; gap: 15px; overflow-x: auto; padding: 5px 2px 10px 2px; scrollbar-width: none; -webkit-overflow-scrolling: touch; flex-wrap: nowrap;">
+                <!-- Itens aleatórios via JS -->
+            </div>
         </div>
 
         <div class="section-title">
@@ -2794,22 +2846,28 @@
     { id: "p55", name: "Farofa de Bacon & Calabresa", weight: "Na farofa de bacon acompanha farofa, manteiga corante, bacon fatiado picado, calabresa fatiada picada, crocante", price: 6.90, oldPrice: 8.62, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/---------------farofa.png", isOffer: true },
     { id: "p56", name: "Sorvete de Chocolate", weight: "Sorvete cremoso sabor chocolate com calda de chocolate", price: 8.90, category: "Sorvetes", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/Untitled%20folder/8-----chocolate.png" },
     { id: "p57", name: "Sorvete de Morango", weight: "Sorvete cremoso sabor morango com calda de chocolate", price: 8.90, category: "Sorvetes", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/Untitled%20folder/8-----morango.png" },
-    { id: "p58", name: "Sorvete de Baunilha", weight: "Sorvete cremoso sabor baunilha com calda de chocolate", price: 8.90, category: "Sorvetes", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/Untitled%20folder/8-----baunilha.png" }
+    { id: "p58", name: "Sorvete de Baunilha", weight: "Sorvete cremoso sabor baunilha com calda de chocolate", price: 8.90, category: "Sorvetes", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/Untitled%20folder/8-----baunilha.png" },
+    { id: "art_1", name: "Artesanal Classic", weight: "Pão brioche, Blend 160g, Queijo Prato, Alface, Tomate e Molho Especial", price: 21.90, category: "Hambúrguer ARTESANAIS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigsalada.png", isSoldOut: true },
+    { id: "art_2", name: "Artesanal BBQ Bacon", weight: "Pão Australiano, Blend 160g, Cheddar, Bacon Crocante e Molho BBQ", price: 23.90, category: "Hambúrguer ARTESANAIS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigbarbecue.png", isSoldOut: true },
+    { id: "art_3", name: "Artesanal Duplo Cheese", weight: "Pão brioche, 2x Blend 160g, Dobro de Queijo e Maionese da Casa", price: 24.90, category: "Hambúrguer ARTESANAIS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-Bigcheddarduplo.png", isSoldOut: true },
+    { id: "art_4", name: "Artesanal Egg Monster", weight: "Pão brioche, Blend 160g, Ovo, Bacon, Queijo e Salada", price: 25.90, category: "Hambúrguer ARTESANAIS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigegg.png", isSoldOut: true }
 ];
 
     const catalogCategories = [
-    { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 1 },
+    { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 3 },
+    { key: "c_art", name: "Hambúrguer ARTESANAIS", icon: "fa-solid fa-burger", order: 4 },
+    { key: "c_ice", name: "Sorvetes", icon: "fa-solid fa-ice-cream", order: 4.1 },
     { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
-    { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 3 },
-    { key: "c_ice", name: "Sorvetes", icon: "fa-solid fa-ice-cream", order: 3.2 },
-    { key: "c10", name: "Combos", icon: "fa-solid fa-boxes-stacked", order: 4 },
-    { key: "c_kids", name: "KIDS", icon: "fa-solid fa-child", order: 4.5 },
-    { key: "c4", name: "Petiscos", icon: "fa-solid fa-shrimp", order: 5 },
-        { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 6 },
-        { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 7 },
-        { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 8 },
-        { key: "c8", name: "Bolos", icon: "fa-solid fa-cake-candles", order: 9 },
-        { key: "c9", name: "Bebidas", icon: "fa-solid fa-beer-mug-empty", order: 10 }
+    { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 1 },
+    { key: "c_add", name: "Adicionais", icon: "fa-solid fa-plus", order: 1.1 },
+    { key: "c10", name: "Combos", icon: "fa-solid fa-boxes-stacked", order: 5 },
+    { key: "c_kids", name: "KIDS", icon: "fa-solid fa-child", order: 6 },
+    { key: "c4", name: "Petiscos", icon: "fa-solid fa-shrimp", order: 7 },
+        { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 8 },
+        { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 9 },
+        { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 10 },
+        { key: "c8", name: "Bolos", icon: "fa-solid fa-cake-candles", order: 11 },
+        { key: "c9", name: "Bebidas", icon: "fa-solid fa-beer-mug-empty", order: 12 }
     ];
 
     let products = [...catalogData];
@@ -3423,6 +3481,7 @@ function init() {
 
             renderHomeCategories();
             renderProducts();
+            renderCategorySuggestions();
             window.logPerf('catalog');
         });
 
@@ -4033,20 +4092,21 @@ function init() {
     };
 
     categories = [
-    { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 1 },
+    { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 3 },
+    { key: "c_art", name: "Hambúrguer ARTESANAIS", icon: "fa-solid fa-burger", order: 4 },
+    { key: "c_ice", name: "Sorvetes", icon: "fa-solid fa-ice-cream", order: 4.1 },
     { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
-    { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 3 },
-    { key: "c_add", name: "Adicionais", icon: "fa-solid fa-plus", order: 3.1 },
-    { key: "c_ice", name: "Sorvetes", icon: "fa-solid fa-ice-cream", order: 3.2 },
-    { key: "c10", name: "Combos", icon: "fa-solid fa-boxes-stacked", order: 4 },
-    { key: "c_kids", name: "KIDS", icon: "fa-solid fa-child", order: 4.5 },
-    { key: "c4", name: "Petiscos", icon: "fa-solid fa-shrimp", order: 5 },
-        { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 6 },
-        { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 7 },
-        { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 8 },
-        { key: "c8", name: "Bolos", icon: "fa-solid fa-cake-candles", order: 9 },
-        { key: "c9", name: "Bebidas", icon: "fa-solid fa-beer-mug-empty", order: 10 },
-    { key: "c_fam", name: "Refeições Família", icon: "fa-solid fa-users", order: 11 }
+    { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 1 },
+    { key: "c_add", name: "Adicionais", icon: "fa-solid fa-plus", order: 1.1 },
+    { key: "c10", name: "Combos", icon: "fa-solid fa-boxes-stacked", order: 5 },
+    { key: "c_kids", name: "KIDS", icon: "fa-solid fa-child", order: 6 },
+    { key: "c4", name: "Petiscos", icon: "fa-solid fa-shrimp", order: 7 },
+        { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 8 },
+        { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 9 },
+        { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 10 },
+        { key: "c8", name: "Bolos", icon: "fa-solid fa-cake-candles", order: 11 },
+        { key: "c9", name: "Bebidas", icon: "fa-solid fa-beer-mug-empty", order: 12 },
+    { key: "c_fam", name: "Refeições Família", icon: "fa-solid fa-users", order: 13 }
     ];
     renderHomeCategories();
     renderProducts();
@@ -4350,7 +4410,16 @@ function renderFakeReviews() {
             const activeEl = document.querySelector(`[data-catname="${catName}"]`);
             if(activeEl) activeEl.classList.add('active-cat');
             const sectionH3 = document.querySelector('.section-title h3');
-            if(sectionH3) sectionH3.innerText = catName;
+            if(sectionH3) {
+                if(catName === 'Hambúrguer') {
+                    sectionH3.parentElement.style.alignItems = "flex-start";
+                    sectionH3.style.lineHeight = "1.1";
+                    sectionH3.innerHTML = `Hambúrguer<br><span style="font-size: 13px; color: white; background: #ea1d2c; padding: 4px 12px; border-radius: 6px; font-weight: 900; display: inline-block; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px;">NAO ARTESANAL</span>`;
+                } else {
+                    sectionH3.style.lineHeight = "normal";
+                    sectionH3.innerText = catName;
+                }
+            }
 
             const sectionHeader = document.querySelector('.section-title');
             if(sectionHeader) {
@@ -4404,6 +4473,70 @@ function renderFakeReviews() {
     }
 
 
+    function renderCategorySuggestions() {
+        const container = document.getElementById('category-suggestion-carousel');
+        const list = document.getElementById('suggestion-list-horizontal');
+        if (!list || allProducts.length === 0) return;
+
+        list.innerHTML = "";
+        
+        // Card de Destaque Inicial (Laranja estilo Hits/iFood)
+        const bannerCard = document.createElement('div');
+        bannerCard.style = "min-width: 140px; width: 140px; height: 190px; flex-shrink: 0; background: linear-gradient(135deg, #f39c12, #ea1d2c); border-radius: 18px; padding: 15px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; color: white;";
+        bannerCard.innerHTML = `
+            <div style="z-index: 2;">
+                <p style="font-size: 10px; font-weight: 900; opacity: 0.9; text-transform: uppercase;">Top 10</p>
+                <h3 style="font-size: 24px; font-weight: 900; line-height: 0.9;">MAIS<br>PEDIDOS</h3>
+            </div>
+            <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg" style="position: absolute; bottom: -10px; right: -10px; width: 100px; opacity: 0.2; transform: rotate(-15deg);">
+            <div style="background: white; color: var(--primary-orange); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                <i class="fa-solid fa-chevron-right"></i>
+            </div>
+        `;
+        bannerCard.onclick = () => filterCategory('all');
+        list.appendChild(bannerCard);
+
+        const categoryNames = [...new Set(allProducts.map(p => p.category))].filter(cat => cat !== 'KIDS');
+        const suggestedProducts = categoryNames.map(cat => {
+            const catProds = allProducts.filter(p => p.category === cat && !p.isSoldOut);
+            if (catProds.length === 0) return null;
+            return catProds[Math.floor(Math.random() * catProds.length)];
+        }).filter(p => p !== null).sort(() => Math.random() - 0.5);
+
+        if (suggestedProducts.length > 0) {
+            container.style.display = 'block';
+            suggestedProducts.forEach(p => {
+                const item = document.createElement('div');
+                item.style = "min-width: 140px; width: 140px; flex-shrink: 0; background: white; border-radius: 18px; border: 1px solid #eee; overflow: hidden; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.03);";
+                item.onclick = () => filterCategory(p.category);
+                
+                const originalPrice = p.oldPrice ? p.oldPrice.toFixed(2).replace('.', ',') : (p.price / 0.8).toFixed(2).replace('.', ',');
+                
+                item.innerHTML = `
+                    <div style="position: relative; width: 100%; height: 100px; overflow: hidden;">
+                        <img src="${getThumb(p.img)}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div style="position: absolute; bottom: 8px; right: 8px; width: 24px; height: 24px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid #eee; color: var(--primary-orange); box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                            <i class="fa-solid fa-plus" style="font-size: 12px;"></i>
+                        </div>
+                    </div>
+                    <div style="padding: 10px;">
+                        <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 4px;">
+                            <i class="fa-solid fa-fire" style="color: #e67e22; font-size: 10px;"></i>
+                            <span style="font-size: 11px; font-weight: 900; color: #333;">R$ ${p.price.toFixed(2).replace('.', ',')}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 5px;">
+                            <span style="text-decoration: line-through; color: #bbb; font-size: 9px;">R$ ${originalPrice}</span>
+                            <span style="background: #fff5f0; color: #ea1d2c; font-size: 8px; font-weight: 900; padding: 1px 4px; border-radius: 4px;">-20%</span>
+                        </div>
+                        <p style="font-size: 10px; font-weight: 700; color: #555; height: 24px; overflow: hidden; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${p.name}</p>
+                        <p style="font-size: 8px; color: #999; font-weight: 900; text-transform: uppercase; margin-top: 4px;">${p.category}</p>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+    }
+
     function renderProducts() {
         const list = document.getElementById('product-list');
         const recList = document.getElementById('recommended-list');
@@ -4438,22 +4571,8 @@ function renderFakeReviews() {
 
             const sortedCats = [...categories].sort((a, b) => (a.order || 0) - (b.order || 0));
 
-            const burgerCat = sortedCats.find(c => c.name.trim().toLowerCase() === 'hambúrguer');
-            if (burgerCat) {
-                const burgerProducts = sortedAllProducts.filter(p => p.category.trim() === 'Hambúrguer');
-                if (burgerProducts.length > 0) {
-                    const sectionTitle = document.createElement('div');
-                    sectionTitle.className = 'section-title';
-                    sectionTitle.style.gridColumn = "1 / -1";
-                    sectionTitle.style.marginTop = "20px";
-                    sectionTitle.innerHTML = `<h3>${burgerCat.name}</h3><span style="color: var(--text-gray); font-size: 12px;">Ver todos ></span>`;
-                    listFragment.appendChild(sectionTitle);
-                    burgerProducts.forEach(p => listFragment.appendChild(createProductCard(p)));
-                }
-            }
-
             sortedCats.forEach(cat => {
-                if (cat.name.trim().toLowerCase() === 'hambúrguer' || cat.name.trim().toLowerCase() === 'dia das mães') return;
+                if (cat.name.trim().toLowerCase() === 'dia das mães') return;
                 
                 const catProducts = sortedAllProducts.filter(p => p.category.trim() === cat.name.trim());
                 if (catProducts.length > 0) {
@@ -4473,7 +4592,8 @@ function renderFakeReviews() {
                     sectionTitle.className = 'section-title';
                     sectionTitle.style.gridColumn = "1 / -1";
                     sectionTitle.style.marginTop = "20px";
-                    sectionTitle.innerHTML = `<h3>${cat.name}</h3><span style="color: var(--text-gray); font-size: 12px;">Ver todos ></span>`;
+                    const tag = cat.name.trim() === 'Hambúrguer' ? `<br><span style="font-size: 13px; color: white; background: #ea1d2c; padding: 4px 12px; border-radius: 6px; font-weight: 900; display: inline-block; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px;">NAO ARTESANAL</span>` : '';
+                    sectionTitle.innerHTML = `<h3 style="line-height: 1.1;">${cat.name}${tag}</h3><span style="color: var(--text-gray); font-size: 12px;">Ver todos ></span>`;
                     listFragment.appendChild(sectionTitle);
                     
                     if (cat.name.toLowerCase() === 'subline' && sublineSettings && sublineSettings.active) {
@@ -4645,40 +4765,41 @@ function renderFakeReviews() {
     function createProductCard(p) {
         const card = document.createElement('div');
         let cardClass = p.isSoldOut ? 'product-card esgotado' : 'product-card';
-        if (p.isMegaPromo && !p.isSoldOut) cardClass += ' mega-promo-card';
-        if (p.isCustomSub && !p.isSoldOut) cardClass += ' custom-sub-card';
-        if (p.category === 'KIDS' && !p.isSoldOut) cardClass += ' kids-card';
         card.className = cardClass;
-        
-        if (p.isCustomSub && !p.isSoldOut) {
-            card.style.border = "2px solid #ea1d2c";
-            card.style.boxShadow = "0 4px 12px rgba(234, 29, 44, 0.15)";
-        }
 
         const originalPrice = p.oldPrice ? p.oldPrice.toFixed(2).replace('.', ',') : (p.price / 0.8).toFixed(2).replace('.', ',');
         const currentPrice = p.price.toFixed(2).replace('.', ',');
     
         const priceHTML = (p.isOffer || p.isMegaPromo)
-? `<div style="display: flex; flex-direction: column; line-height: 1.1;">
-    <span style="color: #888; text-decoration: line-through; font-size: 10px;">R$ ${originalPrice}</span>
-    <span class="p-price" style="color: var(--primary-orange);">R$ ${currentPrice}</span>
-   </div>`
-: `<span class="p-price">R$ ${currentPrice}</span>`;
+            ? `<div style="display: flex; flex-direction: column;">
+                <span style="color: #999; text-decoration: line-through; font-size: 10px;">R$ ${originalPrice}</span>
+                <span style="color: #ea1d2c; font-size: 16px; font-weight: 800;">R$ ${currentPrice}</span>
+               </div>`
+            : `<span style="font-size: 16px; font-weight: 800; color: #3e3e3e;">R$ ${currentPrice}</span>`;
 
         card.innerHTML = `
-            ${p.isSoldOut ? '<div class="esgotado-label">ESGOTADO VOLTA AMANHÃ</div>' : ''}
-            ${p.isMegaPromo && !p.isSoldOut ? `<div class="mega-promo-tag"><div class="fire-container"><i class="fa-solid fa-fire"></i><span class="percent">%</span></div>MEGA PROMO</div>` : ''}
-            ${p.isCustomSub && !p.isSoldOut ? `<div class="mega-promo-tag" style="background: #ea1d2c;"><i class="fa-solid fa-wand-magic-sparkles"></i> ESPECIAL</div>` : ''}
-            ${p.category === 'KIDS' && !p.isSoldOut ? `<div class="mega-promo-tag" style="background: #ea1d2c;"><i class="fa-solid fa-child"></i> KIDS</div>` : ''}
-            <img src="${getThumb(p.img)}" alt="${p.name}" class="product-img-click" loading="lazy" onload="this.classList.add('img-loaded')" onerror="this.src='https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/WhatsApp%20Image%202026-03-14%20at%2011.19.51%20PM%20(1).jpeg'">
-            ${p.serveCount ? `<div style="background: #ea1d2c; color: white; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; margin-bottom: 5px; display: inline-block; text-transform: uppercase;">SERVE ${p.serveCount} PESSOAS</div>` : ''}
-            <p class="p-name">${p.name}</p>
-            <p class="p-weight">${p.weight}</p>
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
-                <div>${priceHTML}</div>
-                ${p.isSoldOut ? '<span style="font-size:10px; color:red; font-weight:bold;">Indisponível</span>' : 
-                  (p.isCustomSub ? `<button class="btn-next" style="padding: 5px 12px; font-size: 10px; border-radius: 6px;">MONTAR</button>` : `<button class="add-btn" data-id="${p.id}">+</button>`)
-                }
+            ${p.isSoldOut ? '<div class="esgotado-label" style="font-size:12px; width:90%;">Indisponível</div>' : ''}
+            
+            <div style="position: relative;">
+                <img src="${getThumb(p.img)}" alt="${p.name}" class="product-img-click" loading="lazy">
+                <div style="position: absolute; top: 8px; left: 8px; display: flex; flex-direction: column; gap: 4px;">
+                    ${p.isMegaPromo && !p.isSoldOut ? `<div style="background: #f46b21; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">🔥 MEGA PROMO</div>` : ''}
+                    ${p.isCustomSub && !p.isSoldOut ? `<div style="background: #6c5ce7; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">✨ ESPECIAL</div>` : ''}
+                    ${p.category === 'KIDS' && !p.isSoldOut ? `<div style="background: #00b894; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">👶 KIDS</div>` : ''}
+                </div>
+            </div>
+
+            <div class="product-card-body">
+                ${p.serveCount ? `<div style="color: #ea1d2c; font-size: 9px; font-weight: 700; margin-bottom: 4px; text-transform: uppercase;">Serves ${p.serveCount} pessoas</div>` : ''}
+                <p class="p-name">${p.name}</p>
+                <p class="p-weight">${p.weight}</p>
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: auto;">
+                    ${priceHTML}
+                    ${p.isSoldOut ? '' : 
+                      (p.isCustomSub ? `<button class="add-btn" style="width: auto; padding: 0 10px; font-size: 11px; font-weight: 800;">MONTAR</button>` : `<button class="add-btn" data-id="${p.id}"><i class="fa-solid fa-plus"></i></button>`)
+                    }
+                </div>
             </div>
         `;
         if(!p.isSoldOut) {
@@ -5260,7 +5381,7 @@ window.addBagToCart = (key) => {
         }
         
 if (appliedCoupon) {
-            const coupons10 = ["REDLINE10%OFF", "ANACYNTHIA10%OFF", "JOSYBRAGA10%OFF", "PHODIVULGA10%OFF", "GEYSAXUXU10%OFF", "HUNTER10%OFF"];
+            const coupons10 = ["REDLINE10%OFF", "ANACYNTHIA10%OFF", "JOSYBRAGA10%OFF", "PHODIVULGA10%OFF", "GEYSAXUXU10%OFF", "HUNTER10%OFF", "VITARZINHO10%OFF"];
             const coupons20 = ["QUERIDAS20%OFF"];
             let percent = 0;
             if (coupons10.includes(appliedCoupon)) percent = 0.10;
@@ -5404,7 +5525,7 @@ window.applyCoupon = async function() {
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
     
-    const coupons10 = ["REDLINE10%OFF", "ANACYNTHIA10%OFF", "JOSYBRAGA10%OFF", "PHODIVULGA10%OFF", "GEYSAXUXU10%OFF", "HUNTER10%OFF"];
+    const coupons10 = ["REDLINE10%OFF", "ANACYNTHIA10%OFF", "JOSYBRAGA10%OFF", "PHODIVULGA10%OFF", "GEYSAXUXU10%OFF", "HUNTER10%OFF", "VITARZINHO10%OFF"];
     const coupons20 = ["QUERIDAS20%OFF"];
 
     if (!coupons10.includes(input) && !coupons20.includes(input)) {
