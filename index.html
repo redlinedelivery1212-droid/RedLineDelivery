@@ -2112,17 +2112,29 @@
         
         <div style="margin-top: 10px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
             <h4 style="margin-bottom: 12px; font-size: 14px;">Como deseja receber seu pedido?</h4>
-            <div id="delivery-options-container" style="display: flex; gap: 10px; margin-bottom: 15px;">
-                <label style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border: 1px solid var(--primary-orange); border-radius: 8px; cursor: pointer; background: #fff5f0;">
-                    <input type="radio" name="delivery-type" value="delivery" checked onchange="toggleDeliveryType(this.value)" style="display: none;">
-                    <i class="fa-solid fa-truck-fast" style="color: var(--primary-orange);"></i>
-                    <span style="font-size: 13px; font-weight: bold; color: var(--primary-orange);">Entrega</span>
+            <div id="delivery-options-container" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+                <div style="display: flex; gap: 10px;">
+                    <label style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1px solid var(--primary-orange); border-radius: 8px; cursor: pointer; background: #fff5f0;">
+                        <input type="radio" name="delivery-type" value="delivery" checked onchange="toggleDeliveryType(this.value)" style="display: none;">
+                        <i class="fa-solid fa-truck-fast" style="color: var(--primary-orange);"></i>
+                        <span style="font-size: 13px; font-weight: bold; color: var(--primary-orange);">Entrega</span>
+                    </label>
+                    <label style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1px solid #eee; border-radius: 8px; cursor: pointer; background: white;">
+                        <input type="radio" name="delivery-type" value="pickup" onchange="toggleDeliveryType(this.value)" style="display: none;">
+                        <i class="fa-solid fa-store" style="color: #666;"></i>
+                        <span style="font-size: 13px; font-weight: bold; color: #666;">Retirada</span>
+                    </label>
+                </div>
+                <label style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1px solid #eee; border-radius: 8px; cursor: pointer; background: white;">
+                    <input type="radio" name="delivery-type" value="no_contact" onchange="toggleDeliveryType(this.value)" style="display: none;">
+                    <i class="fa-solid fa-handshake-slash" style="color: #666;"></i>
+                    <span style="font-size: 13px; font-weight: bold; color: #666;">Entrega sem Contato</span>
                 </label>
-                <label style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border: 1px solid #eee; border-radius: 8px; cursor: pointer; background: white;">
-                    <input type="radio" name="delivery-type" value="pickup" onchange="toggleDeliveryType(this.value)" style="display: none;">
-                    <i class="fa-solid fa-store" style="color: #666;"></i>
-                    <span style="font-size: 13px; font-weight: bold; color: #666;">Retirada</span>
-                </label>
+            </div>
+
+            <div id="no-contact-instructions-field" style="display: none; margin-bottom: 15px; padding: 12px; background: #fff5f5; border-radius: 12px; border-left: 4px solid #ea1d2c;">
+                <p style="font-size: 11px; font-weight: 800; color: #ea1d2c; margin-bottom: 8px; text-transform: uppercase;">Onde o entregador deve deixar o pedido?</p>
+                <input type="text" id="no-contact-text" placeholder="Ex: deixar na garagem, deixar na caixa de correios" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; outline: none;">
             </div>
 
             <h4 style="margin-bottom: 12px; font-size: 14px;">Forma de Pagamento</h4>
@@ -2778,7 +2790,6 @@
     }, { onlyOnce: true });
 
     const catalogData = [
-    { id: "p0_uva", name: "Suco Uva del Vale", weight: "suco de uva 450 ml del valle", price: 4.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/---weewuba.png" },
     { id: "k1", name: "Combo Kids Brinquedo Bolhas", weight: "Acompanha um hamburguer de salada com requeijao e maionese, uma batata p crocante e um brinquedo de bolhas magicas estilo coelho verde", price: 29.90, category: "KIDS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/kids.png" },
     { id: "fam_1", name: "File com Fritas", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 138.50, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1filecomfritas.png", serveCount: 4 },
     { id: "fam_2", name: "Frango & Carne", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 128.40, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1frangoecarne.png", serveCount: 4 },
@@ -2822,10 +2833,11 @@
     { id: "p30", name: "Batata Frita G", weight: "Porção de fritas Grande para 3 pessoas", price: 24.90, oldPrice: 29.87, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805032005_Batata_Frita_G.png", isOffer: true },
     { id: "p31", name: "Batata de Marechal", weight: "Adiciona batata frita, calabresa, frango", price: 28.90, oldPrice: 31.12, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/Gemini_Generated_Image_6lsz5b6lsz5b6lsz.png", isOffer: true },
     { id: "p32", name: "Nugget Crocante Unidade", weight: "Unidade de Nuggets adicione quantas quiser", price: 2.99, oldPrice: 3.74, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805081823_Nugget_Crocante_Unidade.png", isOffer: true },
-    { id: "p33", name: "Dog Padrão", weight: "Uma salsicha, Milho e ervilha, molho especial, carne moída, batata palha", price: 16.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805443692_eewdss.png" },
-    { id: "p34", name: "Dog Duplo", weight: "Duas salsichas, Milho e ervilha, molho especial, carne moída, batata palha", price: 17.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805263280_Dog_Duplo.png" },
-    { id: "p35", name: "Dog Bacon", weight: "Uma salsichas, bacon, Milho e ervilha, molho especial, carne moída, batata palha", price: 19.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805230483_Dog_Bacon.png" },
-    { id: "p36", name: "Dog Cheddar", weight: "Uma salsichas, Milho e ervilha, molho especial, carne moída, batata palha, queijo cheddar", price: 19.90, oldPrice: 24.87, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805280900_Dog_Cheddar.png", isOffer: true },
+    { id: "p33", name: "Dog Padrão", weight: "Uma salsicha, Milho e ervilha, molho especial, carne moída, batata palha", price: 11.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/11000====dogpadrao.png" },
+    { id: "p_sabor", name: "Dog Sabor", weight: "Uma salsicha, Milho e ervilha, molho especial, carne moída, batata palha, alface, cenourinha ralada", price: 14.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/11000====dogsalada.png" },
+    { id: "p35", name: "Dog Bacon", weight: "Uma salsichas, bacon, Milho e ervilha, molho especial, carne moída, batata palha", price: 18.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/11000====dogbacon.png" },
+    { id: "p36", name: "Dog Cheddar", weight: "Uma salsichas, Milho e ervilha, molho especial, carne moída, batata palha, queijo cheddar", price: 19.90, oldPrice: 24.87, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/11000====dogcheddar.png", isOffer: true },
+    { id: "p_tudo_c", name: "Dog Tudo Completo", weight: "duas salsichas, Milho e ervilha, molho especial, carne moída, batata palha, queijo cheddar,queijo, calabresa,bacon,pure,", price: 24.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/11000====dogtudo.png" },
     { id: "p37", name: "Pizza Broto Portuguesa", weight: "Queijo, presunto, pimentão, azeitona, cebola, milho e ervilha, tomate, ovo cozido, oregano", price: 13.90, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805101947_Pizza_Broto_Portuguesa.png" },
     { id: "p38", name: "Pizza Broto Calabresa", weight: "Queijo Moçarella, orégano, calabresa", price: 8.90, oldPrice: 11.13, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805121624_Pizza_Broto_Calabresa.png", isOffer: true, isMegaPromo: true },
     { id: "p39", name: "Pizza Broto Mussarela", weight: "Queijo, orégano", price: 8.90, oldPrice: 11.13, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805182109_Pizza_Broto_Mussarela.png", isOffer: true, isMegaPromo: true },
@@ -2844,9 +2856,6 @@
     { id: "p53", name: "Churrasco Exc de Carne e Toscana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 19.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(1).png", isMegaPromo: true },
     { id: "p54", name: "Feijoadinha 500 ml", weight: "feijoada de 500 ml acompanha calabresa sadia, bacon fatiado e feijao preto saboroso", price: 6.90, oldPrice: 8.62, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/--------feiojo.png", isOffer: true },
     { id: "p55", name: "Farofa de Bacon & Calabresa", weight: "Na farofa de bacon acompanha farofa, manteiga corante, bacon fatiado picado, calabresa fatiada picada, crocante", price: 6.90, oldPrice: 8.62, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/---------------farofa.png", isOffer: true },
-    { id: "p56", name: "Sorvete de Chocolate", weight: "Sorvete cremoso sabor chocolate com calda de chocolate", price: 8.90, category: "Sorvetes", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/Untitled%20folder/8-----chocolate.png" },
-    { id: "p57", name: "Sorvete de Morango", weight: "Sorvete cremoso sabor morango com calda de chocolate", price: 8.90, category: "Sorvetes", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/Untitled%20folder/8-----morango.png" },
-    { id: "p58", name: "Sorvete de Baunilha", weight: "Sorvete cremoso sabor baunilha com calda de chocolate", price: 8.90, category: "Sorvetes", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/Untitled%20folder/8-----baunilha.png" },
     { id: "art_1", name: "Artesanal Classic", weight: "Pão brioche, Blend 160g, Queijo Prato, Alface, Tomate e Molho Especial", price: 21.90, category: "Hambúrguer ARTESANAIS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigsalada.png", isSoldOut: true },
     { id: "art_2", name: "Artesanal BBQ Bacon", weight: "Pão Australiano, Blend 160g, Cheddar, Bacon Crocante e Molho BBQ", price: 23.90, category: "Hambúrguer ARTESANAIS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigbarbecue.png", isSoldOut: true },
     { id: "art_3", name: "Artesanal Duplo Cheese", weight: "Pão brioche, 2x Blend 160g, Dobro de Queijo e Maionese da Casa", price: 24.90, category: "Hambúrguer ARTESANAIS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-Bigcheddarduplo.png", isSoldOut: true },
@@ -2856,14 +2865,13 @@
     const catalogCategories = [
     { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 3 },
     { key: "c_art", name: "Hambúrguer ARTESANAIS", icon: "fa-solid fa-burger", order: 4 },
-    { key: "c_ice", name: "Sorvetes", icon: "fa-solid fa-ice-cream", order: 4.1 },
     { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
     { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 1 },
     { key: "c_add", name: "Adicionais", icon: "fa-solid fa-plus", order: 1.1 },
+    { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 4.5 },
     { key: "c10", name: "Combos", icon: "fa-solid fa-boxes-stacked", order: 5 },
     { key: "c_kids", name: "KIDS", icon: "fa-solid fa-child", order: 6 },
     { key: "c4", name: "Petiscos", icon: "fa-solid fa-shrimp", order: 7 },
-        { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 8 },
         { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 9 },
         { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 10 },
         { key: "c8", name: "Bolos", icon: "fa-solid fa-cake-candles", order: 11 },
@@ -4094,14 +4102,13 @@ function init() {
     categories = [
     { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 3 },
     { key: "c_art", name: "Hambúrguer ARTESANAIS", icon: "fa-solid fa-burger", order: 4 },
-    { key: "c_ice", name: "Sorvetes", icon: "fa-solid fa-ice-cream", order: 4.1 },
     { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
     { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 1 },
     { key: "c_add", name: "Adicionais", icon: "fa-solid fa-plus", order: 1.1 },
+    { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 4.5 },
     { key: "c10", name: "Combos", icon: "fa-solid fa-boxes-stacked", order: 5 },
     { key: "c_kids", name: "KIDS", icon: "fa-solid fa-child", order: 6 },
     { key: "c4", name: "Petiscos", icon: "fa-solid fa-shrimp", order: 7 },
-        { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 8 },
         { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 9 },
         { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 10 },
         { key: "c8", name: "Bolos", icon: "fa-solid fa-cake-candles", order: 11 },
@@ -4496,7 +4503,7 @@ function renderFakeReviews() {
         bannerCard.onclick = () => filterCategory('all');
         list.appendChild(bannerCard);
 
-        const categoryNames = [...new Set(allProducts.map(p => p.category))].filter(cat => cat !== 'KIDS');
+        const categoryNames = [...new Set(allProducts.map(p => p.category))].filter(cat => cat !== 'KIDS' && cat !== 'Refeições Família');
         const suggestedProducts = categoryNames.map(cat => {
             const catProds = allProducts.filter(p => p.category === cat && !p.isSoldOut);
             if (catProds.length === 0) return null;
@@ -4719,7 +4726,7 @@ function renderFakeReviews() {
                 item.className = p.isSoldOut ? 'extra-item esgotado' : 'extra-item';
                 item.style = "background: white; border-radius: 15px; padding: 12px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; position: relative;";
                 item.innerHTML = `
-                    ${p.isSoldOut ? '<div class="esgotado-label" style="font-size:10px;">ESGOTADO</div>' : ''}
+                    ${p.isSoldOut ? '<div class="esgotado-label" style="font-size:10px;">( ESGOTADO POR HOJE VOLTA AMANHA )</div>' : ''}
                     <img src="${getThumb(p.img)}" style="width: 80px; height: 80px; border-radius: 10px; object-fit: cover;" loading="lazy">
                     <div style="flex: 1;">
                         <p style="font-weight: bold; font-size: 14px;">${p.name}</p>
@@ -4778,7 +4785,7 @@ function renderFakeReviews() {
             : `<span style="font-size: 16px; font-weight: 800; color: #3e3e3e;">R$ ${currentPrice}</span>`;
 
         card.innerHTML = `
-            ${p.isSoldOut ? '<div class="esgotado-label" style="font-size:12px; width:90%;">Indisponível</div>' : ''}
+            ${p.isSoldOut ? '<div class="esgotado-label" style="font-size:12px; width:90%;">( ESGOTADO POR HOJE VOLTA AMANHA )</div>' : ''}
             
             <div style="position: relative;">
                 <img src="${getThumb(p.img)}" alt="${p.name}" class="product-img-click" loading="lazy">
@@ -4978,22 +4985,15 @@ window.addBagToCart = (key) => {
             return;
         }
 
-        const marmitasTotalQty = cart.reduce((acc, curr) => {
-            if (curr.category && curr.category.trim() === 'Marmitas' && !curr.isPromo) {
+        // Conta apenas marmitas que NÃO são Mega Promo ou Oferta (itens de valor cheio)
+        const eligibleMarmitasQty = cart.reduce((acc, curr) => {
+            if (curr.category === 'Marmitas' && !curr.isPromo && !curr.isMegaPromo && !curr.isOffer) {
                 return acc + curr.qty;
             }
             return acc;
         }, 0);
 
-        const marmitasStandardQty = cart.reduce((acc, curr) => {
-            if (curr.category && curr.category.trim() === 'Marmitas' && !curr.isPromo && !curr.isMegaPromo) {
-                return acc + curr.qty;
-            }
-            return acc;
-        }, 0);
-
-        if (marmitasTotalQty >= 2) {
-            const isLocked = marmitasStandardQty < 2;
+        if (eligibleMarmitasQty >= 2) {
             if (promoIndex === -1) {
                 const guaraná = allProducts.find(p => p.id === 'p46');
                 if (guaraná) {
@@ -5003,14 +5003,15 @@ window.addBagToCart = (key) => {
                         price: 0,
                         qty: 1,
                         isPromo: true,
-                        isLocked: isLocked,
+                        isLocked: false,
                         category: 'Bebidas'
                     });
                 }
             } else {
-                cart[promoIndex].isLocked = isLocked;
+                cart[promoIndex].isLocked = false;
             }
         } else {
+            // Se não tem 2 marmitas elegíveis, remove o brinde do carrinho completamente
             if (promoIndex !== -1) {
                 cart.splice(promoIndex, 1);
             }
@@ -5287,13 +5288,13 @@ window.addBagToCart = (key) => {
 
         const threshold = 84.90;
         const deliveryType = document.querySelector('input[name="delivery-type"]:checked')?.value || 'delivery';
-        let deliveryFee = (deliveryType === 'delivery' && subtotal > 0 && subtotal < threshold) ? 4.99 : 0;
+        let deliveryFee = ((deliveryType === 'delivery' || deliveryType === 'no_contact') && subtotal > 0 && subtotal < threshold) ? 4.99 : 0;
         if(isRecharge) deliveryFee = 0;
 
         // Código removido (AMORDEPESSOA100%OFF)
 
         // Aplica Frete Grátis do Clube com verificação de segurança de valor
-        if(selectedClubCoupon && selectedClubCoupon.type === 'freeShipping' && deliveryType === 'delivery') {
+        if(selectedClubCoupon && selectedClubCoupon.type === 'freeShipping' && (deliveryType === 'delivery' || deliveryType === 'no_contact')) {
             if (subtotal < 25) {
                 selectedClubCoupon = null;
                 showToast("Cupom de frete removido: valor abaixo de R$ 25,00");
@@ -5332,7 +5333,7 @@ window.addBagToCart = (key) => {
 
         const deliveryRow = document.getElementById('delivery-row');
         
-        if (deliveryType === 'delivery' && subtotal > 0) {
+        if ((deliveryType === 'delivery' || deliveryType === 'no_contact') && subtotal > 0) {
             deliveryRow.style.display = 'flex';
         } else {
             deliveryRow.style.display = 'none';
@@ -5352,13 +5353,13 @@ window.addBagToCart = (key) => {
 
         const deliveryValEl = document.getElementById('delivery-val');
 
-        if (deliveryType === 'delivery' && subtotal > 0) {
+        if ((deliveryType === 'delivery' || deliveryType === 'no_contact') && subtotal > 0) {
             deliveryRow.style.display = 'flex';
         } else {
             deliveryRow.style.display = 'none';
         }
 
-        if (deliveryFee === 0 && subtotal > 0 && deliveryType === 'delivery') {
+        if (deliveryFee === 0 && subtotal > 0 && (deliveryType === 'delivery' || deliveryType === 'no_contact')) {
             deliveryValEl.innerText = "Grátis";
             deliveryValEl.style.color = "#28a745";
             deliveryValEl.style.fontWeight = "bold";
@@ -5572,6 +5573,7 @@ window.applyCoupon = async function() {
 
 window.toggleDeliveryType = function(val) {
     const creditOption = document.getElementById('pay-method-credit');
+    const noContactField = document.getElementById('no-contact-instructions-field');
     const labels = document.querySelectorAll('input[name="delivery-type"]');
     
     labels.forEach(input => {
@@ -5586,6 +5588,30 @@ window.toggleDeliveryType = function(val) {
             label.style.background = "white";
             label.querySelector('i').style.color = "#666";
             label.querySelector('span').style.color = "#666";
+        }
+    });
+
+    noContactField.style.display = (val === 'no_contact') ? 'block' : 'none';
+
+    const restrictedMethods = ['especie', 'credito', 'vale'];
+    const pixInput = document.querySelector('input[name="pay-method"][value="pix"]');
+
+    restrictedMethods.forEach(method => {
+        const input = document.querySelector(`input[name="pay-method"][value="${method}"]`);
+        if (input) {
+            const label = input.parentElement;
+            if (val === 'no_contact') {
+                input.disabled = true;
+                label.style.opacity = '0.4';
+                label.style.background = '#f2f2f2';
+                label.style.cursor = 'not-allowed';
+                if (input.checked && pixInput) pixInput.click();
+            } else {
+                input.disabled = false;
+                label.style.opacity = '1';
+                label.style.background = 'white';
+                label.style.cursor = 'pointer';
+            }
         }
     });
 
@@ -6499,11 +6525,17 @@ document.getElementById('btn-add-to-active').onclick = function() {
         const changeVal = document.getElementById('pay-change').value;
 
         const newOrderRef = push(ref(db, 'orders'));
+        let obsFinal = document.getElementById('order-observation').value;
+        if(deliveryType === 'no_contact') {
+            const instrucao = document.getElementById('no-contact-text').value;
+            obsFinal = `(ENTREGA SEM CONTATO: ${instrucao}) ` + obsFinal;
+        }
+
         const orderData = {
             cliente: userProfile,
             items: cart.filter(i => !i.isLocked),
             extras: extras,
-            observacao: (isSchedule ? `[AGENDADO PARA ${schedTime}] ` : "") + document.getElementById('order-observation').value,
+            observacao: (isSchedule ? `[AGENDADO PARA ${schedTime}] ` : "") + obsFinal,
             sticker: selectedSticker,
             coupon: appliedCoupon,
             total: currentFinalTotal,
@@ -6585,19 +6617,20 @@ document.getElementById('btn-add-to-active').onclick = function() {
         const subtotal = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
         const deliveryType = document.querySelector('input[name="delivery-type"]:checked')?.value || 'delivery';
         let deliveryFee = (deliveryType === 'delivery' && subtotal < 84.90) ? 4.99 : 0;
+        if (deliveryType === 'no_contact' && subtotal < 84.90) deliveryFee = 4.99; // Taxa padrão para sem contato também
         
         const totalComFrete = subtotal + deliveryFee;
-        const minVal = deliveryType === 'delivery' ? 20 : 15;
+        const minVal = (deliveryType === 'delivery' || deliveryType === 'no_contact') ? 20 : 15;
 
         // VALIDAÇÃO DE VALOR MÍNIMO
         if (totalComFrete < minVal) {
             loader.style.display = 'none';
-            showToast(deliveryType === 'delivery' ? "O total com frete deve ser no mínimo R$ 20,00" : "O total deve ser no mínimo R$ 15,00 para retirada");
+            showToast(minVal === 20 ? "O total com frete deve ser no mínimo R$ 20,00" : "O total deve ser no mínimo R$ 15,00 para retirada");
             return;
         }
 
         // VALIDAÇÃO DE MAPA
-        if (deliveryType === 'delivery' && !userProfile.lat && !userProfile.declinedMap) {
+        if ((deliveryType === 'delivery' || deliveryType === 'no_contact') && !userProfile.lat && !userProfile.declinedMap) {
             loader.style.display = 'none';
             document.getElementById('modal-map-ask').style.display = 'flex';
             return;
@@ -6612,12 +6645,18 @@ document.getElementById('btn-add-to-active').onclick = function() {
         const paymentMethod = document.querySelector('input[name="pay-method"]:checked').value;
         const changeVal = document.getElementById('pay-change').value;
 
+        let obsFinal = document.getElementById('order-observation').value;
+        if(deliveryType === 'no_contact') {
+            const instrucao = document.getElementById('no-contact-text').value;
+            obsFinal = `(ENTREGA SEM CONTATO: ${instrucao || 'Não especificado'}) ` + obsFinal;
+        }
+
         const newOrderRef = push(ref(db, 'orders'));
         const orderData = {
             cliente: userProfile,
             items: cart.filter(i => !i.isLocked),
             extras: extras,
-            observacao: (isSchedule ? `[AGENDADO PARA ${schedTime}] ` : "") + document.getElementById('order-observation').value,
+            observacao: (isSchedule ? `[AGENDADO PARA ${schedTime}] ` : "") + obsFinal,
             sticker: selectedSticker,
             coupon: appliedCoupon,
             total: currentFinalTotal,
@@ -6637,19 +6676,21 @@ document.getElementById('btn-add-to-active').onclick = function() {
             const payMethodsMap = {'especie': 'Dinheiro', 'pix': 'PIX', 'credito': 'Cartão Maquininha', 'vale': 'Vale Alimentação'};
             const itemsList = cart.map(i => `${i.qty}x ${i.name}`).join('\n');
 
+            const finalCartForMsg = cart.filter(i => !i.isLocked);
+            const itemsListClean = finalCartForMsg.map(i => `${i.qty}x ${i.name}`).join('\n');
+
             if (paymentMethod === 'pix') {
                 document.getElementById('pay-total-val').innerText = 'R$ ' + currentFinalTotal.toFixed(2).replace('.', ',');
                 document.getElementById('pay-schedule-val').innerText = schedTime || '';
                 document.getElementById('pay-schedule-badge').style.display = isSchedule ? 'inline-flex' : 'none';
                 
-                // Preparar resumo para tela de pagamento
                 const payList = document.getElementById('pay-items-list');
-                if(payList) payList.innerHTML = cart.map(i => `<div style="display:flex; justify-content:space-between; font-size:13px;"><span style="color:#666;">${i.qty}x ${i.name}</span><span style="color:#333; font-weight:900;">R$ ${(i.price * i.qty).toFixed(2).replace('.',',')}</span></div>`).join('');
+                if(payList) payList.innerHTML = finalCartForMsg.map(i => `<div style="display:flex; justify-content:space-between; font-size:13px;"><span style="color:#666;">${i.qty}x ${i.name}</span><span style="color:#333; font-weight:900;">R$ ${(i.price * i.qty).toFixed(2).replace('.',',')}</span></div>`).join('');
                 
                 cart = []; saveCart();
                 changeTab('payment');
             } else {
-                const msg = `   *REDLINE DELIVERY*\n==========================\n${isSchedule ? `*PEDIDO AGENDADO PARA ${schedTime}*\n` : '*NOVO PEDIDO PELO APP*\n'}\n*FORMA DE PAGTO:* ${payMethodsMap[paymentMethod]}\n*VALOR TOTAL:* R$ ${currentFinalTotal.toFixed(2).replace('.',',')}\n\n*ITENS:*\n${itemsList}\n==========================`;
+                const msg = `   *REDLINE DELIVERY*\n==========================\n${isSchedule ? `*PEDIDO AGENDADO PARA ${schedTime}*\n` : '*NOVO PEDIDO PELO APP*\n'}\n*FORMA DE PAGTO:* ${payMethodsMap[paymentMethod]}\n*VALOR TOTAL:* R$ ${currentFinalTotal.toFixed(2).replace('.',',')}\n\n*ITENS:*\n${itemsListClean}\n==========================`;
                 cart = []; saveCart();
                 window.location.href = `https://wa.me/559881422644?text=${encodeURIComponent(msg)}`;
                 changeTab('home');
