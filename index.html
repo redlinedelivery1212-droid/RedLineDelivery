@@ -1305,6 +1305,43 @@
         color: white;
         border-color: var(--primary-orange);
     }
+    @keyframes redBounce {
+        0%, 100% { transform: scale(1); color: #ea1d2c; }
+        50% { transform: scale(1.1); color: #ff0000; }
+    }
+    .price-valentines {
+        display: inline-block;
+        animation: redBounce 0.8s infinite ease-in-out;
+        font-weight: 900 !important;
+    }
+    #entry-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 40000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    .entry-content {
+        background: white;
+        padding: 12px;
+        border-radius: 20px;
+        max-width: 320px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .entry-content img {
+        width: 100%;
+        border-radius: 15px;
+        display: block;
+        margin-bottom: 12px;
+    }
     .spinner-orange {
         width: 40px;
         height: 40px;
@@ -1364,6 +1401,12 @@
 </head>
 <body>
 
+<div id="entry-modal">
+    <div class="entry-content">
+        <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/cccccccccccccccccccccccccccccccccccccccc.png">
+        <button onclick="document.getElementById('entry-modal').style.display='none'" class="btn-next" style="width: 100%;">Fechar</button>
+    </div>
+</div>
 
 <div id="onboarding" class="onboarding-overlay" style="display: none;">
     <!-- PASSO 0: ESCOLHA INICIAL -->
@@ -1750,6 +1793,26 @@
 
         <div class="promo-slider-container">
             <div class="promo-wrapper" id="promo-wrapper">
+                <div class="promo-banner" style="background: #d63031; position: relative; overflow: hidden; padding: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="filterCategory('Combos')">
+                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;">
+                        <svg viewBox="0 0 500 200" preserveAspectRatio="none" style="height: 100%; width: 100%;">
+                            <path d="M0,120 C150,180 350,50 500,120 L500,200 L0,200 Z" fill="#b71c1c" opacity="0.6"></path>
+                            <path d="M0,150 C120,200 300,120 500,180 L500,200 L0,200 Z" fill="#ea1d2c"></path>
+                        </svg>
+                    </div>
+                    <div style="z-index: 2; flex: 1; display: flex; flex-direction: column; justify-content: center; height: 100%;">
+                        <div style="display: flex; align-items: baseline; gap: 3px; margin-top: -12px; margin-bottom: 8px;">
+                            <div style="font-size: 18px; font-weight: 900; color: white;">R$</div>
+                            <h2 style="font-size: 65px; font-weight: 900; line-height: 0.9; color: white; letter-spacing: -3px;">44</h2>
+                            <span style="font-size: 22px; font-weight: 900; color: white;">,90</span>
+                        </div>
+                        <div style="background: #ea1d2c; color: #fff; padding: 4px 12px; border-radius: 8px; font-weight: 900; font-size: 12px; width: fit-content; text-transform: uppercase; margin-bottom: 5px; box-shadow: 0 4px 0px rgba(0,0,0,0.1);">
+                            dia dos namorados
+                        </div>
+                        <p style="font-size: 12px; font-weight: 800; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">Combo Valentines (Casal)</p>
+                    </div>
+                    <img src="https://www.kfc.com.br/_next/image?url=https%3A%2F%2Fd7364jmfys2bj.cloudfront.net%2Fproducts%2F31dda16c-4ded-4388-841f-e3518643668b_1776944312922.png&w=256&q=75&dpl=dpl_Cd64uhPWEp2oewLsEZ2nQxTC3mmC" style="width: 200px; height: 160px; object-fit: contain; z-index: 2; filter: drop-shadow(0 20px 25px rgba(0,0,0,0.3)); transform: scale(1.1) translateX(15%); margin-right: -20px; animation: floatBannerImg 4s ease-in-out infinite;">
+                </div>
                 <div class="promo-banner" style="background: #5e0000; position: relative; overflow: hidden; padding: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="filterCategory('Marmitas')">
                     <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;">
                         <svg viewBox="0 0 500 200" preserveAspectRatio="none" style="height: 100%; width: 100%;">
@@ -1838,6 +1901,7 @@
                 <div class="indicator-bar" id="ind-2"></div>
                 <div class="indicator-bar" id="ind-3"></div>
                 <div class="indicator-bar" id="ind-4"></div>
+                <div class="indicator-bar" id="ind-5"></div>
             </div>
         </div>
 
@@ -2790,6 +2854,7 @@
     }, { onlyOnce: true });
 
     const catalogData = [
+    { id: "c_valentines", name: "Combo Valentines", weight: "O par perfeito: 2 Big Cheddar suculentos, 1 porção de Batata Frita crocante e 1 refrigerante de 1 litro geladinho.", price: 44.90, category: "Combos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/xxxxxxxxxxxxxxxxxxxxxxxxxxcccc.png", isValentines: true, popular: true },
     { id: "k1", name: "Combo Kids Brinquedo Bolhas", weight: "Acompanha um hamburguer de salada com requeijao e maionese, uma batata p crocante e um brinquedo de bolhas magicas estilo coelho verde", price: 29.90, category: "KIDS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/kids.png" },
     { id: "fam_1", name: "File com Fritas", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 138.50, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1filecomfritas.png", serveCount: 4 },
     { id: "fam_2", name: "Frango & Carne", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 128.40, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1frangoecarne.png", serveCount: 4 },
@@ -3740,7 +3805,8 @@ function init() {
             document.getElementById('ind-1'),
             document.getElementById('ind-2'),
             document.getElementById('ind-3'),
-            document.getElementById('ind-4')
+            document.getElementById('ind-4'),
+            document.getElementById('ind-5')
         ];
         
         indicators.forEach((ind, idx) => {
@@ -3751,7 +3817,7 @@ function init() {
     const startAutoSlide = () => {
         stopAutoSlide();
         slideInterval = setInterval(() => {
-            currentSlide = (currentSlide + 1) % 5;
+            currentSlide = (currentSlide + 1) % 6;
             updateSlider();
         }, 5000);
     };
@@ -3772,9 +3838,9 @@ function init() {
             const diff = startX - clientX;
             if (Math.abs(diff) > 50) {
                 if (diff > 0) {
-                    currentSlide = (currentSlide + 1) % 5;
+                    currentSlide = (currentSlide + 1) % 6;
                 } else {
-                    currentSlide = (currentSlide - 1 + 5) % 5;
+                    currentSlide = (currentSlide - 1 + 6) % 6;
                 }
                 updateSlider();
             }
@@ -4777,7 +4843,9 @@ function renderFakeReviews() {
         const originalPrice = p.oldPrice ? p.oldPrice.toFixed(2).replace('.', ',') : (p.price / 0.8).toFixed(2).replace('.', ',');
         const currentPrice = p.price.toFixed(2).replace('.', ',');
     
-        const priceHTML = (p.isOffer || p.isMegaPromo)
+        const priceHTML = p.isValentines
+            ? `<span class="price-valentines" style="font-size: 18px;">R$ ${currentPrice}</span>`
+            : (p.isOffer || p.isMegaPromo)
             ? `<div style="display: flex; flex-direction: column;">
                 <span style="color: #999; text-decoration: line-through; font-size: 10px;">R$ ${originalPrice}</span>
                 <span style="color: #ea1d2c; font-size: 16px; font-weight: 800;">R$ ${currentPrice}</span>
@@ -4790,6 +4858,7 @@ function renderFakeReviews() {
             <div style="position: relative;">
                 <img src="${getThumb(p.img)}" alt="${p.name}" class="product-img-click" loading="lazy">
                 <div style="position: absolute; top: 8px; left: 8px; display: flex; flex-direction: column; gap: 4px;">
+                    ${p.isValentines && !p.isSoldOut ? `<div style="background: #ea1d2c; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">💖 dia dos namorados</div>` : ''}
                     ${p.isMegaPromo && !p.isSoldOut ? `<div style="background: #f46b21; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">🔥 MEGA PROMO</div>` : ''}
                     ${p.isCustomSub && !p.isSoldOut ? `<div style="background: #6c5ce7; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">✨ ESPECIAL</div>` : ''}
                     ${p.category === 'KIDS' && !p.isSoldOut ? `<div style="background: #00b894; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">👶 KIDS</div>` : ''}
