@@ -1401,12 +1401,7 @@
 </head>
 <body>
 
-<div id="entry-modal">
-    <div class="entry-content">
-        <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/cccccccccccccccccccccccccccccccccccccccc.png">
-        <button onclick="document.getElementById('entry-modal').style.display='none'" class="btn-next" style="width: 100%;">Fechar</button>
-    </div>
-</div>
+
 
 <div id="onboarding" class="onboarding-overlay" style="display: none;">
     <!-- PASSO 0: ESCOLHA INICIAL -->
@@ -1793,26 +1788,6 @@
 
         <div class="promo-slider-container">
             <div class="promo-wrapper" id="promo-wrapper">
-                <div class="promo-banner" style="background: #d63031; position: relative; overflow: hidden; padding: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="filterCategory('Combos')">
-                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;">
-                        <svg viewBox="0 0 500 200" preserveAspectRatio="none" style="height: 100%; width: 100%;">
-                            <path d="M0,120 C150,180 350,50 500,120 L500,200 L0,200 Z" fill="#b71c1c" opacity="0.6"></path>
-                            <path d="M0,150 C120,200 300,120 500,180 L500,200 L0,200 Z" fill="#ea1d2c"></path>
-                        </svg>
-                    </div>
-                    <div style="z-index: 2; flex: 1; display: flex; flex-direction: column; justify-content: center; height: 100%;">
-                        <div style="display: flex; align-items: baseline; gap: 3px; margin-top: -12px; margin-bottom: 8px;">
-                            <div style="font-size: 18px; font-weight: 900; color: white;">R$</div>
-                            <h2 style="font-size: 65px; font-weight: 900; line-height: 0.9; color: white; letter-spacing: -3px;">44</h2>
-                            <span style="font-size: 22px; font-weight: 900; color: white;">,90</span>
-                        </div>
-                        <div style="background: #ea1d2c; color: #fff; padding: 4px 12px; border-radius: 8px; font-weight: 900; font-size: 12px; width: fit-content; text-transform: uppercase; margin-bottom: 5px; box-shadow: 0 4px 0px rgba(0,0,0,0.1);">
-                            dia dos namorados
-                        </div>
-                        <p style="font-size: 12px; font-weight: 800; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">Combo Valentines (Casal)</p>
-                    </div>
-                    <img src="https://www.kfc.com.br/_next/image?url=https%3A%2F%2Fd7364jmfys2bj.cloudfront.net%2Fproducts%2F31dda16c-4ded-4388-841f-e3518643668b_1776944312922.png&w=256&q=75&dpl=dpl_Cd64uhPWEp2oewLsEZ2nQxTC3mmC" style="width: 200px; height: 160px; object-fit: contain; z-index: 2; filter: drop-shadow(0 20px 25px rgba(0,0,0,0.3)); transform: scale(1.1) translateX(15%); margin-right: -20px; animation: floatBannerImg 4s ease-in-out infinite;">
-                </div>
                 <div class="promo-banner" style="background: #5e0000; position: relative; overflow: hidden; padding: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="filterCategory('Marmitas')">
                     <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;">
                         <svg viewBox="0 0 500 200" preserveAspectRatio="none" style="height: 100%; width: 100%;">
@@ -1901,7 +1876,6 @@
                 <div class="indicator-bar" id="ind-2"></div>
                 <div class="indicator-bar" id="ind-3"></div>
                 <div class="indicator-bar" id="ind-4"></div>
-                <div class="indicator-bar" id="ind-5"></div>
             </div>
         </div>
 
@@ -2854,11 +2828,8 @@
     }, { onlyOnce: true });
 
     const catalogData = [
-    { id: "c_valentines", name: "Combo Valentines", weight: "O par perfeito: 2 Big Cheddar suculentos, 1 porção de Batata Frita crocante e 1 refrigerante de 1 litro geladinho.", price: 44.90, category: "Combos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/xxxxxxxxxxxxxxxxxxxxxxxxxxcccc.png", isValentines: true, popular: true },
+    { id: "c_valentines", name: "Combo Valentines", weight: "O par perfeito: 2 Big Cheddar suculentos, 1 porção de Batata Frita crocante e 1 refrigerante de 1 litro geladinho.", price: 44.90, category: "Combos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/xxxxxxxxxxxxxxxxxxxxxxxxxxcccc.png", isValentines: false, popular: false },
     { id: "k1", name: "Combo Kids Brinquedo Bolhas", weight: "Acompanha um hamburguer de salada com requeijao e maionese, uma batata p crocante e um brinquedo de bolhas magicas estilo coelho verde", price: 29.90, category: "KIDS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/kids.png" },
-    { id: "fam_1", name: "File com Fritas", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 138.50, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1filecomfritas.png", serveCount: 4 },
-    { id: "fam_2", name: "Frango & Carne", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 128.40, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1frangoecarne.png", serveCount: 4 },
-    { id: "fam_3", name: "File acebolado", weight: "Acompanha: Arroz Branco, Feijoada, Farofa de Bacon, Pure de batata, Salada Verde e macarrao parafuso.", price: 112.80, category: "Refeições Família", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-12-1carneacebolada.png", serveCount: 4 },
     { id: "p1", name: "Marmita Executiva Frango Parmegiana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805317455_Marmita_Executiva_Frango_Parmegiana.png", isOffer: true, popular: true },
     { id: "p2", name: "Subline de Carne", weight: "Disco de carne Friboi fatiado, Pepino, Cebola, Tomate, Pepino, Alface, Repolho, Molho especial", price: 17.90, oldPrice: 21.12, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806259695_0000000000000000000000000000s.png", isOffer: true },
     { id: "p_requeijao", name: "BIG Requeijão Cremoso", weight: "1 disco de carne Friboi tradicional, Requeijão, alface, cebola, tomate, pepino, calabresa, molho especial", price: 15.80, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-Bigrequeijaocrem.png", isMegaPromo: true, popular: true },
@@ -2922,10 +2893,10 @@
     { id: "p_fanta_uva", name: "Fanta Uva", weight: "220ml Refrigerante Fanta Uva", price: 6.40, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/refrifantauva.png" },
     { id: "p_coca_cafe", name: "Coca-Cola Café", weight: "220ml Refrigerante Coca-Cola Café", price: 6.40, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/refricacacafe.png" },
     { id: "p_agua_gas", name: "Agua Mineral com Gás", weight: "500ml Garrafa de água mineral com gás", price: 4.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/refriaguacomgas.png" },
-    { id: "p51", name: "Executivo Presidencial de Picanha Bovina", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 26.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(2).png" },
+    { id: "p51", name: "Executivo Presidencial de Picanha Bovina", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 32.50, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(2).png" },
     { id: "p52", name: "Churrasco Misto Exc de Carne, Toscana e Frango", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(3).png" },
     { id: "p53", name: "Churrasco Exc de Carne e Toscana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 19.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(1).png", isMegaPromo: true },
-    { id: "p54", name: "Feijoadinha 500 ml", weight: "feijoada de 500 ml acompanha calabresa sadia, bacon fatiado e feijao preto saboroso", price: 6.90, oldPrice: 8.62, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/--------feiojo.png", isOffer: true },
+    { id: "p54", name: "Feijoadinha 500 ml", weight: "feijoada de 500 ml acompanha calabresa sadia, bacon fatiado e feijao preto saboroso", price: 8.50, oldPrice: 8.62, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/--------feiojo.png", isOffer: true },
     { id: "p55", name: "Farofa de Bacon & Calabresa", weight: "Na farofa de bacon acompanha farofa, manteiga corante, bacon fatiado picado, calabresa fatiada picada, crocante", price: 6.90, oldPrice: 8.62, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/---------------farofa.png", isOffer: true },
     { id: "art_1", name: "Artesanal Classic", weight: "Pão brioche, Blend 160g, Queijo Prato, Alface, Tomate e Molho Especial", price: 21.90, category: "Hambúrguer ARTESANAIS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigsalada.png", isSoldOut: true },
     { id: "art_2", name: "Artesanal BBQ Bacon", weight: "Pão Australiano, Blend 160g, Cheddar, Bacon Crocante e Molho BBQ", price: 23.90, category: "Hambúrguer ARTESANAIS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigbarbecue.png", isSoldOut: true },
@@ -3811,8 +3782,7 @@ function init() {
             document.getElementById('ind-1'),
             document.getElementById('ind-2'),
             document.getElementById('ind-3'),
-            document.getElementById('ind-4'),
-            document.getElementById('ind-5')
+            document.getElementById('ind-4')
         ];
         
         indicators.forEach((ind, idx) => {
@@ -3823,7 +3793,7 @@ function init() {
     const startAutoSlide = () => {
         stopAutoSlide();
         slideInterval = setInterval(() => {
-            currentSlide = (currentSlide + 1) % 6;
+            currentSlide = (currentSlide + 1) % 5;
             updateSlider();
         }, 5000);
     };
@@ -3844,9 +3814,9 @@ function init() {
             const diff = startX - clientX;
             if (Math.abs(diff) > 50) {
                 if (diff > 0) {
-                    currentSlide = (currentSlide + 1) % 6;
+                    currentSlide = (currentSlide + 1) % 5;
                 } else {
-                    currentSlide = (currentSlide - 1 + 6) % 6;
+                    currentSlide = (currentSlide - 1 + 5) % 5;
                 }
                 updateSlider();
             }
@@ -4184,8 +4154,7 @@ function init() {
         { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 9 },
         { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 10 },
         { key: "c8", name: "Bolos", icon: "fa-solid fa-cake-candles", order: 11 },
-        { key: "c9", name: "Bebidas", icon: "fa-solid fa-beer-mug-empty", order: 12 },
-    { key: "c_fam", name: "Refeições Família", icon: "fa-solid fa-users", order: 13 }
+        { key: "c9", name: "Bebidas", icon: "fa-solid fa-beer-mug-empty", order: 12 }
     ];
     renderHomeCategories();
     renderProducts();
@@ -4575,7 +4544,7 @@ function renderFakeReviews() {
         bannerCard.onclick = () => filterCategory('all');
         list.appendChild(bannerCard);
 
-        const categoryNames = [...new Set(allProducts.map(p => p.category))].filter(cat => cat !== 'KIDS' && cat !== 'Refeições Família');
+        const categoryNames = [...new Set(allProducts.map(p => p.category))].filter(cat => cat !== 'KIDS');
         const suggestedProducts = categoryNames.map(cat => {
             const catProds = allProducts.filter(p => p.category === cat && !p.isSoldOut);
             if (catProds.length === 0) return null;
