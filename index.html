@@ -1396,6 +1396,63 @@
         animation: subline-slide-in 1.5s ease-out forwards;
     }
 
+    /* ANIMACAO BANNER BEBIDAS */
+    @keyframes bev-float {
+        0%, 100% { transform: translateY(0) rotate(-15deg); }
+        50% { transform: translateY(-10px) rotate(-8deg); }
+    }
+    @keyframes ice-float {
+        0%, 100% { transform: scale(1) translate(0, 0) rotate(0deg); }
+        50% { transform: scale(1.1) translate(5px, -5px) rotate(15deg); }
+    }
+    @keyframes ice-spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    @keyframes snow-fall {
+        0% { transform: translateY(-20px) translateX(0); opacity: 0; }
+        50% { opacity: 1; }
+        100% { transform: translateY(100px) translateX(20px); opacity: 0; }
+    }
+    .bev-banner-main {
+        position: relative;
+        width: 100%;
+        height: 150px;
+        background: linear-gradient(135deg, #0077b6, #00b4d8);
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        box-shadow: 0 8px 25px rgba(0, 119, 182, 0.3);
+        border: 2px solid rgba(255,255,255,0.2);
+    }
+    .bev-can-img {
+        height: 165%;
+        position: absolute;
+        right: -45px;
+        bottom: -55px;
+        z-index: 3;
+        filter: drop-shadow(0 15px 25px rgba(0,0,0,0.4));
+        animation: bev-float 3s ease-in-out infinite;
+    }
+    .bev-ice-img {
+        position: absolute;
+        width: 80px;
+        z-index: 2;
+        filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
+    }
+    .ice-pos-1 { top: -10px; right: 80px; animation: ice-float 4s infinite ease-in-out; }
+    .ice-pos-2 { bottom: -10px; right: 10px; animation: ice-float 5s infinite ease-in-out reverse; width: 60px; }
+    .bev-snow {
+        position: absolute;
+        color: white;
+        font-size: 10px;
+        opacity: 0;
+        z-index: 1;
+        animation: snow-fall 4s linear infinite;
+    }
+
     .spinner-orange {
     </style>
 </head>
@@ -1726,6 +1783,48 @@
 
 <div class="app-container">
     
+    <!-- TELA EXCLUSIVA DE BEBIDAS -->
+    <section id="beverages-only-screen" class="screen" style="background: #f8f9fa; padding: 0; padding-bottom: 40px;">
+        <div class="cart-header" style="padding: 20px; background: white; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100;">
+            <h3 style="flex: 1; text-align: center; font-weight: 900; color: var(--text-dark);">CATÁLOGO DE BEBIDAS</h3>
+        </div>
+
+        <div style="padding: 20px;">
+            <!-- BANNER ANIMADO -->
+            <div class="bev-banner-main" style="margin-bottom: 25px;">
+                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.2) 0%, transparent 70%);"></div>
+                <div class="bev-snow" style="left:5%; animation-delay:0s;"><i class="fa-regular fa-snowflake"></i></div>
+                <div class="bev-snow" style="left:20%; animation-delay:1.5s;"><i class="fa-regular fa-snowflake"></i></div>
+                <div class="bev-snow" style="left:50%; animation-delay:2.2s;"><i class="fa-regular fa-snowflake"></i></div>
+                <div style="padding-left: 20px; z-index: 4; position: relative; width: 65%;">
+                    <div style="background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 50px; font-size: 9px; font-weight: 900; color: white; width: fit-content; margin-bottom: 8px; text-transform: uppercase;">Super Gelada</div>
+                    <h2 style="color: white; font-size: 22px; font-weight: 900; line-height: 0.9;">BEBIDAS<br><span style="color: #ffde00;">ESTALANDO!</span></h2>
+                    <p style="color: white; font-size: 10px; font-weight: 600; margin-top: 8px; opacity: 0.9;">Escolha sua favorita abaixo</p>
+                </div>
+                <img src="https://www.thebakers.com.br/wp-content/uploads/2019/05/coca-600x540-600x540.png" class="bev-can-img">
+            </div>
+
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h3 style="font-size: 16px; color: #333; font-weight: 800;">SELECIONE SUA BEBIDA</h3>
+                <p style="font-size: 12px; color: #888;">Adicione a quantidade e finalize pelo WhatsApp</p>
+            </div>
+
+            <div id="bev-only-list" style="display: flex; flex-direction: column; gap: 15px;">
+                <!-- Produtos via JS -->
+            </div>
+        </div>
+
+        <div id="bev-only-footer" style="position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 400px; background: white; padding: 15px 20px; border-top: 1px solid #eee; display: none; justify-content: space-between; align-items: center; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.05);">
+            <div style="flex: 1;">
+                <p style="font-size: 10px; color: #999; font-weight: 800; text-transform: uppercase;">Total Selecionado</p>
+                <h2 id="bev-only-total" style="color: var(--primary-orange); font-size: 20px; font-weight: 900;">R$ 0,00</h2>
+            </div>
+            <button onclick="finishBevOnlyOrder()" class="btn-next" style="padding: 12px 25px; border-radius: 12px; font-weight: 900; font-size: 13px; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-brands fa-whatsapp"></i> FINALIZAR
+            </button>
+        </div>
+    </section>
+
     <section id="tracking-screen" class="screen" style="background: #f8f9fa; padding: 0; padding-bottom: 20px;">
         <div class="cart-header" style="padding: 20px; background: white; border-bottom: 1px solid #eee;">
             <i class="fa-solid fa-arrow-left" onclick="window.location.hash=''; changeTab('home')"></i>
@@ -1997,12 +2096,15 @@
         <div id="cart-items-container"></div>
 
         <div id="beverage-suggestion-section" style="margin: 25px 0; background: #fff; padding: 18px; border-radius: 20px; border: 1px solid #f0f0f0; display: none;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
-                <h4 style="font-size: 14px; font-weight: 800; color: #2d3436; display: flex; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-bottle-water" style="color: #6c5ce7; font-size: 18px;"></i>
-                    Vai uma bebida gelada?
-                </h4>
-                <span style="font-size: 10px; color: #6c5ce7; font-weight: 900; text-transform: uppercase; background: #f3f0ff; padding: 2px 8px; border-radius: 20px;">Sugestão</span>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <h4 style="font-size: 14px; font-weight: 800; color: #2d3436; display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-bottle-water" style="color: #6c5ce7; font-size: 18px;"></i>
+                        Vai uma bebida gelada?
+                    </h4>
+                    <span style="font-size: 10px; color: #6c5ce7; font-weight: 900; text-transform: uppercase; background: #f3f0ff; padding: 2px 8px; border-radius: 20px;">Sugestão</span>
+                </div>
+                <button onclick="changeTab('home'); filterCategory('Bebidas');" style="width: fit-content; background: #6c5ce7; color: white; border: none; padding: 8px 15px; border-radius: 10px; font-size: 10px; font-weight: 900; cursor: pointer; margin-left: 26px; text-transform: uppercase; box-shadow: 0 4px 10px rgba(108, 92, 231, 0.2);">ver todas as bebidas</button>
             </div>
             <div id="beverage-list-horizontal" style="display: flex; gap: 15px; overflow-x: auto; padding: 5px 2px 10px 2px; scrollbar-width: none; -webkit-overflow-scrolling: touch; flex-wrap: nowrap;">
                 <!-- Bebidas via JS -->
@@ -2558,7 +2660,64 @@
     </div>
 </section>
 
-<section id="help-screen" class="screen" style="background: #f8f9fa;">
+<!-- NOVA TELA OLA COM CATALOGO DE BEBIDAS -->
+    <section id="hello-screen" class="screen" style="background: #f8f9fa; padding: 0; padding-bottom: 40px;">
+        <div class="cart-header" style="padding: 20px; background: white; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100;">
+            <i class="fa-solid fa-arrow-left" onclick="changeTab('home')"></i>
+            <h3 style="flex: 1; text-align: center; font-weight: 900; color: var(--text-dark);">CATÁLOGO DE BEBIDAS</h3>
+        </div>
+
+        <div style="padding: 20px;">
+            <!-- RESUMO DOS ITENS SELECIONADOS NO TOPO -->
+            <div id="ola-bev-summary-container" style="display: none; background: white; padding: 20px; border-radius: 20px; border: 2px solid var(--primary-orange); box-shadow: 0 8px 25px rgba(234, 29, 44, 0.1); margin-bottom: 25px; animation: slideUp 0.3s ease-out;">
+                <h3 style="font-size: 14px; font-weight: 900; color: #333; margin-bottom: 15px; border-bottom: 1px dashed #ddd; padding-bottom: 10px; text-transform: uppercase;">📦 ITENS ADICIONADOS:</h3>
+                <div id="ola-bev-summary-items" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                    <!-- Lista via JS -->
+                </div>
+                <button onclick="finishOlaBevOrder()" style="width: 100%; background: var(--primary-orange); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 900; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 5px 15px rgba(234, 29, 44, 0.3);">
+                    <i class="fa-brands fa-whatsapp"></i> CONFIRMAR PEDIDO
+                </button>
+            </div>
+
+            <!-- BANNER ANIMADO -->
+            <div class="bev-banner-main" style="margin-bottom: 25px;">
+                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.2) 0%, transparent 70%);"></div>
+                <div class="bev-snow" style="left:5%; animation-delay:0s;"><i class="fa-regular fa-snowflake"></i></div>
+                <div class="bev-snow" style="left:20%; animation-delay:1.5s;"><i class="fa-regular fa-snowflake"></i></div>
+                <div class="bev-snow" style="left:50%; animation-delay:2.2s;"><i class="fa-regular fa-snowflake"></i></div>
+                <div style="padding-left: 20px; z-index: 4; position: relative; width: 65%;">
+                    <div style="background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 50px; font-size: 9px; font-weight: 900; color: white; width: fit-content; margin-bottom: 8px; text-transform: uppercase;">Super Gelada</div>
+                    <h2 style="color: white; font-size: 22px; font-weight: 900; line-height: 0.9;">BEBIDAS<br><span style="color: #ffde00;">ESTALANDO!</span></h2>
+                    <p style="color: white; font-size: 10px; font-weight: 600; margin-top: 8px; opacity: 0.9;">Escolha sua favorita abaixo</p>
+                </div>
+                <img src="https://www.thebakers.com.br/wp-content/uploads/2019/05/coca-600x540-600x540.png" class="bev-can-img">
+            </div>
+
+            <div id="ola-bev-list" style="display: flex; flex-direction: column; gap: 15px;">
+            <!-- Produtos via JS -->
+        </div>
+
+        <!-- RESUMO DOS ITENS SELECIONADOS -->
+        <div id="ola-bev-summary-container" style="margin-top: 30px; display: none; background: white; padding: 20px; border-radius: 20px; border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+            <h3 style="font-size: 14px; font-weight: 800; color: #333; margin-bottom: 15px; border-bottom: 1px dashed #eee; padding-bottom: 10px;">ITENS ADICIONADOS:</h3>
+            <div id="ola-bev-summary-items" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Lista via JS -->
+            </div>
+        </div>
+    </div>
+
+    <div id="ola-bev-footer" style="position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 400px; background: white; padding: 15px 20px; border-top: 1px solid #eee; display: none; justify-content: space-between; align-items: center; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.05);">
+            <div style="flex: 1;">
+                <p style="font-size: 10px; color: #999; font-weight: 800; text-transform: uppercase;">Total Selecionado</p>
+                <h2 id="ola-bev-total" style="color: var(--primary-orange); font-size: 20px; font-weight: 900;">R$ 0,00</h2>
+            </div>
+            <button onclick="finishOlaBevOrder()" class="btn-next" style="padding: 12px 25px; border-radius: 12px; font-weight: 900; font-size: 13px; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-brands fa-whatsapp"></i> FINALIZAR
+            </button>
+        </div>
+    </section>
+
+    <section id="help-screen" class="screen" style="background: #f8f9fa;">
     <div class="cart-header" style="background: white; padding: 20px; border-bottom: 1px solid #eee;">
         <i class="fa-solid fa-arrow-left" onclick="changeTab('profile')"></i>
         <h3 style="flex: 1; text-align: center; margin-right: 30px; font-weight: 900;">Ajuda e Suporte</h3>
@@ -2832,20 +2991,13 @@
     { id: "k1", name: "Combo Kids Brinquedo Bolhas", weight: "Acompanha um hamburguer de salada com requeijao e maionese, uma batata p crocante e um brinquedo de bolhas magicas estilo coelho verde", price: 29.90, category: "KIDS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/kids.png" },
     { id: "p1", name: "Marmita Executiva Frango Parmegiana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805317455_Marmita_Executiva_Frango_Parmegiana.png", isOffer: true, popular: true },
     { id: "p2", name: "Subline de Carne", weight: "Disco de carne Friboi fatiado, Pepino, Cebola, Tomate, Pepino, Alface, Repolho, Molho especial", price: 17.90, oldPrice: 21.12, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806259695_0000000000000000000000000000s.png", isOffer: true },
-    { id: "p_requeijao", name: "BIG Requeijão Cremoso", weight: "1 disco de carne Friboi tradicional, Requeijão, alface, cebola, tomate, pepino, calabresa, molho especial", price: 15.80, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-Bigrequeijaocrem.png", isMegaPromo: true, popular: true },
-    { id: "p4", name: "Camarão Internacional", weight: "Risoto cremoso recheado com camarão, milho, ervilha, calabresa, arroz, batata palha, cheiro verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805413051_ewweew.png", isOffer: true, popular: true },
-    { id: "p5", name: "BIG Salada X", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigsalada.png" },
-    { id: "p6", name: "BIG Egg", weight: "1 disco de carne Friboi tradicional, ovo, alface, cebola, tomate, pepino, calabresa", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigegg.png" },
-    { id: "p3", name: "BIG Cheddar Cremoso", weight: "1 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa, queijo, molho especial", price: 16.90, oldPrice: 21.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-Bigcheddarcremseeeda.png", isOffer: true, isMegaPromo: true, popular: true },
-    { id: "p7", name: "BIG Barbecue Cremoso", weight: "1 disco de carne Friboi tradicional, calabresa, alface, cebola, tomate, pepino, molho Barbecue", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigbarbecue.png" },
-    { id: "p8", name: "BIG Hot Spice", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho especial apimentado", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bighotspice.png" },
-    { id: "p9", name: "BIG Caramelizado", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, cebola caramelizada na manteiga", price: 17.90, oldPrice: 22.37, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigcarameliszad.png", isOffer: true },
-    { id: "p10", name: "BIG Chicken", weight: "1 Frango Krispy, alface, cebola, tomate, pepino, Steak Perdigão", price: 18.90, oldPrice: 23.62, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-frangocripsy.png", isOffer: true },
-    { id: "p11", name: "BIG Holandês", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho de carne moída e Requeijão", price: 19.90, oldPrice: 24.87, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigholansedesdacnce.png", isOffer: true },
-    { id: "p12", name: "BIG Bacon Mussarela", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho tasty, Bacon, Queijo Mussarela", price: 19.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-baconmussarela.png" },
-    { id: "p13", name: "BIG Cheddar Duplo", weight: "2 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa", price: 23.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-Bigcheddarduplo.png" },
-    { id: "p14", name: "BIG Bacon Triplo", weight: "3 disco de carne Friboi tradicional, Bacon, alface, cebola, tomate, pepino, calabresa, molho especial", price: 24.90, oldPrice: 31.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigbacontriplo.png", isOffer: true },
-    { id: "p15", name: "BIG Tudo", weight: "2 disco de carne Friboi tradicional, Bacon, alface, cebola, tomate, pepino, calabresa, salsicha, cheddar, ovo, batata palha", price: 28.90, oldPrice: 36.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-Bigtudo.png", isOffer: true },
+    { id: "p5", name: "BIG Salada X", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa", price: 14.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/000000-Bigsaladax.png" },
+{ id: "p6", name: "BIG Egg", weight: "1 disco de carne Friboi tradicional, ovo, alface, cebola, tomate, pepino, calabresa", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/000000-Bigegg.png" },
+{ id: "p3", name: "BIG Cheddar Cremoso", weight: "1 disco de carne Friboi tradicional, Cheddar, alface, cebola, tomate, pepino, calabresa, queijo, molho especial", price: 16.90, oldPrice: 21.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/000000-Bigcheddarcremoso.png", isOffer: true, isMegaPromo: true, popular: true },
+{ id: "p9", name: "BIG Caramelizado", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, cebola caramelizada na manteiga", price: 17.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/000000-Bigcaramelizado.png" },
+{ id: "p12", name: "BIG Bacon Mussarela", weight: "1 disco de carne Friboi tradicional, alface, cebola, tomate, pepino, calabresa, molho tasty, Bacon, Queijo Mussarela", price: 19.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/000000-Bigbaconmussarela.png" },
+{ id: "p14", name: "BIG Bacon Triplo", weight: "3 disco de carne Friboi tradicional, Bacon, alface, cebola, tomate, pepino, calabresa, molho especial", price: 24.90, oldPrice: 31.12, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/000000-Bigbacontriplo.png", isOffer: true },
+{ id: "p15", name: "BIG Tudo", weight: "2 disco de carne Friboi tradicional, Bacon, alface, cebola, tomate, pepino, calabresa, salsicha, cheddar, ovo, batata palha", price: 32.40, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/000000-Bigtudo.png" },
     { id: "p16", name: "Subline de Frango", weight: "Steak de frango perdigão fatiado, Cebola, Tomate, Alface, Repolho, Molho especial", price: 17.90, oldPrice: 22.37, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806282305_dsds.png", isOffer: true, popular: true },
     { id: "p17", name: "Subline de Bacon Carne e Cheddar", weight: "Disco de carne Friboi fatiado, Cebola, Tomate, Alface, Pepino, Repolho, Molho especial", price: 18.90, oldPrice: 23.62, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806300866_0000000000000000000sub.png", isOffer: true },
     { id: "p_sub_nuggets", name: "Subline de Nuggets Crocante", weight: "Nuggets de frango crocantes fatiados, Cebola, Tomate, Alface, Molho especial, pepino, Repolho", price: 19.90, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/1--------------nuggets.png" },
@@ -2868,6 +3020,7 @@
     { id: "p29", name: "Batata Frita M", weight: "Porção de fritas media para duas pessoas", price: 18.90, oldPrice: 23.62, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805032005_Batata_Frita_G.png", isOffer: true },
     { id: "p30", name: "Batata Frita G", weight: "Porção de fritas Grande para 3 pessoas", price: 24.90, oldPrice: 29.87, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805032005_Batata_Frita_G.png", isOffer: true },
     { id: "p31", name: "Batata de Marechal", weight: "Adiciona batata frita, calabresa, frango", price: 28.90, oldPrice: 31.12, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/Gemini_Generated_Image_6lsz5b6lsz5b6lsz.png", isOffer: true },
+    { id: "p_batata_recheada", name: "Batata Recheada Cheddar & Requeijao", weight: "Adiciona batata frita, calabresa, bacon fatiado, queijo cheddar, requeijao", price: 34.80, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/00000000cheddarqueidos.png" },
     { id: "p32", name: "Nugget Crocante Unidade", weight: "Unidade de Nuggets adicione quantas quiser", price: 2.99, oldPrice: 3.74, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805081823_Nugget_Crocante_Unidade.png", isOffer: true },
     { id: "p33", name: "Dog Padrão", weight: "Uma salsicha, Milho e ervilha, molho especial, carne moída, batata palha", price: 11.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/11000====dogpadrao.png" },
     { id: "p_sabor", name: "Dog Sabor", weight: "Uma salsicha, Milho e ervilha, molho especial, carne moída, batata palha, alface, cenourinha ralada", price: 14.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/11000====dogsalada.png" },
@@ -2881,18 +3034,18 @@
     { id: "p41", name: "Macarronada Carne moída", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão Penne", price: 19.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806183506_eewwe.png" },
     { id: "p42", name: "Macarronada Turbo", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão Penne, calabresa, bacon", price: 24.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806203876_weew.png" },
     { id: "p43", name: "Macarronada Cheddar Queijos", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão fetuchine, queijo Cheddar", price: 24.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806222968_ewe.png" },
-    { id: "p44", name: "Coca-Cola Lata", weight: "320ml Refrigerante Coca-Cola Lata", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805908258_Coca-Cola_Lata.png" },
-    { id: "p45", name: "Guaraná Lata", weight: "320ml Refrigerante Guaraná Lata", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805921732_0000latagua.png" },
-    { id: "p46", name: "Guaraná 1L", weight: "1L Refrigerante Guaraná Litro", price: 12.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805945732_ew.png" },
-    { id: "p47", name: "Guaraná Jesus Lata", weight: "Refrigerante Guaraná Jesus Lata 260ml", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805961184_0000jesu.png" },
-    { id: "p49", name: "Coca-Cola 1L Tradicional", weight: "1 L Refrigerante Coca-Cola Litro", price: 13.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806012542_xc.png" },
-    { id: "p50", name: "Agua Mineral", weight: "Garrafa de agua de 500 ML Mineral", price: 3.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806034299_---001.png" },
-    { id: "p_fly_limao", name: "Fly Limão", weight: "350ml Refrigerante Fly Limão", price: 6.40, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/refrifyslimao.png" },
-    { id: "p_fly_guarana", name: "Fly Guaraná", weight: "350ml Refrigerante Fly Guaraná", price: 6.40, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/refrifantafysguarana.png" },
-    { id: "p_fanta_laranja", name: "Fanta Laranja", weight: "220ml Refrigerante Fanta Laranja", price: 6.40, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/refrifantalaranja.png" },
-    { id: "p_fanta_uva", name: "Fanta Uva", weight: "220ml Refrigerante Fanta Uva", price: 6.40, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/refrifantauva.png" },
-    { id: "p_coca_cafe", name: "Coca-Cola Café", weight: "220ml Refrigerante Coca-Cola Café", price: 6.40, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/refricacacafe.png" },
-    { id: "p_agua_gas", name: "Agua Mineral com Gás", weight: "500ml Garrafa de água mineral com gás", price: 4.90, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/refriaguacomgas.png" },
+    { id: "p44", name: "Coca-Cola Lata", weight: "320ml Refrigerante Coca-Cola Lata", price: 7.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/111cocalata.png" },
+        { id: "p45", name: "Guaraná Lata", weight: "320ml Refrigerante Guaraná Lata", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/111guaranalata.png" },
+        { id: "p46", name: "Guaraná 1L", weight: "1L Refrigerante Guaraná Litro", price: 12.99, category: "Bebidas", img: "https://www.extrabom.com.br/media/produtos/200x200/4920_extrabom_refrigerante_refrigerante-guarana-antarctica-1-5l-garrafa_4.jpg_.webp" },
+        { id: "p47", name: "Guaraná Jesus Lata", weight: "Refrigerante Guaraná Jesus Lata 260ml", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/111guaranajesus.png" },
+        { id: "p49", name: "Coca-Cola 1L Tradicional", weight: "1 L Refrigerante Coca-Cola Litro", price: 13.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/111coca1litro.png" },
+        { id: "p50", name: "Agua Mineral", weight: "Garrafa de agua de 500 ML Mineral", price: 3.90, category: "Bebidas", img: "https://www.extrabom.com.br/media/produtos/200x200/4641_20210730155132_thumb_Agua_Crystal_sem_gas_1_5L..png_.webp" },
+        { id: "p_fly_limao", name: "Fly Limão", weight: "350ml Refrigerante Fly Limão", price: 6.40, category: "Bebidas", img: "https://www.extrabom.com.br/media/produtos/200x200/133746_extrabom_refrig-fys-lt-350ml-laranja.jpg_.webp" },
+        { id: "p_fly_guarana", name: "Fly Guaraná", weight: "350ml Refrigerante Fly Guaraná", price: 6.40, category: "Bebidas", img: "https://www.extrabom.com.br/media/produtos/200x200/133745_extrabom_refrig-fys-lt-350ml-guarana.jpg_.webp" },
+        { id: "p_fanta_laranja", name: "Fanta Laranja", weight: "220ml Refrigerante Fanta Laranja", price: 6.40, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/111fantalaranja.png" },
+        { id: "p_fanta_uva", name: "Fanta Uva", weight: "220ml Refrigerante Fanta Uva", price: 6.40, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/111fantauva.png" },
+        { id: "p_coca_cafe", name: "Coca-Cola Café", weight: "220ml Refrigerante Coca-Cola Café", price: 6.40, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/111cocacafe.png" },
+        { id: "p_agua_gas", name: "Agua Mineral com Gás", weight: "500ml Garrafa de água mineral com gás", price: 4.90, category: "Bebidas", img: "https://www.extrabom.com.br/media/produtos/200x200/4537_20210730155252_thumb_Agua_com_gas_1_5L..png_.webp" },
     { id: "p51", name: "Executivo Presidencial de Picanha Bovina", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 32.50, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(2).png" },
     { id: "p52", name: "Churrasco Misto Exc de Carne, Toscana e Frango", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(3).png" },
     { id: "p53", name: "Churrasco Exc de Carne e Toscana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 19.90, category: "Marmitas", img: "https://cxpdwntsjvyvyglkwgbj.supabase.co/storage/v1/object/public/pics/------oio%20(1).png", isMegaPromo: true },
@@ -3532,6 +3685,12 @@ function init() {
             renderHomeCategories();
             renderProducts();
             renderCategorySuggestions();
+            
+            // Verifica se deve abrir a tela de bebidas agora que os dados chegaram
+            if (window.location.hash === '#bebidas') {
+                renderBeveragesOnly();
+            }
+
             window.logPerf('catalog');
         });
 
@@ -4325,33 +4484,6 @@ function renderFakeReviews() {
     const list = document.getElementById('reviews-list');
     list.innerHTML = "";
 
-    if (cachedReviews) {
-        let displayList = [...cachedReviews];
-        if (showingOnlyMine && userProfile) {
-            displayList = displayList.filter(r => r.userName === userProfile.nome);
-        }
-
-        displayList.forEach(r => {
-            const div = document.createElement('div');
-            div.className = 'review-card';
-            div.innerHTML = `
-                <div class="review-header">
-                    <img class="review-user-img" src="${r.userImg || 'https://api.dicebear.com/7.x/big-smile/svg?seed=Felix'}">
-                    <div style="flex:1;">
-                        <p style="font-weight:bold; font-size:14px;">${r.userName}</p>
-                        <div class="stars">${'<i class="fa-solid fa-star"></i>'.repeat(r.stars)}${'<i class="fa-regular fa-star"></i>'.repeat(5 - r.stars)}</div>
-                    </div>
-                    <span style="font-size:10px; color:#aaa;">${new Date(r.timestamp).toLocaleDateString()}</span>
-                </div>
-                <p class="review-text">${r.text}</p>
-                ${r.deliveryFeedback ? `<div style="margin-top:8px; font-size:10px; color:var(--primary-orange); font-weight:bold; background:#fff5f0; padding:4px 8px; border-radius:4px; display:inline-block;">Entrega ${r.deliveryFeedback}</div>` : ''}
-            `;
-            list.appendChild(div);
-        });
-    }
-
-    if (showingOnlyMine) return; // Não mostra fakes se estiver filtrando por "Minhas"
-
     const fakes = [
         { name: "Lukinha", text: "Melhor lanche de Pinheiro! A entrega foi muita rapida e chegou quentinho.", stars: 5, img: "Felix" },
         { name: "Bianca", text: "Muito bom, as batatas estavam crocantes e o brinde de ouro branco amei kkkkskks com certeza pedirei mais vezes", stars: 5, img: "Aneka" },
@@ -4385,22 +4517,53 @@ function renderFakeReviews() {
         { name: "Eliane Costa", text: "Atrasou 15 minutos, mas mandaram um brinde extra pra compensar. Atitude nota 10.", stars: 4, img: "Luna" }
     ];
 
-    // Aleatoriza as avaliações fakes
-    const shuffledFakes = fakes.sort(() => Math.random() - 0.5);
+    let combinedList = [];
 
-    shuffledFakes.forEach(f => {
+    // Normalizar reais
+    if (cachedReviews) {
+        let realList = [...cachedReviews];
+        if (showingOnlyMine && userProfile) {
+            realList = realList.filter(r => r.userName === userProfile.nome);
+        }
+        combinedList = realList.map(r => ({
+            name: r.userName,
+            text: r.text,
+            stars: r.stars,
+            imgUrl: r.userImg || 'https://api.dicebear.com/7.x/big-smile/svg?seed=Felix',
+            date: new Date(r.timestamp).toLocaleDateString(),
+            feedback: r.deliveryFeedback
+        }));
+    }
+
+    // Adicionar fakes se não estiver filtrando por "Minhas"
+    if (!showingOnlyMine) {
+        const normalizedFakes = fakes.map(f => ({
+            name: f.name,
+            text: f.text,
+            stars: f.stars,
+            imgUrl: `https://api.dicebear.com/7.x/big-smile/svg?seed=${f.img}`,
+            date: `Há ${Math.floor(Math.random() * 20) + 1}h`,
+            feedback: null
+        }));
+        combinedList = [...combinedList, ...normalizedFakes];
+        // Embaralhar tudo
+        combinedList.sort(() => Math.random() - 0.5);
+    }
+
+    combinedList.forEach(r => {
         const div = document.createElement('div');
         div.className = 'review-card';
         div.innerHTML = `
             <div class="review-header">
-                <img class="review-user-img" src="https://api.dicebear.com/7.x/big-smile/svg?seed=${f.img}">
+                <img class="review-user-img" src="${r.imgUrl}">
                 <div style="flex:1;">
-                    <p style="font-weight:bold; font-size:14px;">${f.name}</p>
-                    <div class="stars">${'<i class="fa-solid fa-star"></i>'.repeat(f.stars)}</div>
+                    <p style="font-weight:bold; font-size:14px;">${r.name}</p>
+                    <div class="stars">${'<i class="fa-solid fa-star"></i>'.repeat(r.stars)}${'<i class="fa-regular fa-star"></i>'.repeat(5 - r.stars)}</div>
                 </div>
-                <span style="font-size:10px; color:#aaa;">Há ${Math.floor(Math.random() * 20) + 1}h</span>
+                <span style="font-size:10px; color:#aaa;">${r.date}</span>
             </div>
-            <p class="review-text">${f.text}</p>
+            <p class="review-text">${r.text}</p>
+            ${r.feedback ? `<div style="margin-top:8px; font-size:10px; color:var(--primary-orange); font-weight:bold; background:#fff5f0; padding:4px 8px; border-radius:4px; display:inline-block;">Entrega ${r.feedback}</div>` : ''}
         `;
         list.appendChild(div);
     });
@@ -4668,6 +4831,31 @@ function renderFakeReviews() {
                     }
                     catProducts.forEach(p => listFragment.appendChild(createProductCard(p)));
 
+                    if (cat.name.trim().toLowerCase() === 'bebidas') {
+                        const bevBanner = document.createElement('div');
+                        bevBanner.className = 'bev-banner-main';
+                        bevBanner.style.gridColumn = "1 / -1";
+                        bevBanner.style.marginTop = "15px";
+                        bevBanner.innerHTML = `
+                            <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.2) 0%, transparent 70%);"></div>
+                            <div class="bev-snow" style="left:5%; animation-delay:0s;"><i class="fa-regular fa-snowflake"></i></div>
+                            <div class="bev-snow" style="left:15%; animation-delay:1.2s;"><i class="fa-regular fa-snowflake"></i></div>
+                            <div class="bev-snow" style="left:25%; animation-delay:0.5s;"><i class="fa-regular fa-snowflake"></i></div>
+                            <div class="bev-snow" style="left:40%; animation-delay:2.1s;"><i class="fa-regular fa-snowflake"></i></div>
+                            <div class="bev-snow" style="left:55%; animation-delay:1.5s;"><i class="fa-regular fa-snowflake"></i></div>
+                            <div class="bev-snow" style="left:70%; animation-delay:0.8s;"><i class="fa-regular fa-snowflake"></i></div>
+                            
+                            <div style="padding-left: 25px; z-index: 4; position: relative; width: 65%;">
+                                <div style="background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 50px; font-size: 9px; font-weight: 900; color: white; width: fit-content; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Sede? Jamais!</div>
+                                <h2 style="color: white; font-size: 24px; font-weight: 900; line-height: 0.9; text-shadow: 0 4px 10px rgba(0,0,0,0.2);">BEBIDAS<br><span style="color: #ffde00;">ESTALANDO!</span></h2>
+                                <p style="color: white; font-size: 11px; font-weight: 600; margin-top: 8px; opacity: 0.9;">Peça agora e receba super gelada.</p>
+                            </div>
+                            
+                            <img src="https://www.thebakers.com.br/wp-content/uploads/2019/05/coca-600x540-600x540.png" class="bev-can-img">
+                        `;
+                        listFragment.appendChild(bevBanner);
+                    }
+
                     if (cat.name.trim().toLowerCase() === 'macarronadas') {
                         const couponBanner = document.createElement('div');
                         couponBanner.className = 'promo-banner';
@@ -4687,6 +4875,30 @@ function renderFakeReviews() {
             });
         } else {
             const catName = activeCat.getAttribute('data-catname');
+
+            if (catName && catName.toLowerCase() === 'bebidas') {
+                const bevBanner = document.createElement('div');
+                bevBanner.className = 'bev-banner-main';
+                bevBanner.style.gridColumn = "1 / -1";
+                bevBanner.style.marginBottom = "20px";
+                bevBanner.innerHTML = `
+                    <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.2) 0%, transparent 70%);"></div>
+                    <div class="bev-snow" style="left:5%; animation-delay:0s;"><i class="fa-regular fa-snowflake"></i></div>
+                    <div class="bev-snow" style="left:20%; animation-delay:1.5s;"><i class="fa-regular fa-snowflake"></i></div>
+                    <div class="bev-snow" style="left:35%; animation-delay:0.7s;"><i class="fa-regular fa-snowflake"></i></div>
+                    <div class="bev-snow" style="left:50%; animation-delay:2.2s;"><i class="fa-regular fa-snowflake"></i></div>
+                    <div class="bev-snow" style="left:65%; animation-delay:1.1s;"><i class="fa-regular fa-snowflake"></i></div>
+                    
+                    <div style="padding-left: 25px; z-index: 4; position: relative; width: 65%;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 50px; font-size: 9px; font-weight: 900; color: white; width: fit-content; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Sede? Jamais!</div>
+                        <h2 style="color: white; font-size: 24px; font-weight: 900; line-height: 0.9; text-shadow: 0 4px 10px rgba(0,0,0,0.2);">BEBIDAS<br><span style="color: #ffde00;">ESTALANDO!</span></h2>
+                        <p style="color: white; font-size: 11px; font-weight: 600; margin-top: 8px; opacity: 0.9;">Peça agora e receba super gelada.</p>
+                    </div>
+                    
+                    <img src="https://www.thebakers.com.br/wp-content/uploads/2019/05/coca-600x540-600x540.png" class="bev-can-img">
+                `;
+                list.prepend(bevBanner);
+            }
 
             if (catName && catName.toLowerCase() === 'marmitas' && marmitaBannerData && marmitaBannerData.active) {
                 const mBanner = document.createElement('div');
@@ -4889,8 +5101,28 @@ function renderFakeReviews() {
     }
 
     window.changeTab = function(tab) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        // Remove a classe active de todas as telas e limpa seleções do menu
+        const screens = document.querySelectorAll('.screen');
+        const navItems = document.querySelectorAll('.nav-item');
+        const bottomNav = document.querySelector('.bottom-nav');
+        const floatingCart = document.getElementById('floating-cart');
+
+        screens.forEach(s => s.classList.remove('active'));
+        navItems.forEach(n => n.classList.remove('active'));
+        
+        if(tab === 'bebidas-only') {
+            const bevScreen = document.getElementById('beverages-only-screen');
+            if(bevScreen) {
+                bevScreen.classList.add('active');
+                bevScreen.scrollTo(0, 0); // Garante que comece no topo
+            }
+            if(bottomNav) bottomNav.style.display = 'none';
+            if(floatingCart) floatingCart.style.display = 'none';
+            return;
+        }
+        
+        // Se for qualquer outra tela, restaura o menu inferior
+        if(bottomNav) bottomNav.style.display = 'flex';
         
         if(tab === 'home') {
             document.getElementById('home-screen').classList.add('active');
@@ -5022,16 +5254,18 @@ window.addBagToCart = (key) => {
         if (!marmitaPromoEnabled) {
             if (promoIndex !== -1) {
                 cart.splice(promoIndex, 1);
-                saveCart();
             }
-            renderCart();
-            updateFloatingCart();
             return;
         }
 
-        // Conta apenas marmitas que NÃO são Mega Promo ou Oferta (itens de valor cheio)
+        // Conta marmitas válidas (Exclui o brinde e ignora o item p53/Churrasco que não entra na conta)
         const eligibleMarmitasQty = cart.reduce((acc, curr) => {
-            if (curr.category === 'Marmitas' && !curr.isPromo && !curr.isMegaPromo && !curr.isOffer) {
+            const isMarmita = curr.category && curr.category.trim() === 'Marmitas';
+            
+            // Verifica se o ID começa com p53 (para ignorar mesmo que tenha o sufixo do ponto da carne)
+            const isExcluded = curr.id.startsWith('p53') || curr.id === 'p46_promo';
+            
+            if (isMarmita && !isExcluded) {
                 return acc + curr.qty;
             }
             return acc;
@@ -5044,25 +5278,20 @@ window.addBagToCart = (key) => {
                     cart.push({
                         ...guaraná,
                         id: 'p46_promo',
+                        name: 'Guaraná 1L (GRÁTIS)',
                         price: 0,
                         qty: 1,
                         isPromo: true,
-                        isLocked: false,
+                        img: 'https://www.extrabom.com.br/media/produtos/200x200/4920_extrabom_refrigerante_refrigerante-guarana-antarctica-1-5l-garrafa_4.jpg_.webp',
                         category: 'Bebidas'
                     });
                 }
-            } else {
-                cart[promoIndex].isLocked = false;
             }
         } else {
-            // Se não tem 2 marmitas elegíveis, remove o brinde do carrinho completamente
             if (promoIndex !== -1) {
                 cart.splice(promoIndex, 1);
             }
         }
-        saveCart();
-        renderCart();
-        updateFloatingCart();
     };
 
     window.addToCart = function(id) {
@@ -5250,6 +5479,46 @@ window.addBagToCart = (key) => {
         }
 
         container.innerHTML = "";
+
+        const hasExcludedFromSoda = cart.some(i => i.id.startsWith('p53'));
+        if(hasExcludedFromSoda) {
+            const promoAlert = document.createElement('div');
+            promoAlert.style = "background: #fff5f5; border: 1px solid #ffebeb; padding: 12px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; border-left: 4px solid #ea1d2c; animation: fadeIn 0.3s;";
+            promoAlert.innerHTML = `
+                <i class="fa-solid fa-circle-exclamation" style="color: #ea1d2c; font-size: 18px;"></i>
+                <p style="font-size: 10px; color: #333; font-weight: 800; line-height: 1.2; margin: 0;">
+                    AVISO DE PROMOÇÃO: O item "Churrasco Exc" já está em valor promocional e não é válido para ganhar o refrigerante grátis.
+                </p>
+            `;
+            container.appendChild(promoAlert);
+        }
+
+        const eligibleMarmitas = cart.filter(i => i.category === 'Marmitas' && !i.id.startsWith('p53') && i.id !== 'p46_promo');
+        const totalEligibleQty = eligibleMarmitas.reduce((acc, i) => acc + i.qty, 0);
+
+        if(totalEligibleQty === 1) {
+            const unlockBanner = document.createElement('div');
+            unlockBanner.style = "background: #fff8e1; border: 1px solid #ffe082; padding: 12px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #ffb300; cursor: pointer; animation: fadeIn 0.3s; display: flex; flex-direction: column; gap: 12px;";
+            unlockBanner.onclick = () => { changeTab('home'); filterCategory('Marmitas'); };
+            unlockBanner.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-lock-open" style="color: #ffb300; font-size: 18px;"></i>
+                        <p style="font-size: 10px; color: #333; font-weight: 800; line-height: 1.2; margin: 0;">
+                            PROMOÇÃO: Adicione mais uma marmita e ganhe 1 Guaraná de 1 litro!
+                        </p>
+                    </div>
+                    <span style="background: #ffb300; color: #fff; padding: 5px 10px; border-radius: 8px; font-size: 9px; font-weight: 900; text-transform: uppercase; white-space: nowrap;">Desbloquear</span>
+                </div>
+                <div class="marmita-observer-trigger start-marmita-anim" style="border-radius: 10px; overflow: hidden; position: relative; width: 100%; line-height: 0; background: transparent;">
+                    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----camada%20marmita0.png" style="width: 100%; height: auto; display: block; position: relative; z-index: 0;">
+                    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----camada%20marmita1.png" style="width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 1;" class="marmita-layer1-anim">
+                    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----camada%20marmita2.png" style="width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; z-index: 2;" class="marmita-layer2-anim">
+                </div>
+            `;
+            container.appendChild(unlockBanner);
+        }
+
         let subtotal = 0;
         let itemsCount = 0;
 
@@ -5302,7 +5571,12 @@ window.addBagToCart = (key) => {
                 div.style.opacity = "0.7";
             }
             
-            const promoBadge = item.isPromo ? (item.isLocked ? '<span style="background:#ea1d2c; color:white; font-size:9px; padding:2px 5px; border-radius:4px; margin-left:5px;">VOCÊ JÁ TEM UMA PROMOÇÃO ATIVA NO MOMENTO</span>' : '<span style="background:#27ae60; color:white; font-size:9px; padding:2px 5px; border-radius:4px; margin-left:5px;">PROMOÇÃO ATIVA</span>') : '';
+            let promoBadge = item.isPromo ? (item.isLocked ? '<span style="background:#ea1d2c; color:white; font-size:9px; padding:2px 5px; border-radius:4px; margin-left:5px;">VOCÊ JÁ TEM UMA PROMOÇÃO ATIVA NO MOMENTO</span>' : '<span style="background:#27ae60; color:white; font-size:9px; padding:2px 5px; border-radius:4px; margin-left:5px;">PROMOÇÃO ATIVA</span>') : '';
+            
+            if (item.id.startsWith('p53') && !item.isPromo) {
+                promoBadge = '<span style="background:#ea1d2c; color:white; font-size:9px; padding:2px 5px; border-radius:4px; margin-left:5px; font-weight:900;">PROMOÇÃO ATIVA</span>';
+            }
+
             const megaPromoTag = item.isMegaPromo ? '<span style="background:#f46b21; color:white; font-size:8px; padding:2px 5px; border-radius:4px; font-weight:900; margin-left:5px; text-transform:uppercase;">MEGA PROMO</span>' : '';
             const priceColor = (item.isMegaPromo || item.isOffer) ? 'var(--primary-orange)' : 'var(--text-dark)';
 
@@ -5525,35 +5799,35 @@ if (appliedCoupon) {
     }
 
     function updateQty(id, delta) {
-    const item = cart.find(c => c.id === id);
-    if(item) {
-        if (item.isPromo) return;
-        if (item.isMotherDayPromo && delta > 0) {
-            alert("Limite de 1 unidade para este item promocional.");
-            return;
-        }
-        item.qty += delta;
-        if(item.qty <= 0) {
-            removeItem(id);
-        } else {
+        const item = cart.find(c => c.id === id);
+        if(item) {
+            if (item.isPromo) return;
+            if (item.isMotherDayPromo && delta > 0) {
+                alert("Limite de 1 unidade para este item promocional.");
+                return;
+            }
+            item.qty += delta;
+            if(item.qty <= 0) {
+                removeItem(id);
+                return;
+            }
+            
+            checkMarmitaPromo();
             saveCart();
             renderCart();
+            updateFloatingCart();
         }
-        checkMarmitaPromo();
     }
-}
 
-function removeItem(id) {
-    if(id === 'reward_big_cheddar') localStorage.removeItem('reward_redeemed');
-    cart = cart.filter(c => c.id !== id);
-    saveCart();
-    if (typeof checkMarmitaPromo === "function") {
+    function removeItem(id) {
+        if(id === 'reward_big_cheddar') localStorage.removeItem('reward_redeemed');
+        cart = cart.filter(c => c.id !== id);
+        
         checkMarmitaPromo();
-    } else {
+        saveCart();
         renderCart();
         updateFloatingCart();
     }
-}
 
 window.applyCoupon = async function() {
     if(selectedClubCoupon) {
@@ -5739,13 +6013,213 @@ document.getElementById('confirm-sticker').onclick = () => {
         });
     };
 
+    let bevOnlyCart = {};
+
     window.checkTrackingHash = function() {
         const hash = window.location.hash.substring(1);
+        
+        if (hash === 'ola') {
+            changeTab('hello');
+            if (allProducts && allProducts.length > 0) {
+                renderOlaBeverages();
+            }
+            return;
+        }
+
+        if (hash === 'bebidas') {
+            changeTab('bebidas-only');
+            // Se os produtos já estiverem carregados, renderiza. 
+            // Se não, o loadEssentialData cuidará disso.
+            if (allProducts && allProducts.length > 0) {
+                renderBeveragesOnly();
+            }
+            return;
+        }
         if (hash && hash.length >= 10 && !isNaN(hash.replace(/\D/g, ''))) {
             const cleanPhone = hash.replace(/\D/g, '');
             changeTab('tracking');
             loadTrackingData(cleanPhone);
         }
+    };
+
+    window.renderBeveragesOnly = function() {
+        const container = document.getElementById('bev-only-list');
+        if (!container) return;
+        
+        // Filtra apenas as bebidas
+        const bebidas = allProducts.filter(p => p.category && p.category.toLowerCase().includes('bebida') && !p.isSoldOut);
+        
+        if (bebidas.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding:60px 20px;">
+                    <div class="spinner-orange" style="margin:0 auto 15px auto;"></div>
+                    <p style="color:#999; font-weight:bold;">Carregando catálogo...</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = "";
+        bebidas.forEach(p => {
+            const qty = bevOnlyCart[p.id] || 0;
+            const div = document.createElement('div');
+            div.style = "background: white; padding: 12px; border-radius: 18px; border: 1px solid #eee; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);";
+            div.innerHTML = `
+                <img src="${getThumb(p.img)}" style="width: 70px; height: 70px; border-radius: 12px; object-fit: cover; background: #f9f9f9;">
+                <div style="flex: 1;">
+                    <h4 style="font-size: 14px; color: #333; margin-bottom: 3px;">${p.name}</h4>
+                    <p style="font-size: 11px; color: #999; margin-bottom: 5px;">${p.weight}</p>
+                    <p style="font-size: 15px; font-weight: 900; color: var(--primary-orange);">R$ ${p.price.toFixed(2).replace('.',',')}</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; background: #f8f9fa; padding: 5px 10px; border-radius: 12px; border: 1px solid #eee;">
+                    <button onclick="updateBevOnlyQty('${p.id}', -1)" style="border:none; background:none; font-weight:bold; font-size:18px; color:#999; width:25px;">-</button>
+                    <span style="font-weight: 900; font-size: 15px; color: #333; min-width: 20px; text-align: center;">${qty}</span>
+                    <button onclick="updateBevOnlyQty('${p.id}', 1)" style="border:none; background:none; font-weight:bold; font-size:18px; color:var(--primary-orange); width:25px;">+</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+        updateBevOnlyTotal();
+    };
+
+    window.updateBevOnlyQty = function(id, delta) {
+        if(!bevOnlyCart[id]) bevOnlyCart[id] = 0;
+        bevOnlyCart[id] = Math.max(0, bevOnlyCart[id] + delta);
+        if(bevOnlyCart[id] === 0) delete bevOnlyCart[id];
+        renderBeveragesOnly();
+    };
+
+    function updateBevOnlyTotal() {
+        let total = 0;
+        let hasItems = false;
+        Object.keys(bevOnlyCart).forEach(id => {
+            const p = allProducts.find(prod => prod.id === id);
+            if(p) {
+                total += p.price * bevOnlyCart[id];
+                hasItems = true;
+            }
+        });
+        document.getElementById('bev-only-total').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        document.getElementById('bev-only-footer').style.display = hasItems ? 'flex' : 'none';
+    }
+
+    let olaBevCart = {};
+
+    window.renderOlaBeverages = function() {
+        const container = document.getElementById('ola-bev-list');
+        if (!container) return;
+        const bebidas = allProducts.filter(p => p.category && p.category.toLowerCase().includes('bebida') && !p.isSoldOut);
+        
+        if (bebidas.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding:60px 20px;"><div class="spinner-orange" style="margin:0 auto 15px auto;"></div><p style="color:#999; font-weight:bold;">Carregando...</p></div>`;
+            return;
+        }
+
+        container.innerHTML = "";
+        bebidas.forEach(p => {
+            const qty = olaBevCart[p.id] || 0;
+            const div = document.createElement('div');
+            div.style = "background: white; padding: 12px; border-radius: 18px; border: 1px solid #eee; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);";
+            div.innerHTML = `
+                <img src="${getThumb(p.img)}" style="width: 70px; height: 70px; border-radius: 12px; object-fit: cover; background: #f9f9f9;">
+                <div style="flex: 1;">
+                    <h4 style="font-size: 14px; color: #333; margin-bottom: 3px;">${p.name}</h4>
+                    <p style="font-size: 11px; color: #999; margin-bottom: 5px;">${p.weight}</p>
+                    <p style="font-size: 15px; font-weight: 900; color: var(--primary-orange);">R$ ${p.price.toFixed(2).replace('.',',')}</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; background: #f8f9fa; padding: 5px 10px; border-radius: 12px; border: 1px solid #eee;">
+                    <button onclick="updateOlaBevQty('${p.id}', -1)" style="border:none; background:none; font-weight:bold; font-size:18px; color:#999; width:25px;">-</button>
+                    <span style="font-weight: 900; font-size: 15px; color: #333; min-width: 20px; text-align: center;">${qty}</span>
+                    <button onclick="updateOlaBevQty('${p.id}', 1)" style="border:none; background:none; font-weight:bold; font-size:18px; color:var(--primary-orange); width:25px;">+</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+        updateOlaBevTotal();
+    };
+
+    window.updateOlaBevQty = function(id, delta) {
+        if(!olaBevCart[id]) olaBevCart[id] = 0;
+        olaBevCart[id] = Math.max(0, olaBevCart[id] + delta);
+        if(olaBevCart[id] === 0) delete olaBevCart[id];
+        renderOlaBeverages();
+    };
+
+    function updateOlaBevTotal() {
+        let total = 0;
+        let hasItems = false;
+        const summaryContainer = document.getElementById('ola-bev-summary-container');
+        const summaryItems = document.getElementById('ola-bev-summary-items');
+        
+        if (summaryItems) summaryItems.innerHTML = "";
+
+        Object.keys(olaBevCart).forEach(id => {
+            const p = allProducts.find(prod => prod.id === id);
+            if(p) {
+                const sub = p.price * olaBevCart[id];
+                total += sub;
+                hasItems = true;
+
+                if (summaryItems) {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.style = "display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #333; font-weight: 700; padding: 5px 0; border-bottom: 1px solid #f9f9f9;";
+                    itemDiv.innerHTML = `<span><span style="color:var(--primary-orange);">${olaBevCart[id]}x</span> ${p.name}</span><span>R$ ${sub.toFixed(2).replace('.',',')}</span>`;
+                    summaryItems.appendChild(itemDiv);
+                }
+            }
+        });
+
+        if (summaryContainer) {
+            summaryContainer.style.display = hasItems ? 'block' : 'none';
+            if(hasItems) summaryContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        const totalEl = document.getElementById('ola-bev-total');
+        if(totalEl) totalEl.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        
+        const footerEl = document.getElementById('ola-bev-footer');
+        if(footerEl) footerEl.style.display = hasItems ? 'flex' : 'none';
+    }
+
+    window.finishOlaBevOrder = function() {
+        let text = "*NOVO PEDIDO DE BEBIDAS*\n==============================\n\nOlá! Selecionei estas bebidas:\n\n";
+        let total = 0;
+        Object.keys(olaBevCart).forEach(id => {
+            const p = allProducts.find(prod => prod.id === id);
+            if(p) {
+                const sub = p.price * olaBevCart[id];
+                text += `*${olaBevCart[id]}x* ${p.name}\n      _R$ ${sub.toFixed(2).replace('.',',')}_\n\n`;
+                total += sub;
+            }
+        });
+        text += "==============================\n";
+        text += `*TOTAL: R$ ${total.toFixed(2).replace('.',',')}*\n\n`;
+        if(userProfile) {
+            text += `*CLIENTE:* ${userProfile.nome.toUpperCase()}\n`;
+            text += `*ENDEREÇO:* ${userProfile.rua}, ${userProfile.numero}\n`;
+        }
+        window.open(`https://wa.me/559881422644?text=${encodeURIComponent(text)}`, '_blank');
+    };
+
+    window.finishBevOnlyOrder = function() {
+        let text = "🥤 *REDLINE DELIVERY - PEDIDO DE BEBIDAS*\n==============================\n\nOlá! Selecionei estas bebidas pelo catálogo:\n\n";
+        let total = 0;
+        Object.keys(bevOnlyCart).forEach(id => {
+            const p = allProducts.find(prod => prod.id === id);
+            if(p) {
+                const sub = p.price * bevOnlyCart[id];
+                text += `✅ *${bevOnlyCart[id]}x* ${p.name}\n      _R$ ${sub.toFixed(2).replace('.',',')}_\n\n`;
+                total += sub;
+            }
+        });
+        text += "==============================\n";
+        text += `💰 *TOTAL: R$ ${total.toFixed(2).replace('.',',')}*\n\n`;
+        if(userProfile) {
+            text += `👤 *CLIENTE:* ${userProfile.nome.toUpperCase()}\n`;
+            text += `📍 *ENTREGAR EM:* ${userProfile.rua}, ${userProfile.numero}\n`;
+        }
+        text += "\nEstou aguardando a confirmação!";
+        
+        window.open(`https://wa.me/559881422644?text=${encodeURIComponent(text)}`, '_blank');
     };
 
     let trackingMap = null;
@@ -6983,6 +7457,9 @@ window.changeTab = function(tab) {
             document.getElementById('help-screen').classList.add('active');
             document.getElementById('floating-cart').style.display = 'none';
             renderHelpOrders();
+        } else if(tab === 'hello') {
+            document.getElementById('hello-screen').classList.add('active');
+            document.getElementById('floating-cart').style.display = 'none';
         } else if(tab === 'test') {
             document.getElementById('test-screen').classList.add('active');
             document.getElementById('floating-cart').style.display = 'none';
