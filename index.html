@@ -1887,26 +1887,6 @@
 
         <div class="promo-slider-container">
             <div class="promo-wrapper" id="promo-wrapper">
-                <div class="promo-banner" style="background: #5e0000; position: relative; overflow: hidden; padding: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="filterCategory('Marmitas')">
-                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;">
-                        <svg viewBox="0 0 500 200" preserveAspectRatio="none" style="height: 100%; width: 100%;">
-                            <path d="M0,120 C150,180 350,50 500,120 L500,200 L0,200 Z" fill="#9e0000" opacity="0.6"></path>
-                            <path d="M0,150 C120,200 300,120 500,180 L500,200 L0,200 Z" fill="#ea1d2c"></path>
-                        </svg>
-                    </div>
-                    <div style="z-index: 2; flex: 1; display: flex; flex-direction: column; justify-content: center; height: 100%;">
-                        <div style="display: flex; align-items: baseline; gap: 3px; margin-top: -12px; margin-bottom: 8px;">
-                            <div style="font-size: 18px; font-weight: 900; color: white;">R$</div>
-                            <h2 style="font-size: 65px; font-weight: 900; line-height: 0.9; color: white; letter-spacing: -3px;">19</h2>
-                            <span style="font-size: 22px; font-weight: 900; color: white;">,90</span>
-                        </div>
-                        <div style="background: #ffde00; color: #5e0000; padding: 4px 12px; border-radius: 8px; font-weight: 900; font-size: 12px; width: fit-content; text-transform: uppercase; margin-bottom: 5px; box-shadow: 0 4px 0px rgba(0,0,0,0.1);">
-                            MEGA PROMO
-                        </div>
-                        <p style="font-size: 12px; font-weight: 800; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">Carne & Toscana</p>
-                    </div>
-                    <img src="https://www.scores.ca/wp-content/uploads/2024/11/QUART-POITRINE-SAVEUR-ET-DEMI-RIBS-576x411.png" style="width: 200px; height: 160px; object-fit: contain; z-index: 2; filter: drop-shadow(0 20px 205px rgba(0,0,0,0.5)); transform: scale(81.2) translateX(25%); margin-right: -20px; animation: floatBannerImg 4s ease-in-out infinite;">
-                </div>
                 <div class="promo-banner" style="background: #f39c12; position: relative; overflow: hidden; padding: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="filterCategory('Hambúrguer')">
                     <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;">
                         <svg viewBox="0 0 500 200" preserveAspectRatio="none" style="height: 100%; width: 100%;">
@@ -1974,7 +1954,6 @@
                 <div class="indicator-bar" id="ind-1"></div>
                 <div class="indicator-bar" id="ind-2"></div>
                 <div class="indicator-bar" id="ind-3"></div>
-                <div class="indicator-bar" id="ind-4"></div>
             </div>
         </div>
 
@@ -2023,6 +2002,22 @@
             </div>
             <div id="suggestion-list-horizontal" style="display: flex; gap: 15px; overflow-x: auto; padding: 5px 2px 10px 2px; scrollbar-width: none; -webkit-overflow-scrolling: touch; flex-wrap: nowrap;">
                 <!-- Itens aleatórios via JS -->
+            </div>
+        </div>
+
+        <div style="background: #ea1d2c; border-radius: 15px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; color: white; border-left: 6px solid #ffde00; box-shadow: 0 8px 20px rgba(234, 29, 44, 0.25); position: relative; overflow: hidden;">
+            <div style="position: absolute; right: -10px; top: -10px; opacity: 0.1; font-size: 80px; transform: rotate(15deg);">
+                <i class="fa-solid fa-medal"></i>
+            </div>
+            <img src="https://www.eatme.com.br/cdn/shop/files/Designsemnome_61_5d9d71b3-8bb7-4363-acc7-d5feaaaa70de.png?v=1760011578" style="width: 70px; height: 70px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)); z-index: 2;">
+            <div style="flex: 1; z-index: 2;">
+                <p style="font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; color: #ffde00;">
+                    <i class="fa-solid fa-award"></i> UPGRADE DE QUALIDADE
+                </p>
+                <h4 style="font-size: 14px; font-weight: 900; margin-bottom: 5px; text-transform: uppercase;">100% Carne Bovina & Artesanal</h4>
+                <p style="font-size: 11px; font-weight: 600; line-height: 1.4; opacity: 0.95;">
+                    A partir de <span style="color: #ffde00; font-weight: 900;">terça-feira 30/06</span>, elevamos nosso padrão: substituiremos a carne industrial por um <strong style="text-decoration: underline;">Blend Bovino Exclusivo</strong>, entregando muito mais suculência e sabor artesanal.
+                </p>
             </div>
         </div>
 
@@ -3049,14 +3044,14 @@
         { id: "p_agua_gas", name: "Agua Mineral com Gás", weight: "500ml Garrafa de água mineral com gás", price: 4.90, category: "Bebidas", img: "https://www.extrabom.com.br/media/produtos/200x200/4537_20210730155252_thumb_Agua_com_gas_1_5L..png_.webp" },
     { id: "p51", name: "Executivo Presidencial de Picanha Bovina", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 32.50, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/comiapicanha.png" },
     { id: "p52", name: "Churrasco Misto Exc de Carne, Toscana e Frango", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/comiacarnetoscanafrango.png" },
-    { id: "p53", name: "Churrasco Exc de Carne e Toscana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 19.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/comiacarnetoscana.png", isMegaPromo: true },
-    { id: "p57", name: "Marmita Executiva Feijoada", weight: "Feijoada completa acompanha arroz branco, couve refogada, farofa e laranja", price: 19.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/weweew.png", isOffer: true },
+    { id: "p53", name: "Churrasco Exc de Carne e Toscana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/comiacarnetoscana.png" },
+    { id: "p57", name: "Marmita Executiva Feijoada", weight: "Feijoada completa acompanha arroz branco, couve refogada, farofa e laranja", price: 22.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/weweew.png" },
     { id: "p54", name: "Feijoadinha 500 ml", weight: "feijoada de 500 ml acompanha calabresa sadia, bacon fatiado e feijao preto saboroso", price: 8.50, oldPrice: 8.62, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/--------feiojo.png", isOffer: true },
     { id: "p55", name: "Farofa de Bacon & Calabresa", weight: "Na farofa de bacon acompanha farofa, manteiga corante, bacon fatiado picado, calabresa fatiada picada, crocante", price: 6.90, oldPrice: 8.62, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/---------------farofa.png", isOffer: true },
-    { id: "art_1", name: "Artesanal Classic", weight: "Pão brioche, Blend 160g, Queijo Prato, Alface, Tomate e Molho Especial", price: 21.90, category: "Hambúrguer ARTESANAIS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigsalada.png", isSoldOut: true },
-    { id: "art_2", name: "Artesanal BBQ Bacon", weight: "Pão Australiano, Blend 160g, Cheddar, Bacon Crocante e Molho BBQ", price: 23.90, category: "Hambúrguer ARTESANAIS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigbarbecue.png", isSoldOut: true },
-    { id: "art_3", name: "Artesanal Duplo Cheese", weight: "Pão brioche, 2x Blend 160g, Dobro de Queijo e Maionese da Casa", price: 24.90, category: "Hambúrguer ARTESANAIS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-Bigcheddarduplo.png", isSoldOut: true },
-    { id: "art_4", name: "Artesanal Egg Monster", weight: "Pão brioche, Blend 160g, Ovo, Bacon, Queijo e Salada", price: 25.90, category: "Hambúrguer ARTESANAIS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/2-bigegg.png", isSoldOut: true }
+    { id: "art_1", name: "ARTESANAL BIG Cheddar Cremoso", weight: "Blend de Carne Artesanal, Cheddar, alface, cebola, tomate, pepino, calabresa, queijo, molho especial", price: 19.90, category: "Hambúrguer ARTESANAIS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/000000-Bigcheddarcremoso.png", isSoldOut: true },
+{ id: "art_2", name: "ARTESANAL BIG Egg", weight: "Blend de Carne Artesanal, ovo, alface, cebola, tomate, pepino, calabresa", price: 23.90, category: "Hambúrguer ARTESANAIS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/000000-Bigegg.png", isSoldOut: true },
+{ id: "art_3", name: "ARTESANAL BIG Bacon Mussarela", weight: "Blend de Carne Artesanal, alface, cebola, tomate, pepino, calabresa, molho tasty, Bacon, Queijo Mussarela", price: 24.90, category: "Hambúrguer ARTESANAIS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/000000-Bigbaconmussarela.png", isSoldOut: true },
+{ id: "art_4", name: "ARTESANAL BIG Bacon Triplo", weight: "3x Blend de Carne Artesanal, Bacon, alface, cebola, tomate, pepino, calabresa, molho especial", price: 26.90, category: "Hambúrguer ARTESANAIS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/000000-Bigbacontriplo.png", isSoldOut: true }
 ];
 
     const catalogCategories = [
@@ -3942,8 +3937,7 @@ function init() {
             document.getElementById('ind-0'),
             document.getElementById('ind-1'),
             document.getElementById('ind-2'),
-            document.getElementById('ind-3'),
-            document.getElementById('ind-4')
+            document.getElementById('ind-3')
         ];
         
         indicators.forEach((ind, idx) => {
@@ -3954,7 +3948,7 @@ function init() {
     const startAutoSlide = () => {
         stopAutoSlide();
         slideInterval = setInterval(() => {
-            currentSlide = (currentSlide + 1) % 5;
+            currentSlide = (currentSlide + 1) % 4;
             updateSlider();
         }, 5000);
     };
@@ -3975,9 +3969,9 @@ function init() {
             const diff = startX - clientX;
             if (Math.abs(diff) > 50) {
                 if (diff > 0) {
-                    currentSlide = (currentSlide + 1) % 5;
+                    currentSlide = (currentSlide + 1) % 4;
                 } else {
-                    currentSlide = (currentSlide - 1 + 5) % 5;
+                    currentSlide = (currentSlide - 1 + 4) % 4;
                 }
                 updateSlider();
             }
@@ -5260,12 +5254,9 @@ window.addBagToCart = (key) => {
             return;
         }
 
-        // Conta marmitas válidas (Exclui o brinde e ignora o item p53/Churrasco que não entra na conta)
         const eligibleMarmitasQty = cart.reduce((acc, curr) => {
             const isMarmita = curr.category && curr.category.trim() === 'Marmitas';
-            
-            // Verifica se o ID começa com p53 (para ignorar mesmo que tenha o sufixo do ponto da carne)
-            const isExcluded = curr.id.startsWith('p53') || curr.id === 'p46_promo';
+            const isExcluded = curr.id === 'p46_promo';
             
             if (isMarmita && !isExcluded) {
                 return acc + curr.qty;
@@ -5393,7 +5384,6 @@ window.addBagToCart = (key) => {
         const isRecharge = cart.some(i => i.isWalletTopup);
         const uKey = userProfile.contato.replace(/\D/g, '');
 
-        // Atualiza saldo na tela de pagamento (Lógica unificada)
         get(ref(db, `users/${uKey}/walletBalance`)).then(snap => {
             const balance = snap.val() || 0;
             const badge = document.getElementById('checkout-wallet-badge');
@@ -5421,7 +5411,6 @@ window.addBagToCart = (key) => {
             }
         });
         
-        // Esconde logística e endereço se for recarga
         const logisticsSection = document.getElementById('delivery-options-container')?.parentElement;
         const addressBar = document.getElementById('address-checkout-bar');
         const deliveryTypeContainer = document.getElementById('delivery-options-container');
@@ -5431,12 +5420,10 @@ window.addBagToCart = (key) => {
             if(addressBar) addressBar.style.display = 'none';
             if(deliveryTypeContainer) deliveryTypeContainer.style.display = 'none';
             
-            // Força PIX e limpa outros
             setTimeout(() => {
                 const pixInput = document.querySelector('input[name="pay-method"][value="pix"]');
                 if(pixInput) {
                     pixInput.checked = true;
-                    // Altera o texto para o solicitado
                     const labelSpan = pixInput.parentElement.querySelector('span');
                     if(labelSpan) labelSpan.innerText = "Pagamento via PIX";
                 }
@@ -5482,20 +5469,7 @@ window.addBagToCart = (key) => {
 
         container.innerHTML = "";
 
-        const hasExcludedFromSoda = cart.some(i => i.id.startsWith('p53'));
-        if(hasExcludedFromSoda) {
-            const promoAlert = document.createElement('div');
-            promoAlert.style = "background: #fff5f5; border: 1px solid #ffebeb; padding: 12px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; border-left: 4px solid #ea1d2c; animation: fadeIn 0.3s;";
-            promoAlert.innerHTML = `
-                <i class="fa-solid fa-circle-exclamation" style="color: #ea1d2c; font-size: 18px;"></i>
-                <p style="font-size: 10px; color: #333; font-weight: 800; line-height: 1.2; margin: 0;">
-                    AVISO DE PROMOÇÃO: O item "Churrasco Exc" já está em valor promocional e não é válido para ganhar o refrigerante grátis.
-                </p>
-            `;
-            container.appendChild(promoAlert);
-        }
-
-        const eligibleMarmitas = cart.filter(i => i.category === 'Marmitas' && !i.id.startsWith('p53') && i.id !== 'p46_promo');
+        const eligibleMarmitas = cart.filter(i => i.category === 'Marmitas' && i.id !== 'p46_promo');
         const totalEligibleQty = eligibleMarmitas.reduce((acc, i) => acc + i.qty, 0);
 
         if(totalEligibleQty === 1) {
