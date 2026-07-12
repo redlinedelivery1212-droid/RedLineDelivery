@@ -1038,6 +1038,109 @@
 
         ::-webkit-scrollbar { display: none; }
 
+        /* Estilos Lista de Descobrimento Style TikTok */
+        .discovery-container {
+            height: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            background: #000;
+        }
+
+        .discovery-item {
+            height: 100%;
+            width: 100%;
+            scroll-snap-align: start;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            overflow: hidden;
+        }
+
+        .discovery-media {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            background: #111;
+        }
+
+        .discovery-media.loaded {
+            opacity: 1;
+        }
+
+        .discovery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .discovery-content {
+            position: relative;
+            z-index: 3;
+            padding: 20px;
+            padding-bottom: 30px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .discovery-info {
+            flex: 1;
+        }
+
+        .discovery-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .action-circle {
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .action-circle.liked {
+            color: #ff4757;
+            background: rgba(255,255,255,0.9);
+        }
+
+        .discovery-add-btn {
+            background: #ea1d2c;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 900;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(234, 29, 44, 0.4);
+            cursor: pointer;
+        }
+
         
 
         /* Onboarding Styles */
@@ -1451,6 +1554,17 @@
         opacity: 0;
         z-index: 1;
         animation: snow-fall 4s linear infinite;
+    }
+
+    @keyframes swing-clock {
+        0% { transform: rotate(-15deg); }
+        50% { transform: rotate(15deg); }
+        100% { transform: rotate(-15deg); }
+    }
+    .swing-orange {
+        color: #f46b21;
+        animation: swing-clock 0.6s infinite ease-in-out;
+        display: inline-block;
     }
 
     .spinner-orange {
@@ -1983,6 +2097,13 @@
                 <span>Bebidas</span>
                 <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----wwwwwwwwwwwwwwww---------------w%20(3).png">
             </div>
+            <div id="card-relampago" class="category-card" style="background: linear-gradient(135deg, #f46b21, #e67e22); display: none;" onclick="filterCategory('Relampago')">
+                <div style="position: absolute; top: 8px; left: 10px; z-index: 3;">
+                    <i class="fa-solid fa-stopwatch swing-orange" style="font-size: 18px; color: #fff; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));"></i>
+                </div>
+                <span style="margin-left: 25px;">Relampago</span>
+                <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/-----wwwwwwwwwwwwwwww---------------w%20(1).png" style="filter: brightness(0) invert(1); opacity: 0.3;">
+            </div>
         </div>
 
         <div class="categories" id="home-categories">
@@ -2026,13 +2147,8 @@
             <div id="recommended-list" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;"></div>
         </div>
 
-        <div class="promo-banner" style="background: #6c5ce7; cursor: pointer; border-radius: 15px !important; margin-bottom: 100px; margin-top: 20px;" onclick="changeTab('bags')">
-            <div style="flex: 1;">
-                <h2 id="footer-bag-title" style="font-size: 18px; color: white;">BAG PROMO!</h2>
-                <p id="footer-bag-desc" style="font-size: 12px; margin-bottom: 10px; color: white;">Economia garantida.</p>
-                <span style="background: white; color: #6c5ce7; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: bold;">VER PACOTES</span>
-            </div>
-            <img id="footer-bag-img" src="https://www.kfc.com.br/_next/image?url=https%3A%2F%2Fd7364jmfys2bj.cloudfront.net%2Fproducts%2Fb4656e01-5f59-43eb-b070-6b1fd47cfd03_1775734445438.png&w=384&q=75&dpl=dpl_HFvgmW3E9mo43JiD11KDo85XKwWs" style="width: 110px; height: 110px; object-fit: contain; transform: rotate(-5deg); animation: floatBannerImg 3s ease-in-out infinite;">
+        <div class="promo-banner" style="background: url('https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/discovery/1783882533118_imagembannerlista.png'); background-size: cover; background-position: center; cursor: pointer; border-radius: 15px !important; margin-bottom: 100px; margin-top: 20px; position: relative; overflow: hidden; height: 180px; border: none; box-shadow: 0 8px 20px rgba(0,0,0,0.15);" onclick="openDiscovery()">
+            <!-- Banner com imagem personalizada do Supabase -->
         </div>
 
         <div id="floating-cart" class="floating-cart-bar" onclick="changeTab('cart')">
@@ -2439,16 +2555,7 @@
             <i class="fa-solid fa-coins" style="position: absolute; right: -20px; bottom: -20px; font-size: 100px; color: rgba(255,255,255,0.1); transform: rotate(-15deg);"></i>
         </div>
 
-        <div class="daily-reward-trigger" onclick="openDailyReward()">
-            <div style="background: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
-                <i class="fa-solid fa-calendar-check"></i>
-            </div>
-            <div style="flex: 1;">
-                <h4 style="font-size: 14px; font-weight: 900; margin-bottom: 2px;">RECOMPENSA DIÁRIA</h4>
-                <p style="font-size: 11px; opacity: 0.9; font-weight: 600;">Clique aqui e ganhe saldo grátis para sua carteira!</p>
-            </div>
-            <i class="fa-solid fa-chevron-right" style="font-size: 12px; opacity: 0.7;"></i>
-        </div>
+        
 
         <div class="daily-reward-trigger" onclick="changeTab('test')" style="background: linear-gradient(135deg, #6c5ce7, #a29bfe); animation: none; margin-top: 10px;">
             <div style="background: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
@@ -2463,24 +2570,7 @@
 
     </div>
 
-    <!-- MODAL RECOMPENSA DIÁRIA -->
-    <div id="modal-daily-reward" class="modal-overlay" style="z-index: 9999;">
-        <div class="modal-content" style="text-align: center; max-width: 380px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <h3 style="color: var(--text-dark);"><i class="fa-solid fa-gift" style="color: #ea1d2c;"></i> Presente Diário</h3>
-                <i class="fa-solid fa-xmark" onclick="document.getElementById('modal-daily-reward').style.display='none'" style="cursor: pointer; color: #999;"></i>
-            </div>
-            <p style="font-size: 13px; color: #666; margin-bottom: 5px;">Resgate prêmios todos os dias a partir das 18h!</p>
-            <div id="reward-time-info" style="font-size: 11px; font-weight: bold; color: #ea1d2c; margin-bottom: 15px; background: #fff5f5; padding: 5px; border-radius: 8px; display: none;">SISTEMA ABRE ÀS 18:00 (HORÁRIO DE BRASÍLIA)</div>
-
-            <div class="reward-grid" id="reward-days-container">
-                <!-- Dias gerados via JS -->
-            </div>
-
-            <button id="btn-claim-reward" class="btn-next" style="width: 100%; padding: 15px; background: #ccc;" disabled>RESGATAR RECOMPENSA</button>
-            <button class="btn-back" style="width: 100%; margin-top: 10px;" onclick="document.getElementById('modal-daily-reward').style.display='none'">Fechar</button>
-        </div>
-    </div>
+    
 
     <!-- MODAL ADICIONAR SALDO -->
     <div id="modal-wallet-add" class="modal-overlay">
@@ -2735,6 +2825,30 @@
     </div>
 </section>
 
+<section id="discovery-screen" class="screen" style="padding: 0; background: #000; overflow: hidden;">
+    <div style="position: absolute; top: 20px; left: 20px; z-index: 10; width: 40px; height: 40px; background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer;" onclick="changeTab('home')">
+        <i class="fa-solid fa-arrow-left"></i>
+    </div>
+    <div class="discovery-container" id="discovery-list-viewport">
+        <!-- Itens TikTok style via JS -->
+    </div>
+</section>
+
+<!-- MODAL FEEDBACK DESCOBRIMENTO -->
+<div id="modal-discovery-feedback" class="modal-overlay" style="z-index: 11000; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);">
+    <div class="modal-content" style="text-align: center; padding: 30px 20px; border-radius: 30px;">
+        <div style="background: #2ecc71; width: 60px; height: 60px; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; margin: 0 auto 20px auto; font-size: 30px; box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <h3 style="font-size: 20px; margin-bottom: 10px;">Item Adicionado!</h3>
+        <p style="font-size: 14px; color: #666; margin-bottom: 25px;">O que você deseja fazer agora?</p>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <button class="btn-next" onclick="discoveryNextItem()" style="background: #333;">CONTINUAR DESCOBRINDO</button>
+            <button class="btn-next" onclick="document.getElementById('modal-discovery-feedback').style.display='none'; changeTab('cart');" style="background: var(--primary-orange);">IR PARA O CARRINHO</button>
+        </div>
+    </div>
+</div>
+
 <section id="test-screen" class="screen" style="background: #f8f9fa;">
     <div class="cart-header" style="background: white; padding: 20px; border-bottom: 1px solid #eee; margin-bottom: 0;">
         <i class="fa-solid fa-arrow-left" onclick="changeTab('home')"></i>
@@ -2971,7 +3085,7 @@
     { id: "c_valentines", name: "Combo Valentines", weight: "O par perfeito: 2 Big Cheddar suculentos, 1 porção de Batata Frita crocante e 1 refrigerante de 1 litro geladinho.", price: 44.90, category: "Combos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/xxxxxxxxxxxxxxxxxxxxxxxxxxcccc.png", isValentines: false, popular: false },
     { id: "k1", name: "Combo Kids Brinquedo Bolhas", weight: "Acompanha um hamburguer de salada com requeijao e maionese, uma batata p crocante e um brinquedo de bolhas magicas estilo coelho verde", price: 29.90, category: "KIDS", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/kids.png" },
     { id: "p56", name: "Camarão Internacional", weight: "Camarão cremoso ao molho branco de queijo mussarela e requeijao com presunto, ervilha, batata palha arroz e macarrao", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805413051_ewweew.png", isOffer: true, popular: true },
-    { id: "p_raclette", name: "Raclette Executivo de Bife a Parmegiana", weight: "Bife suculento a parmegiana com queijo raclette derretido, acompanha arroz, feijão, macarrão e batata frita", price: 24.90, oldPrice: 31.12, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/wwwwwwwwwwwwwwwwwwwwwwwwwwwwwcarnequeijo.png", isOffer: true, popular: true },
+    { id: "p_raclette", name: "Raclette Executivo de Bife a Parmegiana", weight: "Bife suculento a parmegiana com queijo raclette derretido, acompanha arroz, feijão, macarrão e batata frita", price: 24.90, oldPrice: 31.12, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/wwwwwwwwwwwwwwwwwwwwwwwwwwwwwcarnequeijo.png", isOffer: true, popular: true, isNew: true },
     { id: "p1", name: "Marmita Executiva Frango Parmegiana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho, salada verde", price: 22.90, oldPrice: 28.62, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805317455_Marmita_Executiva_Frango_Parmegiana.png", isOffer: true, popular: true },
     { id: "p2", name: "Subline de Carne", weight: "Disco de carne Friboi fatiado, Pepino, Cebola, Tomate, Pepino, Alface, Repolho, Molho especial", price: 17.90, oldPrice: 21.12, category: "SubLine", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776806259695_0000000000000000000000000000s.png", isOffer: true },
     { id: "p5", name: "BIG Salada X", weight: "Blend de carne, alface, cebola, tomate, pepino, calabresa", price: 16.90, category: "Hambúrguer", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/000000-Bigsaladax.png" },
@@ -3021,7 +3135,7 @@
     { id: "p44", name: "Coca-Cola Lata", weight: "320ml Refrigerante Coca-Cola Lata", price: 7.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/111cocalata.png" },
         { id: "p45", name: "Guaraná Lata", weight: "320ml Refrigerante Guaraná Lata", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/111guaranalata.png" },
         { id: "p46", name: "Guaraná 1L", weight: "1L Refrigerante Guaraná Litro", price: 12.99, category: "Bebidas", img: "https://www.extrabom.com.br/media/produtos/200x200/4920_extrabom_refrigerante_refrigerante-guarana-antarctica-1-5l-garrafa_4.jpg_.webp" },
-        { id: "p47", name: "Guaraná Jesus Lata", weight: "Refrigerante Guaraná Jesus Lata 260ml", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/111guaranajesus.png" },
+        { id: "p47", name: "Guaraná Jesus Lata", weight: "Refrigerante Guaraná Jesus Lata 220ml", price: 6.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/111guaranajesus.png" },
         { id: "p49", name: "Coca-Cola 1L Tradicional", weight: "1 L Refrigerante Coca-Cola Litro", price: 13.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/111coca1litro.png" },
         { id: "p50", name: "Agua Mineral", weight: "Garrafa de agua de 500 ML Mineral", price: 3.90, category: "Bebidas", img: "https://www.extrabom.com.br/media/produtos/200x200/4641_20210730155132_thumb_Agua_Crystal_sem_gas_1_5L..png_.webp" },
         { id: "p_fly_limao", name: "Fly Limão", weight: "350ml Refrigerante Fly Limão", price: 6.40, category: "Bebidas", img: "https://www.extrabom.com.br/media/produtos/200x200/133746_extrabom_refrig-fys-lt-350ml-laranja.jpg_.webp" },
@@ -3043,6 +3157,7 @@
     { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
     { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 1 },
     { key: "c_add", name: "Adicionais", icon: "fa-solid fa-plus", order: 1.1 },
+    { key: "c_rel", name: "Relampago", icon: "fa-solid fa-stopwatch", order: 1.2 },
     { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 4.5 },
     { key: "c10", name: "Combos", icon: "fa-solid fa-boxes-stacked", order: 5 },
     { key: "c_kids", name: "KIDS", icon: "fa-solid fa-child", order: 6 },
@@ -3476,125 +3591,7 @@ function init() {
         renderDailyRewardUI();
     };
 
-    window.openDailyReward = function() {
-        if(!userProfile) return;
-        document.getElementById('modal-daily-reward').style.display = 'flex';
-        renderDailyRewardUI();
-    };
-
-    window.renderDailyRewardUI = function() {
-        const data = window.cachedDailyReward || { streak: 0, lastDate: "" };
-        const container = document.getElementById('reward-days-container');
-        const btn = document.getElementById('btn-claim-reward');
-        const timeInfo = document.getElementById('reward-time-info');
-        
-        container.innerHTML = "";
-
-        const now = new Date();
-        const bsbTime = parseInt(new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: 'numeric', hour12: false }).format(now));
-        const todayStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(now);
-        
-        const isTimeOk = bsbTime >= 18 || bsbTime < 1; 
-        const alreadyClaimed = data.lastDate === todayStr;
-
-        if(!isTimeOk) {
-            timeInfo.style.display = 'block';
-            timeInfo.style.color = '#ea1d2c';
-            timeInfo.style.background = '#fff5f5';
-            timeInfo.innerText = "SISTEMA ABRE ÀS 18:00 (HORÁRIO DE BRASÍLIA)";
-        } else if(alreadyClaimed) {
-            timeInfo.style.display = 'block';
-            timeInfo.style.color = '#2ecc71';
-            timeInfo.style.background = '#f0fff4';
-            timeInfo.innerText = "VOCÊ JÁ RESGATOU SEU PRÊMIO DE HOJE!";
-        } else {
-            timeInfo.style.display = 'none';
-        }
-
-        const rewards = [
-            { day: 1, type: 'star', val: 0 },
-            { day: 2, type: 'star', val: 0 },
-            { day: 3, type: 'money', val: 5 },
-            { day: 4, type: 'star', val: 0 },
-            { day: 5, type: 'star', val: 0 },
-            { day: 6, type: 'star', val: 0 },
-            { day: 7, type: 'money', val: 10 }
-        ];
-
-        const fragment = document.createDocumentFragment();
-        rewards.forEach(r => {
-            const isClaimed = r.day <= data.streak;
-            const isNext = r.day === data.streak + 1;
-            
-            const div = document.createElement('div');
-            div.className = `reward-day-box ${r.type === 'money' ? 'big' : ''} ${isClaimed ? 'claimed' : ''} ${isNext && isTimeOk && !alreadyClaimed ? 'active' : ''}`;
-            
-            let icon = r.type === 'star' ? 'fa-star' : 'fa-sack-dollar';
-            let label = r.type === 'money' 
-                ? `${r.val.toFixed(2).replace('.', ',').padStart(5, '0')}` 
-                : `Dia ${r.day}`;
-
-            if (r.type === 'money') {
-                div.style.background = "#ea1d2c";
-                div.style.borderColor = "#ffde00";
-                div.innerHTML = `
-                    <div style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;">
-                        <i class="fa-solid ${isClaimed ? 'fa-circle-check' : 'fa-sack-dollar'}" style="font-size: 24px; color: #fff;"></i>
-                        <div style="text-align: left; display: flex; flex-direction: column; justify-content: center;">
-                            <span style="font-size: 8px; font-weight: 900; color: rgba(255,255,255,0.8); line-height: 1;">RECEBA</span>
-                            <span style="font-size: 22px; font-weight: 900; color: #fff; line-height: 1; margin: 0;">R$ ${label}</span>
-                            <span style="font-size: 8px; font-weight: 900; color: rgba(255,255,255,0.8); line-height: 1;">SALDO CARTEIRA</span>
-                        </div>
-                    </div>
-                `;
-            } else {
-                div.innerHTML = `
-                    <i class="fa-solid ${isClaimed ? 'fa-circle-check' : icon}" style="font-size: 18px;"></i>
-                    <span style="font-size: 9px; font-weight: 900;">${label}</span>
-                `;
-            }
-            fragment.appendChild(div);
-        });
-        container.appendChild(fragment);
-
-        if(isTimeOk && !alreadyClaimed) {
-            btn.disabled = false;
-            btn.style.background = 'var(--primary-orange)';
-            btn.innerText = "RESGATAR RECOMPENSA";
-            btn.onclick = () => claimDailyReward(data.streak + 1, todayStr);
-        } else {
-            btn.disabled = true;
-            btn.style.background = '#ccc';
-            btn.innerText = alreadyClaimed ? "RESGATADO" : "INDISPONÍVEL";
-        }
-    };
-
-    window.claimDailyReward = async function(newStreak, dateStr) {
-        const uKey = userProfile.contato.replace(/\D/g, '');
-        const btn = document.getElementById('btn-claim-reward');
-        btn.disabled = true;
-        btn.innerText = "PROCESSANDO...";
-
-        let moneyReward = 0;
-        if(newStreak === 3) moneyReward = 5;
-        if(newStreak === 7) moneyReward = 10;
-
-        const updates = {};
-        updates[`users/${uKey}/dailyReward/streak`] = newStreak >= 7 ? 0 : newStreak;
-        updates[`users/${uKey}/dailyReward/lastDate`] = dateStr;
-
-        if(moneyReward > 0) {
-            const balSnap = await get(ref(db, `users/${uKey}/walletBalance`));
-            const currentBal = balSnap.val() || 0;
-            updates[`users/${uKey}/walletBalance`] = currentBal + moneyReward;
-        }
-
-        update(ref(db), updates).then(() => {
-            showToast(moneyReward > 0 ? `PARABÉNS! R$ ${moneyReward.toFixed(2)} adicionados à sua carteira!` : "Estrela de hoje resgatada! Volte amanhã.");
-            renderDailyRewardUI();
-            updateUserProfileUI();
-        });
-    };
+    
 
     const formatPhone = (id) => {
         const input = document.getElementById(id);
@@ -3648,30 +3645,44 @@ function init() {
     }
 
     const loadEssentialData = () => {
-        get(ref(db, 'products')).then((prodSnap) => {
-            const dbData = prodSnap.val();
-            const soldOutMap = {};
-            if (dbData) {
-                Object.values(dbData).forEach(item => { 
-                    if(item.isSoldOut && item.name) soldOutMap[item.name.trim().toLowerCase()] = true; 
-                });
-            }
-
-            allProducts = catalogData.map(p => ({
-                ...p,
-                isSoldOut: !!soldOutMap[p.name.trim().toLowerCase()]
-            }));
-
-            renderHomeCategories();
-            renderProducts();
-            renderCategorySuggestions();
+        onValue(ref(db, 'settings/flash_deals'), (flashSnap) => {
+            const flashData = flashSnap.val() || {};
+            const flashItems = Object.entries(flashData)
+                .filter(([_, item]) => item.visible)
+                .map(([key, item]) => ({
+                    ...item,
+                    id: 'flash_' + key,
+                    category: 'Relampago',
+                    isMegaPromo: true
+                }));
             
-            // Verifica se deve abrir a tela de bebidas agora que os dados chegaram
-            if (window.location.hash === '#bebidas') {
-                renderBeveragesOnly();
-            }
+            const cardRel = document.getElementById('card-relampago');
+            if(cardRel) cardRel.style.display = flashItems.length > 0 ? 'flex' : 'none';
 
-            window.logPerf('catalog');
+            get(ref(db, 'products')).then((prodSnap) => {
+                const dbData = prodSnap.val();
+                const soldOutMap = {};
+                if (dbData) {
+                    Object.values(dbData).forEach(item => { 
+                        if(item.isSoldOut && item.name) soldOutMap[item.name.trim().toLowerCase()] = true; 
+                    });
+                }
+
+                allProducts = [...catalogData, ...flashItems].map(p => ({
+                    ...p,
+                    isSoldOut: !!soldOutMap[p.name.trim().toLowerCase()]
+                }));
+
+                renderHomeCategories();
+                renderProducts();
+                renderCategorySuggestions();
+                
+                if (window.location.hash === '#bebidas') {
+                    renderBeveragesOnly();
+                }
+
+                window.logPerf('catalog');
+            });
         });
 
         // Mantém a escuta em tempo real para mudanças de estoque (Esgotado)
@@ -3987,13 +3998,14 @@ function init() {
             const items = Object.values(data);
             items.forEach(item => {
                 const itemDiv = document.createElement('label');
+                const isGolden = item.isGolden === true;
                 itemDiv.style = "display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; position: relative;";
                 itemDiv.innerHTML = `
-                    <div style="width: 100%; aspect-ratio: 1/1; background: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; position: relative; border: 2px solid #f0f0f0; transition: 0.2s; box-shadow: 0 3px 8px rgba(0,0,0,0.02); overflow: hidden; padding: 8px;">
+                    <div class="${isGolden ? 'premium-glow' : ''}" style="width: 100%; aspect-ratio: 1/1; background: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; position: relative; border: ${isGolden ? '2px solid #ffd700' : '2px solid #f0f0f0'}; transition: 0.2s; box-shadow: 0 3px 8px rgba(0,0,0,0.02); overflow: hidden; padding: 8px;">
                         <img src="${item.img}" style="width: 85%; height: 85%; object-fit: contain;">
-                        <input type="checkbox" class="opt-free-dynamic" data-nome="${item.name}" onchange="this.parentElement.style.borderColor = this.checked ? 'var(--primary-orange)' : '#f0f0f0'; this.parentElement.style.background = this.checked ? '#fff5f5' : '#fff';" style="position: absolute; top: 6px; right: 6px; width: 16px; height: 16px; accent-color: var(--primary-orange); cursor: pointer;">
+                        <input type="checkbox" class="opt-free-dynamic" data-nome="${item.name}" onchange="this.parentElement.style.borderColor = this.checked ? 'var(--primary-orange)' : ( ${isGolden} ? '#ffd700' : '#f0f0f0'); this.parentElement.style.background = this.checked ? '#fff5f5' : '#fff';" style="position: absolute; top: 6px; right: 6px; width: 16px; height: 16px; accent-color: var(--primary-orange); cursor: pointer;">
                     </div>
-                    <span style="font-size: 9px; font-weight: 800; color: #555; text-align: center; line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 20px; width: 100%;">${item.name}</span>
+                    <span style="font-size: 9px; font-weight: 800; color: ${isGolden ? '#b8860b' : '#555'}; text-align: center; line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 20px; width: 100%;">${item.name}</span>
                 `;
                 list.appendChild(itemDiv);
             });
@@ -4334,17 +4346,11 @@ function updateUserProfileUI() {
 
     const userKeyForWallet = userProfile.contato.replace(/\D/g, '');
     
-    // Escuta saldo e recompensa diária em tempo real (cache local para carregar instantâneo)
     onValue(ref(db, `users/${userKeyForWallet}`), (snap) => {
         const userData = snap.val() || {};
         const balance = userData.walletBalance || 0;
-        window.cachedDailyReward = userData.dailyReward || { streak: 0, lastDate: "" };
         
         document.getElementById('wallet-balance-display').innerText = `R$ ${balance.toFixed(2).replace('.', ',')}`;
-        
-        if(document.getElementById('modal-daily-reward').style.display === 'flex') {
-            renderDailyRewardUI();
-        }
     });
 
     const firstName = userProfile.nome.split(' ')[0];
@@ -5027,6 +5033,7 @@ function renderFakeReviews() {
                     ${p.isMegaPromo && !p.isSoldOut ? `<div style="background: #f46b21; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">🔥 MEGA PROMO</div>` : ''}
                     ${p.isCustomSub && !p.isSoldOut ? `<div style="background: #6c5ce7; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">✨ ESPECIAL</div>` : ''}
                     ${p.category === 'KIDS' && !p.isSoldOut ? `<div style="background: #00b894; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">👶 KIDS</div>` : ''}
+                    ${p.isNew && !p.isSoldOut ? `<div style="background: #ea1d2c; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">✨ NOVIDADE</div>` : ''}
                 </div>
             </div>
 
@@ -5078,6 +5085,94 @@ function renderFakeReviews() {
 
         changeTab('details');
     }
+
+    window.openDiscovery = function() {
+        changeTab('discovery');
+        renderDiscoveryList();
+    };
+
+    window.renderDiscoveryList = function() {
+        const viewport = document.getElementById('discovery-list-viewport');
+        viewport.innerHTML = "";
+
+        onValue(ref(db, 'settings/discovery_list'), (snap) => {
+            const data = snap.val();
+            let items = [];
+
+            if (data) {
+                items = Object.values(data);
+            } else {
+                items = allProducts.filter(p => p.popular && !p.isSoldOut).slice(0, 5);
+            }
+
+            // Aleatoriza a ordem dos itens toda vez que a função é executada
+            items.sort(() => Math.random() - 0.5);
+
+            if (items.length === 0) {
+                viewport.innerHTML = `<div style="height:100%; display:flex; align-items:center; justify-content:center; color:white;">Nenhum item em destaque hoje.</div>`;
+                return;
+            }
+
+            // Criar o Observer para carregar imagens apenas quando visíveis
+            const discoveryObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target.querySelector('.discovery-media');
+                        if (img && img.dataset.src) {
+                            img.src = img.dataset.src;
+                            img.onload = () => img.classList.add('loaded');
+                            img.removeAttribute('data-src');
+                            discoveryObserver.unobserve(entry.target);
+                        }
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: "0px 0px 200px 0px" });
+
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'discovery-item';
+                div.innerHTML = `
+                    <img data-src="${item.img}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" class="discovery-media">
+                    <div class="discovery-overlay"></div>
+                    <div class="discovery-content">
+                        <div class="discovery-info">
+                            <h2 style="font-size: 24px; font-weight: 900; margin-bottom: 5px; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">${item.name}</h2>
+                            <p style="font-size: 13px; opacity: 0.9; margin-bottom: 15px; max-width: 80%; line-height: 1.2;">${item.weight || item.description || ''}</p>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <button class="discovery-add-btn" onclick="addToCartFromDiscovery('${item.id || item.prodId}')">
+                                    <i class="fa-solid fa-cart-plus"></i> ADICIONAR R$ ${item.price.toFixed(2).replace('.', ',')}
+                                </button>
+                            </div>
+                        </div>
+                        <div class="discovery-actions">
+                            <div class="action-circle" onclick="this.classList.toggle('liked')">
+                                <i class="fa-solid fa-heart"></i>
+                            </div>
+                            <div class="action-circle" onclick="window.open('https://wa.me/559881422644?text=Vi o ${item.name} no Descobrimento e amei!')">
+                                <i class="fa-solid fa-share"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                viewport.appendChild(div);
+                discoveryObserver.observe(div);
+            });
+        });
+    };
+
+    window.addToCartFromDiscovery = function(id) {
+        addToCart(id);
+        const modal = document.getElementById('modal-discovery-feedback');
+        modal.style.display = 'flex';
+        
+        // Função para rolar para o próximo item automaticamente se escolher continuar
+        window.discoveryNextItem = function() {
+            modal.style.display = 'none';
+            const container = document.getElementById('discovery-list-viewport');
+            const currentItem = container.querySelector('.discovery-item:not([style*="display: none"])'); // Simplificado para o scroll snap
+            container.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+        };
+    };
 
     window.changeTab = function(tab) {
         // Remove a classe active de todas as telas e limpa seleções do menu
@@ -5992,6 +6087,10 @@ document.getElementById('confirm-sticker').onclick = () => {
             if (allProducts && allProducts.length > 0) {
                 renderBeveragesOnly();
             }
+            return;
+        }
+        if (hash === 'descobrimento') {
+            openDiscovery();
             return;
         }
         if (hash && hash.length >= 10 && !isNaN(hash.replace(/\D/g, ''))) {
@@ -7366,10 +7465,17 @@ document.getElementById('btn-add-subline-cart').onclick = () => {
 };
 
 window.changeTab = function(tab) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    
-    if(tab === 'home') {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        
+        const bottomNav = document.querySelector('.bottom-nav');
+        if(tab === 'discovery') {
+            if(bottomNav) bottomNav.style.display = 'none';
+        } else {
+            if(bottomNav) bottomNav.style.display = 'flex';
+        }
+
+        if(tab === 'home') {
         document.getElementById('home-screen').classList.add('active');
         document.getElementById('nav-home').classList.add('active');
         updateFloatingCart();
@@ -7395,6 +7501,9 @@ window.changeTab = function(tab) {
         document.getElementById('floating-cart').style.display = 'none';
     } else if(tab === 'details') {
         document.getElementById('details-screen').classList.add('active');
+        document.getElementById('floating-cart').style.display = 'none';
+    } else if(tab === 'discovery') {
+        document.getElementById('discovery-screen').classList.add('active');
         document.getElementById('floating-cart').style.display = 'none';
     } else if(tab === 'subline-builder') {
         document.getElementById('subline-builder-screen').classList.add('active');
