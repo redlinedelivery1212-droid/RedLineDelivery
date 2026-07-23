@@ -3700,6 +3700,33 @@ function init() {
                     p.isSoldOut = !!soldOutMap[p.name.trim().toLowerCase()];
                 });
 
+                // Verificação em tempo real do carrinho (inclusive na tela de pagamento)
+                let removedNames = [];
+                const initialCartLength = cart.length;
+                cart = cart.filter(cartItem => {
+                    const isSoldOut = soldOutMap[cartItem.name.trim().toLowerCase()];
+                    if (isSoldOut) {
+                        removedNames.push(cartItem.name);
+                        return false;
+                    }
+                    return true;
+                });
+
+                if (removedNames.length > 0) {
+                    saveCart();
+                    updateFloatingCart();
+                    const isPaymentActive = document.getElementById('payment-screen').classList.contains('active');
+                    const isCartActive = document.getElementById('cart-screen').classList.contains('active');
+                    
+                    alert("Atenção: O item '" + removedNames.join(', ') + "' acabou de esgotar e foi removido do seu pedido.");
+                    
+                    if (isPaymentActive) {
+                        changeTab('home');
+                    } else if (isCartActive) {
+                        renderCart();
+                    }
+                }
+
                 const activeCat = document.querySelector('.cat-item.active-cat');
                 if (activeCat && activeCat.id !== 'cat-all') {
                     const catName = activeCat.getAttribute('data-catname');
@@ -5460,6 +5487,22 @@ window.addBagToCart = (key) => {
     window.renderCart = function() {
         const container = document.getElementById('cart-items-container');
         if (!userProfile) return;
+
+        let itemsRemoved = [];
+        cart = cart.filter(cartItem => {
+            const productStatus = allProducts.find(p => p.name.trim().toLowerCase() === cartItem.name.trim().toLowerCase());
+            if (productStatus && productStatus.isSoldOut) {
+                itemsRemoved.push(cartItem.name);
+                return false;
+            }
+            return true;
+        });
+
+        if (itemsRemoved.length > 0) {
+            saveCart();
+            updateFloatingCart();
+            alert("Atenção: Os seguintes itens esgotaram e foram removidos do seu carrinho: \n\n- " + itemsRemoved.join('\n- '));
+        }
         
         const isRecharge = cart.some(i => i.isWalletTopup);
         const uKey = userProfile.contato.replace(/\D/g, '');
@@ -6905,9 +6948,7 @@ document.getElementById('btn-add-to-active').onclick = function() {
         const isMonday = weekday.includes('segunda');
         const isWorkingHours = (hour >= 18 && (hour < 22 || (hour === 22 && minute <= 30)));
 
-        if(storeSettings.inauguration) {
-            status = "inauguracao";
-        } else if(storeSettings.forcedOpen) {
+        if(storeSettings.forcedOpen) {
             status = "aberto";
         } else if(storeSettings.closedToday || isMonday) {
             status = "fechado";
@@ -6947,17 +6988,13 @@ document.getElementById('btn-add-to-active').onclick = function() {
                 }
             }
 
-        } else if(status === "inauguracao") {
-            badge.innerText = "Em breve";
-            badge.classList.add('status-inauguration');
-            finishBtn.classList.add('btn-disabled');
         } else {
             badge.innerText = "Fechado";
             badge.classList.add('status-closed');
             finishBtn.classList.add('btn-disabled');
             if(scheduleBtn && status !== "inauguracao") scheduleBtn.style.display = 'block';
 
-            if (storeSettings.showOpeningTimer && !storeSettings.closedToday && !storeSettings.inauguration) {
+            if (storeSettings.showOpeningTimer && !storeSettings.closedToday) {
                 if (isMonday) {
                     let totalHours = (23 - hour) + 18;
                     let diffMinutes = 60 - minute;
