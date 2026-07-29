@@ -2299,19 +2299,7 @@
 
         <div id="status-error-msg" style="color: red; font-size: 13px; font-weight: bold; margin-top: 10px; text-align: center; display: none;"></div>
 
-        <!-- MODAL AGENDAMENTO -->
-        <div id="modal-schedule" class="modal-overlay" style="z-index: 10000;">
-            <div class="modal-content" style="text-align: center;">
-                <i class="fa-solid fa-clock" style="font-size: 40px; color: var(--primary-orange); margin-bottom: 10px;"></i>
-                <h3>Agendar Pedido</h3>
-                <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Escolha o horário que deseja receber seu pedido hoje:</p>
-                <input type="time" id="schedule-time" style="width: 100%; font-size: 24px; text-align: center; padding: 10px; border: 2px solid var(--primary-orange); border-radius: 12px; margin-bottom: 20px;">
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn-back" onclick="document.getElementById('modal-schedule').style.display='none'" style="flex: 1;">Voltar</button>
-                    <button class="btn-next" onclick="confirmSchedule()" style="flex: 1;">Agendar</button>
-                </div>
-            </div>
-        </div>
+        
 
         <div id="high-demand-warning" style="display: none; color: #e74c3c; font-weight: 900; font-size: 12px; text-align: center; margin-top: 15px; background: #fff0f0; padding: 10px; border-radius: 10px; border: 1px solid #ffcccc;">
             <i class="fa-solid fa-clock"></i> DEMANDA ALTA: PRAZO DE ENTREGA DE 40 A 60 MINUTOS
@@ -2426,7 +2414,6 @@
 
         <p style="text-align: center; font-size: 10px; color: #999; margin-top: 15px;">Ao finalizar o pedido, você concorda com os termos do site</p>
         <button id="finish-order" style="width: 100%; background: var(--primary-orange); color: white; border: none; padding: 15px; border-radius: 12px; margin-top: 5px; font-weight: bold; cursor: pointer;">Finalizar Pedido</button>
-        <button id="schedule-order-btn" style="width: 100%; background: #34495e; color: white; border: none; padding: 15px; border-radius: 12px; margin-top: 10px; font-weight: bold; cursor: pointer; display: none;" onclick="openScheduleModal()">Agendar para mais tarde</button>
     </div>
 </section>
 
@@ -2648,9 +2635,7 @@
                     <div id="pay-savings-badge" style="display: inline-flex; align-items: center; gap: 5px; background: #fff5f5; color: #ea1d2c; padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 900; margin-top: 5px; border: 1px solid #ffebeb;">
                         <i class="fa-solid fa-piggy-bank"></i> VOCÊ ECONOMIZOU R$ <span id="pay-savings-val">0,00</span>
                     </div>
-                    <div id="pay-schedule-badge" style="display: none; align-items: center; gap: 5px; background: #34495e; color: white; padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 900; margin-top: 5px;">
-                        <i class="fa-solid fa-clock"></i> PEDIDO AGENDADO PARA <span id="pay-schedule-val">--:--</span>
-                    </div>
+                    
                 </div>
 
                 <div style="background: #f9f9f9; border-radius: 20px; padding: 20px; border: 1px solid #eee; margin-bottom: 25px;">
@@ -3066,18 +3051,31 @@
         }
     };
 
-    // Lógica de Contador de Acessos
-
-    // Lógica de Contador de Acessos
-    const today = new Date().toISOString().split('T')[0];
-    onValue(ref(db, 'stats/accesses'), (snap) => {
+    // Contador de Acessos RedLine
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date());
+    onValue(ref(db, 'stats/accesses/redline'), (snap) => {
         const data = snap.val() || { total: 0, daily: {} };
-        const newTotal = (data.total || 0) + 1;
-        const newDaily = (data.daily && data.daily[today] ? data.daily[today] : 0) + 1;
-        
-        set(ref(db, 'stats/accesses/total'), newTotal);
-        set(ref(db, 'stats/accesses/daily/' + today), newDaily);
+        set(ref(db, 'stats/accesses/redline/total'), (data.total || 0) + 1);
+        set(ref(db, 'stats/accesses/redline/daily/' + today), (data.daily && data.daily[today] ? data.daily[today] : 0) + 1);
     }, { onlyOnce: true });
+
+    // Rastreador de Origem de Tráfego (UTM)
+    const urlParams = new URLSearchParams(window.location.search);
+    const utmSource = urlParams.get('utm_source');
+    if (utmSource) {
+        const validSources = ['instagram', 'status', 'grupos'];
+        if (validSources.includes(utmSource)) {
+            const sourceRef = ref(db, `stats/traffic_sources/${utmSource}`);
+            get(sourceRef).then(snap => {
+                const data = snap.val() || { total: 0, daily: {} };
+                const currentDaily = (data.daily && data.daily[today]) ? data.daily[today] : 0;
+                update(sourceRef, {
+                    total: (data.total || 0) + 1,
+                    [`daily/${today}`]: currentDaily + 1
+                });
+            });
+        }
+    }
 
     const catalogData = [
     { id: "suco_goiaba", name: "Suco Natural de Goiaba", weight: "Suco natural da fruta geladinho 300ml", price: 6.50, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/0011goiaba.jfif" },
@@ -5037,7 +5035,10 @@ function renderFakeReviews() {
 
     function createProductCard(p) {
         const card = document.createElement('div');
-        let cardClass = p.isSoldOut ? 'product-card esgotado' : 'product-card';
+        const isStoreOpen = updateStoreStatusUI() === 'aberto';
+        const effectiveSoldOut = isStoreOpen ? p.isSoldOut : false;
+        
+        let cardClass = effectiveSoldOut ? 'product-card esgotado' : 'product-card';
         card.className = cardClass;
 
         const originalPrice = p.oldPrice ? p.oldPrice.toFixed(2).replace('.', ',') : (p.price / 0.8).toFixed(2).replace('.', ',');
@@ -5053,16 +5054,16 @@ function renderFakeReviews() {
             : `<span style="font-size: 16px; font-weight: 800; color: #3e3e3e;">R$ ${currentPrice}</span>`;
 
         card.innerHTML = `
-            ${p.isSoldOut ? '<div class="esgotado-label" style="font-size:12px; width:90%;">( ESGOTADO POR HOJE VOLTA AMANHA )</div>' : ''}
+            ${effectiveSoldOut ? '<div class="esgotado-label" style="font-size:12px; width:90%;">( ESGOTADO POR HOJE VOLTA AMANHA )</div>' : ''}
             
             <div style="position: relative;">
                 <img src="${getThumb(p.img)}" alt="${p.name}" class="product-img-click" loading="lazy">
                 <div style="position: absolute; top: 8px; left: 8px; display: flex; flex-direction: column; gap: 4px;">
-                    ${p.isValentines && !p.isSoldOut ? `<div style="background: #ea1d2c; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">💖 dia dos namorados</div>` : ''}
-                    ${p.isMegaPromo && !p.isSoldOut ? `<div style="background: #f46b21; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">🔥 MEGA PROMO</div>` : ''}
-                    ${p.isCustomSub && !p.isSoldOut ? `<div style="background: #6c5ce7; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">✨ ESPECIAL</div>` : ''}
-                    ${p.category === 'KIDS' && !p.isSoldOut ? `<div style="background: #00b894; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">👶 KIDS</div>` : ''}
-                    ${p.isNew && !p.isSoldOut ? `<div style="background: #ea1d2c; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">✨ NOVIDADE</div>` : ''}
+                    ${p.isValentines && !effectiveSoldOut ? `<div style="background: #ea1d2c; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">💖 dia dos namorados</div>` : ''}
+                    ${p.isMegaPromo && !effectiveSoldOut ? `<div style="background: #f46b21; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">🔥 MEGA PROMO</div>` : ''}
+                    ${p.isCustomSub && !effectiveSoldOut ? `<div style="background: #6c5ce7; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">✨ ESPECIAL</div>` : ''}
+                    ${p.category === 'KIDS' && !effectiveSoldOut ? `<div style="background: #00b894; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">👶 KIDS</div>` : ''}
+                    ${p.isNew && !effectiveSoldOut ? `<div style="background: #ea1d2c; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; text-transform: uppercase;">✨ NOVIDADE</div>` : ''}
                 </div>
             </div>
 
@@ -5074,13 +5075,13 @@ function renderFakeReviews() {
                 
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-top: auto;">
                     ${priceHTML}
-                    ${p.isSoldOut ? '' : 
+                    ${effectiveSoldOut ? '' : 
                       (p.isCustomSub ? `<button class="add-btn" style="width: auto; padding: 0 10px; font-size: 11px; font-weight: 800;">MONTAR</button>` : `<button class="add-btn" data-id="${p.id}"><i class="fa-solid fa-plus"></i></button>`)
                     }
                 </div>
             </div>
         `;
-        if(!p.isSoldOut) {
+        if(!effectiveSoldOut) {
             if(p.isCustomSub) {
                 card.onclick = () => openSubLineBuilder();
             } else {
@@ -6966,12 +6967,10 @@ document.getElementById('btn-add-to-active').onclick = function() {
             timerEl.style.color = '#666';
         }
 
-        const scheduleBtn = document.getElementById('schedule-order-btn');
         if(status === "aberto") {
             badge.innerText = "Aberto";
             badge.classList.add('status-open');
             finishBtn.classList.remove('btn-disabled');
-            if(scheduleBtn) scheduleBtn.style.display = 'none';
 
             if (storeSettings.showOpeningTimer && !storeSettings.forcedOpen) {
                 // Verifica se faltam 60 minutos ou menos para as 22:30
@@ -6992,7 +6991,6 @@ document.getElementById('btn-add-to-active').onclick = function() {
             badge.innerText = "Fechado";
             badge.classList.add('status-closed');
             finishBtn.classList.add('btn-disabled');
-            if(scheduleBtn && status !== "inauguracao") scheduleBtn.style.display = 'block';
 
             if (storeSettings.showOpeningTimer && !storeSettings.closedToday) {
                 if (isMonday) {
@@ -7091,73 +7089,51 @@ document.getElementById('btn-add-to-active').onclick = function() {
         });
     }
 
-    window.openScheduleModal = () => {
-        if(cart.length === 0) return showToast("Carrinho vazio!");
-        const now = new Date();
-        const hour = String(now.getHours()).padStart(2, '0');
-        const min = String(now.getMinutes()).padStart(2, '0');
-        document.getElementById('schedule-time').value = `${hour}:${min}`;
-        document.getElementById('modal-schedule').style.display = 'flex';
-    };
-
-    window.confirmSchedule = () => {
-        const time = document.getElementById('schedule-time').value;
-        if(!time) return alert("Escolha um horário!");
-        const [h, m] = time.split(':').map(Number);
-        const now = new Date();
-        const schedDate = new Date();
-        schedDate.setHours(h, m, 0);
-        if(schedDate < now) return alert("Escolha um horário futuro para hoje!");
-        document.getElementById('modal-schedule').style.display = 'none';
-        processFinalOrder(true, time);
-    };
-
-    window.processFinalOrder = async (isSchedule = false, schedTime = null) => {
+    window.processFinalOrder = async () => {
         const loader = document.getElementById('order-processing-loader');
         loader.style.display = 'flex';
+
         const subtotal = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
         const deliveryType = document.querySelector('input[name="delivery-type"]:checked')?.value || 'delivery';
         let deliveryFee = (deliveryType === 'delivery' && subtotal < 84.90) ? 4.99 : 0;
+        if (deliveryType === 'no_contact' && subtotal < 84.90) deliveryFee = 4.99; 
+        
         const totalComFrete = subtotal + deliveryFee;
-        const minVal = deliveryType === 'delivery' ? 20 : 15;
+        const minVal = (deliveryType === 'delivery' || deliveryType === 'no_contact') ? 20 : 15;
 
         if (totalComFrete < minVal) {
             loader.style.display = 'none';
-            showToast(deliveryType === 'delivery' ? "O total com frete deve ser no mínimo R$ 20,00" : "O total deve ser no mínimo R$ 15,00 para retirada");
+            showToast(minVal === 20 ? "O total com frete deve ser no mínimo R$ 20,00" : "O total deve ser no mínimo R$ 15,00 para retirada");
             return;
         }
 
-        if (deliveryType === 'delivery' && !userProfile.lat && !userProfile.declinedMap) {
+        if ((deliveryType === 'delivery' || deliveryType === 'no_contact') && !userProfile.lat && !userProfile.declinedMap) {
             loader.style.display = 'none';
             document.getElementById('modal-map-ask').style.display = 'flex';
             return;
         }
 
         let currentFinalTotal = Math.max(0, (subtotal + deliveryFee) - couponDiscount);
+        
         const extras = [];
-        
-        // Pega os itens gratuitos selecionados dinamicamente
-        document.querySelectorAll('.opt-free-dynamic:checked').forEach(cb => {
-            extras.push(cb.getAttribute('data-nome'));
-        });
-        
+        document.querySelectorAll('.opt-free-dynamic:checked').forEach(cb => extras.push(cb.getAttribute('data-nome')));
         document.querySelectorAll('.opt-brinde-dinamico:checked').forEach(cb => extras.push(cb.getAttribute('data-nome')));
 
         const paymentMethod = document.querySelector('input[name="pay-method"]:checked').value;
         const changeVal = document.getElementById('pay-change').value;
 
-        const newOrderRef = push(ref(db, 'orders'));
         let obsFinal = document.getElementById('order-observation').value;
         if(deliveryType === 'no_contact') {
             const instrucao = document.getElementById('no-contact-text').value;
-            obsFinal = `(ENTREGA SEM CONTATO: ${instrucao}) ` + obsFinal;
+            obsFinal = `(ENTREGA SEM CONTATO: ${instrucao || 'Não especificado'}) ` + obsFinal;
         }
 
+        const newOrderRef = push(ref(db, 'orders'));
         const orderData = {
             cliente: userProfile,
             items: cart.filter(i => !i.isLocked),
             extras: extras,
-            observacao: (isSchedule ? `[AGENDADO PARA ${schedTime}] ` : "") + obsFinal,
+            observacao: obsFinal,
             sticker: selectedSticker,
             coupon: appliedCoupon,
             total: currentFinalTotal,
@@ -7168,25 +7144,26 @@ document.getElementById('btn-add-to-active').onclick = function() {
             modoPresente: document.getElementById('opt-presente').checked,
             donation: selectedDonation,
             timestamp: Date.now(),
-            status: isSchedule ? 'agendado' : 'pendente',
-            scheduledTime: schedTime
+            status: 'pendente'
         };
 
         set(newOrderRef, orderData).then(() => {
             loader.style.display = 'none';
             const payMethodsMap = {'especie': 'Dinheiro', 'pix': 'PIX', 'credito': 'Cartão Maquininha', 'vale': 'Vale Alimentação'};
-            const itemsList = cart.map(i => `${i.qty}x ${i.name}`).join('\n');
+
+            const finalCartForMsg = cart.filter(i => !i.isLocked);
+            const itemsListClean = finalCartForMsg.map(i => `${i.qty}x ${i.name}`).join('\n');
 
             if (paymentMethod === 'pix') {
                 document.getElementById('pay-total-val').innerText = 'R$ ' + currentFinalTotal.toFixed(2).replace('.', ',');
-                document.getElementById('pay-schedule-val').innerText = schedTime || '';
-                document.getElementById('pay-schedule-badge').style.display = isSchedule ? 'inline-flex' : 'none';
+                
                 const payList = document.getElementById('pay-items-list');
-                if(payList) payList.innerHTML = cart.map(i => `<div style="display:flex; justify-content:space-between; font-size:13px;"><span style="color:#666;">${i.qty}x ${i.name}</span><span style="color:#333; font-weight:900;">R$ ${(i.price * i.qty).toFixed(2).replace('.',',')}</span></div>`).join('');
+                if(payList) payList.innerHTML = finalCartForMsg.map(i => `<div style="display:flex; justify-content:space-between; font-size:13px;"><span style="color:#666;">${i.qty}x ${i.name}</span><span style="color:#333; font-weight:900;">R$ ${(i.price * i.qty).toFixed(2).replace('.',',')}</span></div>`).join('');
+                
                 cart = []; saveCart();
                 changeTab('payment');
             } else {
-                const msg = `   *REDLINE DELIVERY*\n==========================\n${isSchedule ? `*PEDIDO AGENDADO PARA ${schedTime}*\n` : '*NOVO PEDIDO PELO APP*\n'}\n*FORMA DE PAGTO:* ${payMethodsMap[paymentMethod]}\n*VALOR TOTAL:* R$ ${currentFinalTotal.toFixed(2).replace('.',',')}\n\n*ITENS:*\n${itemsList}\n==========================`;
+                const msg = `   *REDLINE DELIVERY*\n==========================\n*NOVO PEDIDO PELO APP*\n\n*FORMA DE PAGTO:* ${payMethodsMap[paymentMethod]}\n*VALOR TOTAL:* R$ ${currentFinalTotal.toFixed(2).replace('.',',')}\n\n*ITENS:*\n${itemsListClean}\n==========================`;
                 cart = []; saveCart();
                 window.location.href = `https://wa.me/559881422644?text=${encodeURIComponent(msg)}`;
                 changeTab('home');
@@ -7199,11 +7176,11 @@ document.getElementById('btn-add-to-active').onclick = function() {
         const errorMsg = document.getElementById('status-error-msg');
         if (status !== 'aberto') {
             errorMsg.style.display = 'block';
-            errorMsg.innerText = status === 'inauguracao' ? "A loja ainda não inaugurou" : "A loja está fechada. Use a opção Agendar.";
+            errorMsg.innerText = "Desculpe, a loja está fechada no momento.";
             return;
         }
         if(cart.length === 0) return showToast("Carrinho vazio!");
-        processFinalOrder(false, null);
+        processFinalOrder();
     };
 
     window.openScheduleModal = () => {
