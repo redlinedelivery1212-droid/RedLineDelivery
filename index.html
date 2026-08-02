@@ -3153,21 +3153,21 @@
     { id: "p52", name: "Churrasco Misto Exc de Carne, Toscana e Frango", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/comiacarnetoscanafrango.png" },
     { id: "p53", name: "Churrasco Exc de Carne e Toscana", weight: "Acompanha Batata frita, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 22.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/comiacarnetoscana.png" },
     { id: "p57", name: "Marmita Executiva Feijoada", weight: "Feijoada completa acompanha arroz branco, couve refogada, farofa e laranja", price: 22.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/weweew.png" },
-    { id: "p54", name: "Feijoada 500 ml", weight: "feijoada de 500 ml acompanha calabresa sadia, bacon fatiado e feijao preto saboroso", price: 8.50, oldPrice: 8.62, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/--------feiojo.png", isOffer: true },
+    { id: "p54", name: "Feijoadinha 500 ml", weight: "feijoada de 500 ml acompanha calabresa sadia, bacon fatiado e feijao preto saboroso", price: 8.50, oldPrice: 8.62, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/--------feiojo.png", isOffer: true },
     { id: "p55", name: "Farofa de Bacon & Calabresa", weight: "Na farofa de bacon acompanha farofa, manteiga corante, bacon fatiado picado, calabresa fatiada picada, crocante", price: 6.90, oldPrice: 8.62, category: "Adicionais", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/---------------farofa.png", isOffer: true }
 ];
 
     const catalogCategories = [
-    { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 3 },
-    { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
-    { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 1 },
-    { key: "c_add", name: "Adicionais", icon: "fa-solid fa-plus", order: 1.1 },
-    { key: "c_rel", name: "Relampago", icon: "fa-solid fa-stopwatch", order: 1.2 },
+    { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 1 },
+    { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 2 },
+    { key: "c_add", name: "Adicionais", icon: "fa-solid fa-plus", order: 3 },
+    { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 4 },
+    { key: "c_rel", name: "Relampago", icon: "fa-solid fa-stopwatch", order: 4.1 },
     { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 4.5 },
     { key: "c10", name: "Combos", icon: "fa-solid fa-boxes-stacked", order: 5 },
     { key: "c_kids", name: "KIDS", icon: "fa-solid fa-child", order: 6 },
     { key: "c4", name: "Petiscos", icon: "fa-solid fa-shrimp", order: 7 },
-        { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 1.5 },
+        { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 3.5 },
         { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 10 },
         { key: "c8", name: "Bolos", icon: "fa-solid fa-cake-candles", order: 11 },
         { key: "c9", name: "Bebidas", icon: "fa-solid fa-beer-mug-empty", order: 12 }
@@ -4324,15 +4324,15 @@ function init() {
     };
 
     categories = [
-    { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 3 },
-    { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 2 },
-    { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 1 },
-    { key: "c_add", name: "Adicionais", icon: "fa-solid fa-plus", order: 1.1 },
+    { key: "c1", name: "Hambúrguer", icon: "fa-solid fa-burger", order: 1 },
+    { key: "c3", name: "Marmitas", icon: "fa-solid fa-drumstick-bite", order: 2 },
+    { key: "c_add", name: "Adicionais", icon: "fa-solid fa-plus", order: 3 },
+    { key: "c2", name: "SubLine", icon: "fa-solid fa-burger", order: 4 },
     { key: "c5", name: "Cachorro Quente", icon: "fa-solid fa-hotdog", order: 4.5 },
     { key: "c10", name: "Combos", icon: "fa-solid fa-boxes-stacked", order: 5 },
     { key: "c_kids", name: "KIDS", icon: "fa-solid fa-child", order: 6 },
     { key: "c4", name: "Petiscos", icon: "fa-solid fa-shrimp", order: 7 },
-        { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 1.5 },
+        { key: "c6", name: "Mini Pizzas", icon: "fa-solid fa-pizza-slice", order: 3.5 },
         { key: "c7", name: "Macarronadas", icon: "fa-solid fa-drumstick-bite", order: 10 },
         { key: "c8", name: "Bolos", icon: "fa-solid fa-cake-candles", order: 11 },
         { key: "c9", name: "Bebidas", icon: "fa-solid fa-beer-mug-empty", order: 12 }
