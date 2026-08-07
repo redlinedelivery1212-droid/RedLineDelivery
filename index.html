@@ -4806,7 +4806,7 @@ function renderFakeReviews() {
                 
                 const catProducts = sortedAllProducts.filter(p => p.category.trim() === cat.name.trim());
                 if (catProducts.length > 0) {
-                    if (cat.name.trim().toLowerCase() === 'marmitas' && marmitaBannerData && marmitaBannerData.active) {
+                    if (false && cat.name.trim().toLowerCase() === 'marmitas' && marmitaBannerData && marmitaBannerData.active) {
                     const mBanner = document.createElement('div');
                     mBanner.className = "marmita-observer-trigger";
                     mBanner.style = "grid-column: 1 / -1; margin-top: 20px; margin-bottom: 10px; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; width: 100%; line-height: 0; background: transparent;";
@@ -4919,7 +4919,7 @@ function renderFakeReviews() {
                 list.prepend(bevBanner);
             }
 
-            if (catName && catName.toLowerCase() === 'marmitas' && marmitaBannerData && marmitaBannerData.active) {
+            if (false && catName && catName.toLowerCase() === 'marmitas' && marmitaBannerData && marmitaBannerData.active) {
                 const mBanner = document.createElement('div');
                 mBanner.className = "marmita-observer-trigger";
                 mBanner.style = "grid-column: 1 / -1; margin-bottom: 15px; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; width: 100%; line-height: 0; background: transparent;";
@@ -5363,7 +5363,7 @@ window.addBagToCart = (key) => {
     window.checkMarmitaPromo = function() {
         const promoIndex = cart.findIndex(i => i.id === 'p46_promo');
 
-        if (!marmitaPromoEnabled) {
+        if (true || !marmitaPromoEnabled) {
             if (promoIndex !== -1) {
                 cart.splice(promoIndex, 1);
             }
@@ -5604,7 +5604,7 @@ window.addBagToCart = (key) => {
         const eligibleMarmitas = cart.filter(i => i.category === 'Marmitas' && i.id !== 'p46_promo');
         const totalEligibleQty = eligibleMarmitas.reduce((acc, i) => acc + i.qty, 0);
 
-        if(totalEligibleQty === 1) {
+        if(false && totalEligibleQty === 1) {
             const unlockBanner = document.createElement('div');
             unlockBanner.style = "background: #fff8e1; border: 1px solid #ffe082; padding: 12px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #ffb300; cursor: pointer; animation: fadeIn 0.3s; display: flex; flex-direction: column; gap: 12px;";
             unlockBanner.onclick = () => { changeTab('home'); filterCategory('Marmitas'); };
