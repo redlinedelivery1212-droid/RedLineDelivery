@@ -1984,7 +1984,7 @@
             <p class="greeting">Olá, Cliente!</p>
             <h2 style="margin: 5px 0; display: flex; align-items: center; flex-wrap: wrap; gap: 5px;">
                 RedLine Delivery 
-                <a href="https://wa.me/559881422644" target="_blank" style="color: #25d366; font-size: 18px; text-decoration: none; margin-left: 5px; display: flex; align-items: center;"><i class="fa-brands fa-whatsapp"></i></a>
+                <a href="https://wa.me/559881701238" target="_blank" style="color: #25d366; font-size: 18px; text-decoration: none; margin-left: 5px; display: flex; align-items: center;"><i class="fa-brands fa-whatsapp"></i></a>
             </h2>
             <p style="font-size: 11px; color: var(--text-gray); display: flex; align-items: center; gap: 4px; margin-top: -5px; margin-bottom: 5px; font-weight: 600;">
                 <i class="fa-solid fa-location-dot" style="color: var(--primary-orange);"></i> Pinheiro-MA
@@ -2679,7 +2679,7 @@
                     </p>
                 </div>
 
-                <button onclick="window.open('https://wa.me/559881422644?text=' + encodeURIComponent('Olá RedLine! Acabei de realizar meu pedido e estou enviando o comprovante do PIX.'), '_blank')" style="width: 100%; background: #25d366; color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 900; font-size: 14px; cursor: pointer; box-shadow: 0 8px 20px rgba(37, 211, 102, 0.2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <button onclick="window.open('https://wa.me/559881701238?text=' + encodeURIComponent('Olá RedLine! Acabei de realizar meu pedido e estou enviando o comprovante do PIX.'), '_blank')" style="width: 100%; background: #25d366; color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 900; font-size: 14px; cursor: pointer; box-shadow: 0 8px 20px rgba(37, 211, 102, 0.2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 10px;">
                     <i class="fa-brands fa-whatsapp" style="font-size: 20px;"></i> Enviar Comprovante
                 </button>
                 <button onclick="localStorage.removeItem('pendingPaymentTotal'); changeTab('home');" style="width: 100%; background: #2ecc71; color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 900; font-size: 14px; cursor: pointer; box-shadow: 0 8px 20px rgba(46, 204, 113, 0.2); text-transform: uppercase; letter-spacing: 1px;">
@@ -5186,7 +5186,7 @@ function renderFakeReviews() {
                             <div class="action-circle" onclick="this.classList.toggle('liked')">
                                 <i class="fa-solid fa-heart"></i>
                             </div>
-                            <div class="action-circle" onclick="window.open('https://wa.me/559881422644?text=Vi o ${item.name} no Descobrimento e amei!')">
+                            <div class="action-circle" onclick="window.open('https://wa.me/559881701238?text=Vi o ${item.name} no Descobrimento e amei!')">
                                 <i class="fa-solid fa-share"></i>
                             </div>
                         </div>
@@ -6309,7 +6309,7 @@ document.getElementById('confirm-sticker').onclick = () => {
             text += `*CLIENTE:* ${userProfile.nome.toUpperCase()}\n`;
             text += `*ENDEREÇO:* ${userProfile.rua}, ${userProfile.numero}\n`;
         }
-        window.open(`https://wa.me/559881422644?text=${encodeURIComponent(text)}`, '_blank');
+        window.open(`https://wa.me/559881701238?text=${encodeURIComponent(text)}`, '_blank');
     };
 
     window.finishBevOnlyOrder = function() {
@@ -6331,7 +6331,7 @@ document.getElementById('confirm-sticker').onclick = () => {
         }
         text += "\nEstou aguardando a confirmação!";
         
-        window.open(`https://wa.me/559881422644?text=${encodeURIComponent(text)}`, '_blank');
+        window.open(`https://wa.me/559881701238?text=${encodeURIComponent(text)}`, '_blank');
     };
 
     let trackingMap = null;
@@ -6723,7 +6723,7 @@ document.getElementById('btn-add-to-active').onclick = function() {
                 changeTab('payment');
             } else {
                 const msg = `Olá RedLine! Fiz uma ADIÇÃO ao meu pedido que está em andamento.`;
-                window.location.href = `https://wa.me/559881422644?text=${encodeURIComponent(msg)}`;
+                window.location.href = `https://wa.me/559881701238?text=${encodeURIComponent(msg)}`;
                 changeTab('home');
             }
         }, 300);
@@ -7173,7 +7173,7 @@ document.getElementById('btn-add-to-active').onclick = function() {
             } else {
                 const msg = `   *REDLINE DELIVERY*\n==========================\n*NOVO PEDIDO PELO APP*\n\n*FORMA DE PAGTO:* ${payMethodsMap[paymentMethod]}\n*VALOR TOTAL:* R$ ${currentFinalTotal.toFixed(2).replace('.',',')}\n\n*ITENS:*\n${itemsListClean}\n==========================`;
                 cart = []; saveCart();
-                window.location.href = `https://wa.me/559881422644?text=${encodeURIComponent(msg)}`;
+                window.location.href = `https://wa.me/559881701238?text=${encodeURIComponent(msg)}`;
                 changeTab('home');
             }
         });
@@ -7299,7 +7299,7 @@ document.getElementById('btn-add-to-active').onclick = function() {
             } else {
                 const msg = `   *REDLINE DELIVERY*\n==========================\n${isSchedule ? `*PEDIDO AGENDADO PARA ${schedTime}*\n` : '*NOVO PEDIDO PELO APP*\n'}\n*FORMA DE PAGTO:* ${payMethodsMap[paymentMethod]}\n*VALOR TOTAL:* R$ ${currentFinalTotal.toFixed(2).replace('.',',')}\n\n*ITENS:*\n${itemsListClean}\n==========================`;
                 cart = []; saveCart();
-                window.location.href = `https://wa.me/559881422644?text=${encodeURIComponent(msg)}`;
+                window.location.href = `https://wa.me/559881701238?text=${encodeURIComponent(msg)}`;
                 changeTab('home');
             }
         });
