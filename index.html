@@ -1485,6 +1485,18 @@
                    wobble-bounce 2s infinite ease-in-out 1.3s;
     }
 
+    @keyframes gta-bg-zoom-out { 
+        0% { transform: scale(2.2); } 
+        100% { transform: scale(1); } 
+    }
+    @keyframes gta-char-sync-zoom { 
+        0% { opacity: 0; transform: scale(1.8); } 
+        1% { opacity: 1; transform: scale(1.8); }
+        100% { opacity: 1; transform: scale(1); } 
+    }
+    .start-gta-anim .gta-layer1-anim { animation: gta-bg-zoom-out 3s cubic-bezier(0.165, 0.84, 0.44, 1) forwards; }
+    .start-gta-anim .gta-layer2-anim { animation: gta-char-sync-zoom 1.5s cubic-bezier(0.165, 0.84, 0.44, 1) 1.2s forwards; }
+
     @keyframes subline-slide-in {
         0% { transform: translateY(-50%) translateX(-250px); }
         100% { transform: translateY(-50%) translateX(-60px); }
@@ -2023,6 +2035,16 @@
                     </div>
                     <img src="https://d3sn2rlrwxy0ce.cloudfront.net/_800x600_crop_center-center_none/whopper-thumb_2021-09-16-125319_mppe.png?mtime=20210916095320&focal=none&tmtime=20241024134409" style="width: 200px; height: 160px; object-fit: contain; z-index: 2; filter: drop-shadow(0 20px 25px rgba(0,0,0,0.3)); transform: scale(1.1) translateX(15%); margin-right: -20px; animation: floatBannerImg 4s ease-in-out infinite;">
                 </div>
+                <div class="promo-banner gta-observer-trigger" style="background: #000; position: relative; overflow: hidden; padding: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="addToCart('combo_gta6')">
+                    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/Camada%201.png" class="gta-layer1-anim" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;">
+                    <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/camada%202.png" class="gta-layer2-anim" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 2; opacity: 0;">
+                    <div style="z-index: 3; flex: 1; display: flex; flex-direction: column; justify-content: center; text-shadow: 2px 2px 10px rgba(0,0,0,0.8);">
+                         <div style="background: #ffde00; color: #000; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; width: fit-content; margin-bottom: 8px; text-transform: uppercase;">edição limitada</div>
+                         <h2 style="font-size: 24px; font-weight: 900; color: white; line-height: 0.9; text-transform: uppercase;">GTA VI <br>OLHAR ESTENDIDO</h2>
+                         <p style="font-size: 10px; color: rgba(255,255,255,0.9); font-weight: bold; margin-top: 5px;">ACOMPANHA MAPA + POSTAIS + BANNER</p>
+                         <div style="margin-top: 10px; font-size: 26px; font-weight: 900; color: #ffde00;">R$ 42,90</div>
+                    </div>
+                </div>
                 <div class="promo-banner subline-banner subline-observer-trigger" style="background: #27ae60; position: relative; overflow: hidden; padding: 20px; display: flex; align-items: center; justify-content: flex-end; cursor: pointer;" onclick="openSubLineBuilder()">
                     <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;">
                         <svg viewBox="0 0 500 200" preserveAspectRatio="none" style="height: 100%; width: 100%;">
@@ -2070,6 +2092,7 @@
                 <div class="indicator-bar" id="ind-1"></div>
                 <div class="indicator-bar" id="ind-2"></div>
                 <div class="indicator-bar" id="ind-3"></div>
+                <div class="indicator-bar" id="ind-4"></div>
             </div>
         </div>
 
@@ -3958,7 +3981,8 @@ function init() {
             document.getElementById('ind-0'),
             document.getElementById('ind-1'),
             document.getElementById('ind-2'),
-            document.getElementById('ind-3')
+            document.getElementById('ind-3'),
+            document.getElementById('ind-4')
         ];
         
         indicators.forEach((ind, idx) => {
@@ -3968,13 +3992,21 @@ function init() {
 
     const startAutoSlide = () => {
         stopAutoSlide();
-        slideInterval = setInterval(() => {
-            currentSlide = (currentSlide + 1) % 4;
-            updateSlider();
-        }, 5000);
+        const runSlider = () => {
+            let delay = (currentSlide === 1) ? 8000 : 5000;
+            slideInterval = setTimeout(() => {
+                currentSlide = (currentSlide + 1) % 5;
+                updateSlider();
+                runSlider();
+            }, delay);
+        };
+        runSlider();
     };
 
-    const stopAutoSlide = () => clearInterval(slideInterval);
+    const stopAutoSlide = () => {
+        clearTimeout(slideInterval);
+        clearInterval(slideInterval);
+    };
 
     const sliderContainer = document.querySelector('.promo-slider-container');
     if(sliderContainer) {
@@ -3990,9 +4022,9 @@ function init() {
             const diff = startX - clientX;
             if (Math.abs(diff) > 50) {
                 if (diff > 0) {
-                    currentSlide = (currentSlide + 1) % 4;
+                    currentSlide = (currentSlide + 1) % 5;
                 } else {
-                    currentSlide = (currentSlide - 1 + 4) % 4;
+                    currentSlide = (currentSlide - 1 + 5) % 5;
                 }
                 updateSlider();
             }
@@ -4996,11 +5028,14 @@ function renderFakeReviews() {
                     if (entry.target.classList.contains('subline-observer-trigger')) {
                         entry.target.classList.add('start-subline-anim');
                     }
+                    if (entry.target.classList.contains('gta-observer-trigger')) {
+                        entry.target.classList.add('start-gta-anim');
+                    }
                 }
             });
         }, { threshold: 0.1 });
 
-        document.querySelectorAll('.marmita-observer-trigger, .subline-observer-trigger').forEach(el => observer.observe(el));
+        document.querySelectorAll('.marmita-observer-trigger, .subline-observer-trigger, .gta-observer-trigger').forEach(el => observer.observe(el));
     }
 
     function getThumb(url) {
