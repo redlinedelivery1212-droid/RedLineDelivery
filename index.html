@@ -1567,7 +1567,9 @@
         display: inline-block;
     }
 
-    .spinner-orange {
+    .spinner-orange { }
+    @keyframes flashRed { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+    .restricted-msg { color: #ff0000; font-weight: 900; animation: flashRed 0.6s infinite; font-size: 12px; text-align: center; margin: 10px 0; display: block; background: #fff0f0; padding: 10px; border-radius: 8px; border: 2px solid #ff0000; }
     </style>
 </head>
 <body>
@@ -2204,9 +2206,12 @@
             <div id="beverage-list-horizontal" style="display: flex; gap: 15px; overflow-x: auto; padding: 5px 2px 10px 2px; scrollbar-width: none; -webkit-overflow-scrolling: touch; flex-wrap: nowrap;">
                 <!-- Bebidas via JS -->
             </div>
+            <button onclick="document.getElementById('cart-screen').scrollTo({top: document.getElementById('cart-screen').scrollHeight, behavior: 'smooth'})" style="width: 100%; background: #f8f9fa; color: #666; border: 1px solid #ddd; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 13px; cursor: pointer; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                CONTINUAR PARA PAGAMENTO <i class="fa-solid fa-chevron-down"></i>
+            </button>
         </div>
 
-        <div class="coupon-box" style="flex-direction: column; gap: 5px;">
+        <div class="coupon-box" style="display: none;">
             <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <span style="font-size: 13px;"><i class="fa-solid fa-truck-fast"></i> <span id="coupon-status-text">Frete grátis disponível</span></span>
                 <span style="color: var(--primary-orange); font-weight: bold; font-size: 12px;">Mín. R$ 84,90</span>
@@ -2217,13 +2222,7 @@
         </div>
 
         <div class="payment-details">
-            <div style="background: white; padding: 20px; border-radius: 25px; border: 1px solid #eee; margin-top: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-                    <div style="background: var(--primary-orange); width: 4px; height: 16px; border-radius: 10px;"></div>
-                    <h4 style="margin: 0; font-size: 15px; font-weight: 900; color: #2d3436; text-transform: uppercase; letter-spacing: 0.5px;">Mimos Gratuitos</h4>
-                </div>
-                <div id="dynamic-free-extras-list" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;"></div>
-            </div>
+            
 
             <div id="brindes-container"></div>
             <div id="brindes-premium-container"></div>
@@ -2445,10 +2444,9 @@
     </div>
     <div class="details-info">
         <h2 id="det-name" style="font-size: 26px;"></h2>
-        <p id="det-weight" class="p-weight" style="font-size: 14px; margin-bottom: 10px;"></p>
+        <p id="det-weight" style="font-size: 14px; color: var(--text-gray); line-height: 1.6; margin-bottom: 15px;"></p>
         <p id="det-price" class="details-price"></p>
         <p id="det-category" style="font-size: 12px; color: var(--primary-orange); text-transform: uppercase; font-weight: bold; margin-bottom: 10px;"></p>
-        <p class="details-desc"> </p>
         
         <button id="det-add-btn" class="admin-btn" style="width: 100%; font-size: 18px; padding: 18px; display: flex; justify-content: space-between; align-items: center;">
             <span>Adicionar</span>
@@ -3083,6 +3081,7 @@
     }
 
     const catalogData = [
+    { id: "combo_gta6", name: "Combo Grand Theft Auto VI Um Olhar Estendido", weight: "acompanha big cheddar cremoso batata frita p coca cola lata/copo acompanha 1 Mapa de Leonida 8 Cartoes postais 1 Banner Brilhante com a artwork", price: 42.90, category: "Combos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/imafgem.png", isMegaPromo: false, isOffer: true, isCombo: true, popular: true, recommended: true },
     { id: "suco_goiaba", name: "Suco Natural de Goiaba", weight: "Suco natural da fruta geladinho 300ml", price: 6.50, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/0011goiaba.jfif" },
     { id: "suco_goiaba_leite", name: "Suco Natural de Goiaba com Leite", weight: "Suco natural batido com leite 300ml", price: 7.50, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/0011goiabaleite.jfif" },
 { id: "redline_cola", name: "Redline Cola", weight: "Sabor intenso e refrescante, a combinação perfeita para seu lanche 300ml", price: 5.60, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/discovery/1784044597619_redlinecola222.png", isMegaPromo: true },
@@ -3114,26 +3113,22 @@
     { id: "p23", name: "Jantar Executivo Presidencial de Strogonoff", weight: "Strogonoff de frango, milho e ervilha, Batata palha, Macarrão, farofa de bacon, Pure de batata, arroz branco de alho", price: 24.90, category: "Marmitas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805509789_------w_(1).png" },
 { id: "c_piscina_cheddar", name: "Piscina de Cheddar Burger + Batata", weight: "acompanha piscina de cheddar cremoso 1 Big Cheddar Cremoso suculento cortado, 1 porção de Batata Frita P crocante", price: 26.90, category: "Combos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/piscinacheddar.jfif", isMegaPromo: true, popular: true },
 { id: "c_creamline", name: "Combo CreamLine", weight: "O trio perfeito: 1 Big Cheddar Cremoso suculento, 1 porção de Batata Frita P crocante e 1 Coca-Cola lata geladinha.", price: 26.90, category: "Combos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/combocreamline.jfif", isMegaPromo: true, popular: true },
-    { id: "p24", name: "COMBO SUBLINE", weight: "2 SubLine um de carne e outro de frango com batata frita e molhos especiais", price: 63.90, oldPrice: 79.88, category: "Combos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776804918411_-------w1.png", isOffer: true },
-    { id: "p25", name: "COMBO NETFLIX", weight: "2 Hamburguês de cheddar, Batata Frita, 2 Pizza Broto calabresa, Aneis Cebola Empanada, Queijo Cheddar, Bacon", price: 125.90, category: "Combos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776804937097_000000000000000000000000000000000000g.png" },
-    { id: "p26", name: "COMBO BIG LINE TRIPLO", weight: "3 Hamburguês de Cheddar, Batata Frita, Nuggets, Aneis Cebola Empanada, Queijo Cheddar, Bacon", price: 128.90, category: "Combos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776804959351_COMBO_BIG_LINE_TRIPLO.png" },
-    { id: "p27", name: "COMBO BIG DOG", weight: "2 Dog Cheddar, Batata Frita, Nuggets, Aneis Cebola Empanada, Queijo Cheddar, Bacon", price: 110.85, category: "Combos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805014022_COMBO_BIG_DOG.png" },
+    { id: "p26", name: "COMBO BIG LINE TRIPLO", weight: "3 Hamburguês de Cheddar, Batata Frita, 6 Nuggets, 6 Aneis Cebola Empanada, Queijo Cheddar, Bacon", price: 128.90, category: "Combos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/comoboooooooooo.png" },
     { id: "p28", name: "Batata Frita P", weight: "Porção de fritas Pequena para uma pessoa", price: 16.90, oldPrice: 21.12, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805032005_Batata_Frita_G.png", isOffer: true },
     { id: "p29", name: "Batata Frita M", weight: "Porção de fritas media para duas pessoas", price: 18.90, oldPrice: 23.62, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805032005_Batata_Frita_G.png", isOffer: true },
     { id: "p30", name: "Batata Frita G", weight: "Porção de fritas Grande para 3 pessoas", price: 24.90, oldPrice: 29.87, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805032005_Batata_Frita_G.png", isOffer: true },
     { id: "p31", name: "Batata de Marechal", weight: "Adiciona batata frita, calabresa, frango", price: 28.90, oldPrice: 31.12, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/Gemini_Generated_Image_6lsz5b6lsz5b6lsz.png", isOffer: true },
     { id: "p_batata_recheada", name: "Batata Recheada Cheddar & Requeijao", weight: "Adiciona batata frita, calabresa, bacon fatiado, queijo cheddar, requeijao", price: 34.80, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/00000000cheddarqueidos.png" },
     { id: "p32", name: "Nugget Crocante Unidade", weight: "Unidade de Nuggets adicione quantas quiser", price: 2.99, oldPrice: 3.74, category: "Petiscos", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/ecs/1776805081823_Nugget_Crocante_Unidade.png", isOffer: true },
-    { id: "p33", name: "Dog Padrão", weight: "Uma salsicha, Milho e ervilha, molho especial, carne moída, batata palha", price: 11.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/11000====dogpadrao.png" },
-    { id: "p_sabor", name: "Dog Sabor", weight: "Uma salsicha, Milho e ervilha, molho especial, carne moída, batata palha, alface, cenourinha ralada", price: 14.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/11000====dogsalada.png" },
-    { id: "p35", name: "Dog Bacon", weight: "Uma salsichas, bacon, Milho e ervilha, molho especial, carne moída, batata palha", price: 18.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/11000====dogbacon.png" },
-    { id: "p36", name: "Dog Cheddar", weight: "Uma salsichas, Milho e ervilha, molho especial, carne moída, batata palha, queijo cheddar", price: 19.90, oldPrice: 24.87, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/11000====dogcheddar.png", isOffer: true },
-    { id: "p_tudo_c", name: "Dog Tudo Completo", weight: "duas salsichas, Milho e ervilha, molho especial, carne moída, batata palha, queijo cheddar,queijo, calabresa,bacon,pure,", price: 24.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/Red/11000====dogtudo.png" },
+    { id: "p33", name: "Dog Padrão", weight: "Uma salsicha, Milho e ervilha, molho especial, carne moída, batata palha", price: 11.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/0yiffdogpadrao.jfif" },
+    { id: "p35", name: "Dog Bacon", weight: "Uma salsichas, bacon, Milho e ervilha, molho especial, carne moída, batata palha", price: 18.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/0yiffdogbacon.jfif" },
+    { id: "p36", name: "Dog Cheddar", weight: "Uma salsichas, Milho e ervilha, molho especial, carne moída, batata palha, queijo cheddar", price: 19.90, oldPrice: 24.87, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/0yiffdogcheddar.webp", isOffer: true },
+    { id: "p_tudo_c", name: "Dog Tudo Completo", weight: "duas salsichas, Milho e ervilha, molho especial, carne moída, batata palha, queijo cheddar,queijo, calabresa,bacon,pure,", price: 24.90, category: "Cachorro Quente", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/0yiffdogtudocompleto.jfif" },
     { id: "p37", name: "Pizza Broto Portuguesa", weight: "Queijo, presunto, pimentão, azeitona, cebola, milho e ervilha, tomate, ovo cozido, oregano", price: 13.90, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/pizzaportuguesa.jfif" },
     { id: "p38", name: "Pizza Broto Calabresa", weight: "Queijo Moçarella, orégano, calabresa", price: 8.90, oldPrice: 11.13, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/pizzacalabresa.jfif", isOffer: true, isMegaPromo: true },
     { id: "p39", name: "Pizza Broto Mussarela", weight: "Queijo, orégano", price: 8.90, oldPrice: 11.13, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/pizzamussarela.jfif", isOffer: true, isMegaPromo: true },
     { id: "p40", name: "Pizza Broto Tres Queijos", weight: "Queijo, orégano, queijo Cheddar", price: 12.90, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/pizzatresqsueijos.jfif" },
-    { id: "p41", name: "Macarronada Carne moída", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão Penne", price: 19.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/Macarronadacarnemoida.jpg" },
+    { id: "p41", name: "Macarronada Carne moída", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão Penne", price: 19.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/macarrroooo.jpg" },
     { id: "p42", name: "Macarronada Turbo", weight: "Molho especial, carne moída, milho, ewilha, batata palha, macarrão Penne, calabresa, bacon", price: 24.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/macarronadaturbo.jfif" },
     { id: "p43", name: "Macarronada Cheddar Queijos", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão fetuchine, queijo Cheddar", price: 24.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/macarronadacheddarqueijos.webp" },
     { id: "p44", name: "Coca-Cola Lata", weight: "320ml Refrigerante Coca-Cola Lata", price: 7.99, category: "Bebidas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/111cocalata.png" },
@@ -4020,31 +4015,7 @@ function init() {
     }
     startAutoSlide();
 
-    onValue(ref(db, 'settings/free_extras'), (snapshot) => {
-        const list = document.getElementById('dynamic-free-extras-list');
-        if(!list) return;
-        list.innerHTML = "";
-        const data = snapshot.val();
-        
-        if(data) {
-            const items = Object.values(data);
-            items.forEach(item => {
-                const itemDiv = document.createElement('label');
-                const isGolden = item.isGolden === true;
-                itemDiv.style = "display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; position: relative;";
-                itemDiv.innerHTML = `
-                    <div class="${isGolden ? 'premium-glow' : ''}" style="width: 100%; aspect-ratio: 1/1; background: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; position: relative; border: ${isGolden ? '2px solid #ffd700' : '2px solid #f0f0f0'}; transition: 0.2s; box-shadow: 0 3px 8px rgba(0,0,0,0.02); overflow: hidden; padding: 8px;">
-                        <img src="${item.img}" style="width: 85%; height: 85%; object-fit: contain;">
-                        <input type="checkbox" class="opt-free-dynamic" data-nome="${item.name}" onchange="this.parentElement.style.borderColor = this.checked ? 'var(--primary-orange)' : ( ${isGolden} ? '#ffd700' : '#f0f0f0'); this.parentElement.style.background = this.checked ? '#fff5f5' : '#fff';" style="position: absolute; top: 6px; right: 6px; width: 16px; height: 16px; accent-color: var(--primary-orange); cursor: pointer;">
-                    </div>
-                    <span style="font-size: 9px; font-weight: 800; color: ${isGolden ? '#b8860b' : '#555'}; text-align: center; line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 20px; width: 100%;">${item.name}</span>
-                `;
-                list.appendChild(itemDiv);
-            });
-        } else {
-            list.innerHTML = "<p style='text-align:center; color:#999; padding:20px; font-size:12px; grid-column:1/4;'>Nenhum mimo disponível no momento.</p>";
-        }
-    });
+    
 
     onValue(ref(db, 'settings/brindes_extras'), (snapshot) => {
         const container = document.getElementById('brindes-container');
@@ -5075,7 +5046,6 @@ function renderFakeReviews() {
             <div class="product-card-body">
                 ${p.serveCount ? `<div style="color: #ea1d2c; font-size: 9px; font-weight: 700; margin-bottom: 4px; text-transform: uppercase;">Serves ${p.serveCount} pessoas</div>` : ''}
                 <p class="p-name">${p.name}</p>
-                ${p.category === 'Hambúrguer' ? `<div style="background: #fdf2f2; color: #ea1d2c; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; width: fit-content; margin-bottom: 4px; border: 0.5px solid #ea1d2c; text-transform: uppercase; letter-spacing: 0.3px;"><i class="fa-solid fa-check"></i> Carne Artesanal 100% Bovina</div>` : ''}
                 <p class="p-weight">${p.weight}</p>
                 
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-top: auto;">
@@ -5423,7 +5393,7 @@ window.addBagToCart = (key) => {
                 if(document.getElementById('details-screen').classList.contains('active')) changeTab('home');
                 checkMarmitaPromo();
             };
-        } else if (item.isCombo) {
+        } else if (item.isCombo && item.id !== 'combo_gta6') {
             onValue(ref(db, 'settings/combo_drinks'), (snap) => {
                 const drinksStr = snap.val() || "";
                 const drinks = drinksStr.split(',').map(d => d.trim()).filter(d => d !== "");
@@ -5709,10 +5679,92 @@ window.addBagToCart = (key) => {
 
         
 
-        const threshold = 84.90;
         const deliveryType = document.querySelector('input[name="delivery-type"]:checked')?.value || 'delivery';
-        let deliveryFee = ((deliveryType === 'delivery' || deliveryType === 'no_contact') && subtotal > 0 && subtotal < threshold) ? 4.99 : 0;
-        if(isRecharge) deliveryFee = 0;
+        
+        let deliveryFee = 4.90;
+        let isRestricted = false;
+
+        if (userProfile && (deliveryType === 'delivery' || deliveryType === 'no_contact')) {
+            const addr = (userProfile.bairro + " " + userProfile.rua).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            
+            if (addr.includes("pacas") || addr.includes("enseada 2")) {
+                isRestricted = true;
+            } else if (addr.includes("bubalina residencial bom viver") || addr.includes("residencial bom viver")) {
+                deliveryFee = 9.50;
+            } else if (addr.includes("pedrinhas dos fugacas")) {
+                deliveryFee = 9.50;
+            } else if (addr.includes("joao castelo")) {
+                deliveryFee = 7.90;
+            } else if (addr.includes("centro")) {
+                deliveryFee = 6.90;
+            } else if (addr.includes("alcantara")) {
+                deliveryFee = 7.90;
+            } else if (addr.includes("matriz")) {
+                deliveryFee = 8.90;
+            } else if (addr.includes("dondona soares") || addr.includes("dondona") || addr.includes("dodona soares")) {
+                deliveryFee = 9.50;
+            } else if (addr.includes("campinho")) {
+                deliveryFee = 6.90;
+            } else if (addr.includes("kiola sarney")) {
+                deliveryFee = 7.90;
+            } else if (addr.includes("antigo aeroporto") || addr.includes("aeroporto")) {
+                deliveryFee = 6.90;
+            } else if (addr.includes("enseada 1")) {
+                deliveryFee = 5.90;
+            } else if (addr.includes("enseada")) {
+                deliveryFee = 5.90;
+            } else if (addr.includes("floresta")) {
+                deliveryFee = 7.90;
+            } else if (addr.includes("sete")) {
+                deliveryFee = 6.90;
+            } else if (addr.includes("bubalina")) {
+                deliveryFee = 9.90;
+            } else if (addr.includes("ilha de ventura") || addr.includes("ilha de leonor")) {
+                deliveryFee = 9.50;
+            } else if (addr.includes("sao benedito")) {
+                deliveryFee = 7.90;
+            } else if (addr.includes("vila filuca")) {
+                deliveryFee = 9.50;
+            } else if (addr.includes("vila ze genesio")) {
+                deliveryFee = 8.90;
+            } else if (addr.includes("residencial coqueiro")) {
+                deliveryFee = 8.90;
+            } else if (addr.includes("sitio bar")) {
+                deliveryFee = 9.50;
+            } else if (addr.includes("rua do binoca")) {
+                deliveryFee = 5.90;
+            } else {
+                deliveryFee = 4.90;
+            }
+        }
+
+        if (deliveryType === 'pickup' || subtotal === 0 || isRecharge) {
+            deliveryFee = 0;
+        }
+
+        const finishBtn = document.getElementById('finish-order');
+        const existingRestrictedMsg = document.getElementById('restricted-area-alert');
+        if (existingRestrictedMsg) existingRestrictedMsg.remove();
+        const existingRestrictedMsgBtn = document.getElementById('restricted-area-alert-btn');
+        if (existingRestrictedMsgBtn) existingRestrictedMsgBtn.remove();
+
+        if (isRestricted && (deliveryType === 'delivery' || deliveryType === 'no_contact')) {
+            const msgDiv = document.createElement('div');
+            msgDiv.id = 'restricted-area-alert';
+            msgDiv.className = 'restricted-msg';
+            msgDiv.innerText = "NÃO ENTREGAMOS NESTA REGIÃO";
+            container.appendChild(msgDiv);
+
+            const msgDivBtn = msgDiv.cloneNode(true);
+            msgDivBtn.id = 'restricted-area-alert-btn';
+            finishBtn.parentNode.insertBefore(msgDivBtn, finishBtn);
+
+            finishBtn.classList.add('btn-disabled');
+            finishBtn.disabled = true;
+        } else {
+            finishBtn.disabled = false;
+            finishBtn.classList.remove('btn-disabled');
+        }
 
         // Código removido (AMORDEPESSOA100%OFF)
 
@@ -5735,23 +5787,6 @@ window.addBagToCart = (key) => {
             xpInfo.style = "text-align: center; margin-top: 10px; color: #f46b21; font-size: 12px; font-weight: bold;";
             xpInfo.innerHTML = `<i class="fa-solid fa-star"></i> Ganhe +${xpToGain} XP com este pedido!`;
             container.appendChild(xpInfo);
-        }
-
-        const progress = Math.min((subtotal / threshold) * 100, 100);
-        const progressBar = document.getElementById('free-shipping-progress');
-        const statusText = document.getElementById('coupon-status-text');
-        
-        if(progressBar) progressBar.style.width = progress + '%';
-        if(statusText) {
-            if(subtotal === 0) {
-                statusText.innerText = "Frete grátis disponível";
-            } else if(subtotal >= threshold) {
-                statusText.innerText = "Frete grátis aplicado!";
-                statusText.style.color = "#28a745";
-            } else {
-                statusText.innerText = `Faltam R$ ${(threshold - subtotal).toFixed(2).replace('.',',')} para frete grátis`;
-                statusText.style.color = "inherit";
-            }
         }
 
         const deliveryRow = document.getElementById('delivery-row');
@@ -6478,13 +6513,6 @@ document.getElementById('confirm-sticker').onclick = () => {
                     </p>
                 </div>
 
-                <div style="margin-bottom: 25px;">
-                    <p style="font-size: 10px; color: #999; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; text-align: left;">item promocional</p>
-                    <a href="https://linktr.ee/lojadohunterPHO" target="_blank">
-                        <img src="https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/igres/IMG_22222222.PNG" style="width: 100%; aspect-ratio: 1280/720; border-radius: 15px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #eee;">
-                    </a>
-                </div>
-
                 <div style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #eee; margin-bottom: 20px;">
                     <p style="font-size: 11px; color: var(--text-gray); font-weight: bold; text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px dashed #eee; padding-bottom: 8px;">Informações do Pedido</p>
                     
@@ -6674,15 +6702,6 @@ document.getElementById('btn-add-to-active').onclick = function() {
     const finalTotal = Math.max(0, subtotal - couponDiscount);
     
     const extras = [];
-    if(document.getElementById('opt-maionese')?.checked) extras.push("Maionese Hellmann's");
-    if(document.getElementById('opt-ketchup')?.checked) extras.push("Ketchup Hellmann's");
-    if(document.getElementById('opt-tasty')?.checked) extras.push("Molho Tasty");
-    if(document.getElementById('opt-bbq')?.checked) extras.push("Molho BBQ");
-    if(document.getElementById('opt-tucupi')?.checked) extras.push("Molho Tucupi do Pará");
-    if(document.getElementById('opt-garfo')?.checked) extras.push("Garfo Descartável");
-    if(document.getElementById('opt-guardanapo')?.checked) extras.push("Guardanapo Extra");
-    if(document.getElementById('opt-pirulito')?.checked) extras.push("Pirulito de Cereja");
-    
     document.querySelectorAll('.opt-brinde-dinamico:checked').forEach(cb => {
         extras.push(cb.getAttribute('data-nome'));
     });
@@ -7100,8 +7119,7 @@ document.getElementById('btn-add-to-active').onclick = function() {
 
         const subtotal = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
         const deliveryType = document.querySelector('input[name="delivery-type"]:checked')?.value || 'delivery';
-        let deliveryFee = (deliveryType === 'delivery' && subtotal < 84.90) ? 4.99 : 0;
-        if (deliveryType === 'no_contact' && subtotal < 84.90) deliveryFee = 4.99; 
+        let deliveryFee = (deliveryType === 'delivery' || deliveryType === 'no_contact') ? 4.99 : 0; 
         
         const totalComFrete = subtotal + deliveryFee;
         const minVal = (deliveryType === 'delivery' || deliveryType === 'no_contact') ? 20 : 15;
@@ -7121,7 +7139,6 @@ document.getElementById('btn-add-to-active').onclick = function() {
         let currentFinalTotal = Math.max(0, (subtotal + deliveryFee) - couponDiscount);
         
         const extras = [];
-        document.querySelectorAll('.opt-free-dynamic:checked').forEach(cb => extras.push(cb.getAttribute('data-nome')));
         document.querySelectorAll('.opt-brinde-dinamico:checked').forEach(cb => extras.push(cb.getAttribute('data-nome')));
 
         const paymentMethod = document.querySelector('input[name="pay-method"]:checked').value;
@@ -7220,20 +7237,50 @@ document.getElementById('btn-add-to-active').onclick = function() {
 
         const subtotal = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
         const deliveryType = document.querySelector('input[name="delivery-type"]:checked')?.value || 'delivery';
-        let deliveryFee = (deliveryType === 'delivery' && subtotal < 84.90) ? 4.99 : 0;
-        if (deliveryType === 'no_contact' && subtotal < 84.90) deliveryFee = 4.99; // Taxa padrão para sem contato também
+        
+        let deliveryFee = 4.90;
+        if (deliveryType === 'pickup' || subtotal === 0 || cart.some(i => i.isWalletTopup)) {
+            deliveryFee = 0;
+        } else if (userProfile) {
+            const addr = (userProfile.bairro + " " + userProfile.rua).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            if (addr.includes("bubalina residencial bom viver") || addr.includes("residencial bom viver")) deliveryFee = 9.50;
+            else if (addr.includes("pedrinhas dos fugacas")) deliveryFee = 9.50;
+            else if (addr.includes("joao castelo")) deliveryFee = 7.90;
+            else if (addr.includes("centro")) deliveryFee = 6.90;
+            else if (addr.includes("alcantara")) deliveryFee = 7.90;
+            else if (addr.includes("matriz")) deliveryFee = 8.90;
+            else if (addr.includes("dondona soares") || addr.includes("dondona") || addr.includes("dodona soares")) deliveryFee = 9.50;
+            else if (addr.includes("campinho")) deliveryFee = 6.90;
+            else if (addr.includes("kiola sarney")) deliveryFee = 7.90;
+            else if (addr.includes("antigo aeroporto") || addr.includes("aeroporto")) deliveryFee = 6.90;
+            else if (addr.includes("enseada 1")) deliveryFee = 5.90;
+            else if (addr.includes("enseada")) deliveryFee = 5.90;
+            else if (addr.includes("floresta")) deliveryFee = 7.90;
+            else if (addr.includes("sete")) deliveryFee = 6.90;
+            else if (addr.includes("bubalina")) deliveryFee = 9.90;
+            else if (addr.includes("ilha de ventura") || addr.includes("ilha de leonor")) deliveryFee = 9.50;
+            else if (addr.includes("sao benedito")) deliveryFee = 7.90;
+            else if (addr.includes("vila filuca")) deliveryFee = 9.50;
+            else if (addr.includes("vila ze genesio")) deliveryFee = 8.90;
+            else if (addr.includes("residencial coqueiro")) deliveryFee = 8.90;
+            else if (addr.includes("sitio bar")) deliveryFee = 9.50;
+            else if (addr.includes("rua do binoca")) deliveryFee = 5.90;
+        }
+
+        if(selectedClubCoupon && selectedClubCoupon.type === 'freeShipping' && deliveryType !== 'pickup' && subtotal >= 25) {
+            const limit = selectedClubCoupon.limitFS || 25;
+            deliveryFee = Math.max(0, deliveryFee - limit);
+        }
         
         const totalComFrete = subtotal + deliveryFee;
         const minVal = (deliveryType === 'delivery' || deliveryType === 'no_contact') ? 20 : 15;
 
-        // VALIDAÇÃO DE VALOR MÍNIMO
         if (totalComFrete < minVal) {
             loader.style.display = 'none';
             showToast(minVal === 20 ? "O total com frete deve ser no mínimo R$ 20,00" : "O total deve ser no mínimo R$ 15,00 para retirada");
             return;
         }
 
-        // VALIDAÇÃO DE MAPA
         if ((deliveryType === 'delivery' || deliveryType === 'no_contact') && !userProfile.lat && !userProfile.declinedMap) {
             loader.style.display = 'none';
             document.getElementById('modal-map-ask').style.display = 'flex';
@@ -7243,7 +7290,6 @@ document.getElementById('btn-add-to-active').onclick = function() {
         let currentFinalTotal = Math.max(0, (subtotal + deliveryFee) - couponDiscount);
         
         const extras = [];
-        document.querySelectorAll('.opt-free-dynamic:checked').forEach(cb => extras.push(cb.getAttribute('data-nome')));
         document.querySelectorAll('.opt-brinde-dinamico:checked').forEach(cb => extras.push(cb.getAttribute('data-nome')));
 
         const paymentMethod = document.querySelector('input[name="pay-method"]:checked').value;
