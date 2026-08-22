@@ -3034,6 +3034,30 @@
     </div>
 </div>
 
+<div id="modal-burger-meat" class="modal-overlay" style="z-index: 8000;">
+    <div class="modal-content">
+        <h3>Tipo de Carne</h3>
+        <p style="font-size: 13px; color: var(--text-gray); margin-bottom: 10px;">Escolha a carne do seu burger:</p>
+        <div id="burger-meat-options" style="display: flex; flex-direction: column; gap: 10px;">
+            <label style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8f9fa; border-radius: 12px; cursor: pointer; border: 1px solid #eee;">
+                <input type="radio" name="selected-burger-meat" value="Disco Friboi Trad" data-extra="1" checked style="accent-color: var(--primary-orange);">
+                <div style="flex: 1;">
+                    <span style="font-size: 14px; font-weight: bold; display: block; color: #333;">Disco Friboi Tradicional</span>
+                    <span id="price-meat-trad" style="font-size: 14px; color: #ea1d2c; font-weight: 900;"></span>
+                </div>
+            </label>
+            <label style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fff9f5; border-radius: 12px; cursor: pointer; border: 1px solid #ffcc80;">
+                <input type="radio" name="selected-burger-meat" value="Blend Artesanal" data-extra="1.4" style="accent-color: var(--primary-orange);">
+                <div style="flex: 1;">
+                    <span style="font-size: 14px; font-weight: bold; display: block; color: #333;">Blend de Carne Artesanal</span>
+                    <span id="price-meat-blend" style="font-size: 14px; color: #ea1d2c; font-weight: 900;"></span>
+                </div>
+            </label>
+        </div>
+        <button class="btn-next" id="btn-confirm-burger-meat" style="margin-top: 20px; width: 100%;">Confirmar e Adicionar</button>
+    </div>
+</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getDatabase, ref, onValue, set, push, remove, get, query, limitToLast, update } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
@@ -5427,6 +5451,57 @@ window.addBagToCart = (key) => {
                 updateFloatingCart();
                 if(document.getElementById('details-screen').classList.contains('active')) changeTab('home');
                 checkMarmitaPromo();
+            };
+        } else if (item.category === 'Hambúrguer') {
+            const pTrad = item.price;
+            const pBlend = item.price * 1.4;
+            document.getElementById('price-meat-trad').innerText = 'R$ ' + pTrad.toFixed(2).replace('.', ',');
+            document.getElementById('price-meat-blend').innerText = 'R$ ' + pBlend.toFixed(2).replace('.', ',');
+            
+            get(ref(db, 'settings/artesanal_meat_sold_out')).then(snap => {
+                const isArtesanalSoldOut = snap.val() || false;
+                const blendRadio = document.querySelector('input[name="selected-burger-meat"][value="Blend Artesanal"]');
+                const blendLabel = blendRadio.parentElement;
+                
+                if (isArtesanalSoldOut) {
+                    blendRadio.disabled = true;
+                    blendLabel.style.opacity = '0.4';
+                    blendLabel.style.pointerEvents = 'none';
+                    blendLabel.style.background = '#f2f2f2';
+                    document.getElementById('price-meat-blend').innerText = "ESGOTADO";
+                    document.querySelector('input[name="selected-burger-meat"][value="Disco Friboi Trad"]').checked = true;
+                } else {
+                    blendRadio.disabled = false;
+                    blendLabel.style.opacity = '1';
+                    blendLabel.style.pointerEvents = 'auto';
+                    blendLabel.style.background = '#fff9f5';
+                }
+            });
+
+            document.getElementById('modal-burger-meat').style.display = 'flex';
+            document.getElementById('btn-confirm-burger-meat').onclick = () => {
+                const selectedInput = document.querySelector('input[name="selected-burger-meat"]:checked');
+                const meatType = selectedInput.value;
+                const multiplier = parseFloat(selectedInput.dataset.extra);
+                const finalPrice = item.price * multiplier;
+                
+                const cartItem = {
+                    ...item, 
+                    qty: 1, 
+                    price: finalPrice, 
+                    meatType: meatType,
+                    name: `${item.name} (${meatType})`,
+                    id: item.id + '_' + meatType.replace(/\s/g, '')
+                };
+
+                const inCart = cart.find(c => c.id === cartItem.id);
+                if(inCart) inCart.qty++;
+                else cart.push(cartItem);
+
+                document.getElementById('modal-burger-meat').style.display = 'none';
+                saveCart();
+                updateFloatingCart();
+                if(document.getElementById('details-screen').classList.contains('active')) changeTab('home');
             };
         } else if (item.isCombo && item.id !== 'combo_gta6') {
             onValue(ref(db, 'settings/combo_drinks'), (snap) => {
