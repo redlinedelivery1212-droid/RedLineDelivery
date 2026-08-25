@@ -3175,6 +3175,7 @@
     { id: "p38", name: "Pizza Broto Calabresa", weight: "Queijo Moçarella, orégano, calabresa", price: 8.90, oldPrice: 11.13, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/pizzacalabresa.jfif", isOffer: true, isMegaPromo: true },
     { id: "p39", name: "Pizza Broto Mussarela", weight: "Queijo, orégano", price: 8.90, oldPrice: 11.13, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/pizzamussarela.jfif", isOffer: true, isMegaPromo: true },
     { id: "p40", name: "Pizza Broto Tres Queijos", weight: "Queijo, orégano, queijo Cheddar", price: 12.90, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/pizzatresqsueijos.jfif" },
+    { id: "p_pizza_chocolate", name: "Pizza Broto Chocolate Doce", weight: "Deliciosa pizza broto com cobertura de chocolate cremoso", price: 14.90, category: "Mini Pizzas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/pizza-de-chocolate-e-caramelo-1401797860219_1024x768.jpg" },
     { id: "p41", name: "Macarronada Carne moída", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão Penne", price: 19.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/macarrroooo.jpg" },
     { id: "p42", name: "Macarronada Turbo", weight: "Molho especial, carne moída, milho, ewilha, batata palha, macarrão Penne, calabresa, bacon", price: 24.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/macarronadaturbo.jfif" },
     { id: "p43", name: "Macarronada Cheddar Queijos", weight: "Molho especial, carne moída, milho, ervilha, batata palha, macarrão fetuchine, queijo Cheddar", price: 24.90, category: "Macarronadas", img: "https://shscuqqqezibwkibhyix.supabase.co/storage/v1/object/public/arc/macarronadacheddarqueijos.webp" },
@@ -4432,7 +4433,88 @@ function updateUserProfileUI() {
 }
 
 function updateLoyaltyUI() {
-    window.logPerf('xp');
+    if(!userProfile) return;
+    const container = document.getElementById('loyalty-section');
+    if(!container) return;
+
+    get(ref(db, 'orders')).then((snap) => {
+        const data = snap.val() || {};
+        const totalSpent = Object.values(data)
+            .filter(o => o.cliente && o.cliente.contato === userProfile.contato && (o.status === 'pago' || o.status === 'finalizado'))
+            .reduce((acc, curr) => acc + (parseFloat(curr.total) || 0), 0);
+        
+        const xp = Math.min(totalSpent, 1000);
+        const percent = (xp / 1000) * 100;
+
+        let rank = "Bronze";
+        let color = "#cd7f32";
+        let textColor = "#fff";
+        
+        if(xp >= 951) { 
+            rank = "Ouro Puro"; 
+            color = "linear-gradient(90deg, #ffd700, #fff7ad, #ffae00, #ffd700)"; 
+            textColor = "#5c4300";
+        }
+        else if(xp >= 801) { rank = "Platina"; color = "#95a5a6"; textColor = "#fff"; }
+        else if(xp >= 651) { rank = "Esmeralda"; color = "#2ecc71"; textColor = "#fff"; }
+        else if(xp >= 501) { rank = "Ametista"; color = "#9b59b6"; textColor = "#fff"; }
+        else if(xp >= 351) { rank = "Diamante"; color = "#3498db"; textColor = "#fff"; }
+        else if(xp >= 201) { rank = "Ouro"; color = "#f1c40f"; textColor = "#5c4300"; }
+        else if(xp >= 101) { rank = "Prata"; color = "#bdc3c7"; textColor = "#333"; }
+        else { rank = "Bronze"; color = "#cd7f32"; textColor = "#fff"; }
+
+        container.style.display = 'block';
+        container.style.background = 'white';
+        container.style.padding = '20px 15px';
+        container.style.borderRadius = '18px';
+        container.style.boxShadow = '0 4px 15px rgba(0,0,0,0.05)';
+        
+        const milestones = [
+            { pos: 10, icon: 'fa-medal', color: '#bdc3c7' },
+            { pos: 20, icon: 'fa-medal', color: '#f1c40f' },
+            { pos: 35, icon: 'fa-gem', color: '#3498db' },
+            { pos: 50, icon: 'fa-dharmachakra', color: '#9b59b6' },
+            { pos: 65, icon: 'fa-leaf', color: '#2ecc71' },
+            { pos: 80, icon: 'fa-shield-halved', color: '#95a5a6' },
+            { pos: 95, icon: 'fa-crown', color: '#f1c40f' }
+        ];
+
+        const iconsHtml = milestones.map(m => `
+            <div style="position: absolute; left: ${m.pos}%; bottom: 22px; transform: translateX(-50%); z-index: 10;">
+                <i class="fa-solid ${m.icon}" style="font-size: 10px; color: ${xp >= (m.pos * 10) ? m.color : '#ddd'};"></i>
+            </div>
+        `).join('');
+
+        const dividersHtml = milestones.map(m => `
+            <div style="position: absolute; left: ${m.pos}%; top: 0; width: 1px; height: 100%; background: rgba(0,0,0,0.05); z-index: 5;"></div>
+        `).join('');
+
+        container.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <div style="display: flex; flex-direction: column;">
+                    <span style="font-size: 10px; font-weight: 900; color: #bbb; text-transform: uppercase; letter-spacing: 1px;">Status de Fidelidade</span>
+                    <h3 style="font-size: 18px; font-weight: 900; color: #333;">${rank}</h3>
+                </div>
+                <div style="background: ${color.includes('gradient') ? '#ffd700' : color}; color: ${textColor}; padding: 5px 15px; border-radius: 10px; font-size: 11px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.2);">
+                    ${xp.toFixed(0)} XP
+                </div>
+            </div>
+            <div style="position: relative; padding-top: 10px;">
+                ${iconsHtml}
+                <div style="height: 10px; background: #f5f5f5; border-radius: 50px; position: relative; border: 1px solid #f0f0f0; overflow: hidden;">
+                    ${dividersHtml}
+                    <div style="height: 100%; width: ${percent}%; background: ${color}; transition: 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-radius: 50px; position: absolute; top: 0; left: 0; z-index: 2;">
+                        ${xp > 950 ? '<div style="position:absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent); animation: premiumShine 2s infinite;"></div>' : ''}
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                <span style="font-size: 9px; font-weight: 900; color: #ccc; text-transform: uppercase;">Iniciante</span>
+                <span style="font-size: 9px; font-weight: 900; color: #ccc; text-transform: uppercase;">Mestre 1000 XP</span>
+            </div>
+        `;
+        window.logPerf('xp');
+    });
 }
 
 function renderOrderHistory() {
